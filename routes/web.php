@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\SurveyController;
 use App\Models\Question;
@@ -27,3 +28,5 @@ Route::middleware('auth')->group(function () {
     Route::post('survey/{id}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
     Route::get('/survey/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 });
+
+Route::get('/chart', [ChartController::class, 'index']);
