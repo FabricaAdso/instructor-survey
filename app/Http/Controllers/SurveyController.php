@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Apprentice;
+use App\Models\Instructor;
+use App\Models\Question;
 use App\Models\Survey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,13 +33,15 @@ class SurveyController extends Controller
         ]);
 
         foreach ($data['answers'] as $questionId => $answer) {
+            $question = Question::find($questionId);
             if (!Auth::check()) {
                 return redirect()->route('login.form')->withErrors(['error' => 'Debes iniciar sesión para completar la encuesta.']);
             }
+           
 
             Answer::create([
                 'qualification' => $answer,
-                'apprentice_id' =>null,
+                'apprentice_id' => null,
                 'question_id' => $questionId,
                 'instructor_id' => $request->instructor_id,
             ]);
