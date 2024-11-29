@@ -67,4 +67,11 @@ class SurveyController extends Controller
         return view('survey.complete');
     }
 
+    public function index()
+    {
+        $_SURVEY= Survey::orderBy('id', 'desc' )
+            ->paginate(2);
+        return view('survey.form', compact('survey'));
+    }
+
 }

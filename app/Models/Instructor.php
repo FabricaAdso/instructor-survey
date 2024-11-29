@@ -9,6 +9,7 @@ class Instructor extends Model
 {
     protected $fillable = [
         'name',
+        // 'middle_name',
         'last_name',
         'second_last_name',
         'identity_document',
