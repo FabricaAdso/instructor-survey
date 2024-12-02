@@ -50,7 +50,6 @@ class MunicipalitySeeder extends Seeder
             ['name' => 'Villa Rica'],
         ];
 
-        // Insertar en la tabla 'municipalities'
         DB::table('municipalities')->insert($municipalities);
     }
 }

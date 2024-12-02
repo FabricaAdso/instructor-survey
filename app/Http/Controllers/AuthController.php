@@ -30,6 +30,11 @@ class AuthController extends Controller
 
             if ($apprentice) {
                 Auth::login($apprentice);
+
+                if ($apprentice->role === 'admin') {
+                    return redirect()->route('admin');
+                }
+
                 return redirect()->route('survey.show', ['apprenticeId' => $apprentice->id, 'surveyId' => 1]);
             }
         }
@@ -43,5 +48,5 @@ class AuthController extends Controller
         return redirect()->route('login.form');
     }
 
-    
+
 }
