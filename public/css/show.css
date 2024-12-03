@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h2, h3 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.chart-section {
+    margin: 20px 0;
+}
+
+#chart1, #chart2, #chart3, #chart4 {
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    h2, h3 {
+        font-size: 1.2em;
+    }
+
+    #chart1, #chart2, #chart3, #chart4 {
+        padding: 5px;
+        margin-top: 10px;
+    }
+}

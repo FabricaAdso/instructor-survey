@@ -8,8 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Apprentice extends Authenticatable
 {
     protected $fillable = [
-        'first_name',
-        'middle_name',
+        'name',
         'last_name',
         'second_last_name',
         'identity_document',
@@ -19,11 +18,6 @@ class Apprentice extends Authenticatable
     protected $primaryKey = 'id';
 
     public $timestamps = false;
-
-    // public function user ()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
 
     public function survey ()
     {
@@ -44,6 +38,5 @@ class Apprentice extends Authenticatable
     {
         return $this->belongsToMany(Instructor::class, 'course_instructor', 'course_id', 'instructor_id');
     }
-
 
 }

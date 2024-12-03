@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->string('question');
-            $table->enum('type', ['radio', 'text']); // Tipo de respuesta (radio o texto libre)
-            $table->json('options')->nullable(); // Opciones de respuesta, si es tipo radio
+            $table->enum('type', ['radio', 'text']);
+            $table->json('options')->nullable();
 
             $table->unsignedBigInteger('survey_id');
             $table->foreign('survey_id')->references('id')->on('surveys');

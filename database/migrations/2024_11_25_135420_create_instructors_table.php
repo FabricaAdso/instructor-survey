@@ -14,15 +14,11 @@ return new class extends Migration
         Schema::create('instructors', function (Blueprint $table) {
             $table->id();
 
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
+            $table->string('name');
             $table->string('last_name');
             $table->string('second_last_name')->nullable();
             $table->string('identity_document')->unique();
-            
-            // $table->unsignedBigInteger('user_id');
-            // $table->foreign('user_id')->references('id')->on('users');
-            
+
             $table->timestamps();
         });
     }
