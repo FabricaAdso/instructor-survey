@@ -39,9 +39,10 @@ class SurveyController extends Controller
 
         $course = $user->course;
 
+
         foreach ($data['answers'] as $questionId => $answer) {
             Answer::create([
-                'qualification' => $answer,
+                'qualification' => $answer ?? null,
                 'apprentice_id' => null,
                 'question_id' => $questionId,
                 'instructor_id' => $data['instructor_id'],

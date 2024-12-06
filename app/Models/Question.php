@@ -43,4 +43,16 @@ class Question extends Model
         }
         $query->with($relations);
     }
+
+    public static function boot()
+{
+    parent::boot();
+
+    static::saving(function ($model) {
+        if ($model->type === 'radio' && $model->type === null) {
+            throw new \Exception('El campo "type" no puede ser null si es de tipo "radio".');
+        }
+    });
+}
+
 }

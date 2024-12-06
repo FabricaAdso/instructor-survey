@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->string('question');
-            $table->enum('type', ['radio', 'text']);
+            $table->enum('type', ['radio', 'text'])->nullable();
             $table->json('options')->nullable();
 
             $table->unsignedBigInteger('survey_id');

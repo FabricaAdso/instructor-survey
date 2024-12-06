@@ -68,80 +68,110 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const reportData = @json($reportData->pluck('average')->values());
-            const questions = @json($questions->values());
+       document.addEventListener('DOMContentLoaded', function() {
+    const reportData = @json($reportData->pluck('average')->values());
+    const questions = @json($questions->values());
 
-            const distribution = [6, 4, 6, 4]; // Cantidad de preguntas por gráfica
-            let startIndex = 0;
+    const distribution = [6, 4, 6, 4]; // Cantidad de preguntas por gráfica
+    let startIndex = 0;
 
-            distribution.forEach((count, index) => {
-                const chunkData = reportData.slice(startIndex, startIndex + count);
-                const chunkCategories = questions.slice(startIndex, startIndex + count).map(q => {
-                    return q.length > 20 ? q.substring(0, 25) + '...' : q;
-                });
-                startIndex += count;
+    function splitText(text, maxChars) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
 
-                const options = {
-                    chart: {
-                        type: 'bar',
-                        height: 400,
-                        toolbar: {
-                            show: false
-                        },
-                        animations: {
-                            enabled: true,
-                            easing: 'easeinout',
-                            speed: 800,
-                        }
-                    },
-                    colors: ['#2196F3'],
-                    series: [{
-                        name: 'Promedio de Calificación',
-                        data: chunkData
-                    }],
-                    xaxis: {
-                        categories: chunkCategories,
-                        title: {
-                            text: 'Preguntas'
-                        },
-                        labels: {
-                            rotate: 0,
-                            style: {
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                            }
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: 'Calificación Promedio'
-                        },
-                        min: 0,
-                        max: 5
-                    },
-                    tooltip: {
-                        y: {
-                            formatter: function(val) {
-                                return val.toFixed(2);
-                            }
-                        }
-                    },
-                    dataLabels: {
-                        enabled: true,
-                        formatter: function(val) {
-                            return val.toFixed(2);
-                        },
-                        style: {
-                            colors: ['#333']
-                        }
-                    }
-                };
+  words.forEach(word => {
+    if ((line + word).length > maxChars) {
+      lines.push(line.trim());
+      line = '';
+    }
+    line += `${word} `;
+  });
 
-                const chart = new ApexCharts(document.querySelector(`#chart${index + 1}`), options);
-                chart.render();
-            });
+  if (line.trim()) {
+    lines.push(line.trim());
+  }
+
+  return lines;
+}
+
+
+    distribution.forEach((count, index) => {
+        const chunkData = reportData.slice(startIndex, startIndex + count);
+        const chunkCategories = questions.slice(startIndex, startIndex + count).map(q => {
+            return q.length > 20 ? q.substring(0, 25) + '...' : q;
         });
+
+        // Colores dinámicos para cada barra
+        const colors = ['#2196F3', '#FF5733', '#33FF57', '#3357FF', '#FFC300', '#8E44AD'];
+
+        const seriesData = chunkData.map((value, i) => ({
+            x: chunkCategories[i], // Categoría
+            y: value, // Valor
+            fillColor: colors[i % colors.length] // Ciclar colores si hay más barras que colores
+        }));
+
+        startIndex += count;
+
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 400,
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                }
+            },
+            series: [{
+                name: 'Promedio de Calificación',
+                data: seriesData // Datos con colores personalizados
+            }],
+            xaxis: {
+                title: {
+                    text: 'Preguntas'
+                },
+                labels: {
+                    rotate: 0,
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Calificación Promedio'
+                },
+                min: 0,
+                max: 5
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return val.toFixed(2);
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return val.toFixed(2);
+                },
+                style: {
+                    colors: ['#333']
+                }
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector(`#chart${index + 1}`), options);
+        chart.render();
+    });
+});
+
     </script>
 
 </body>

@@ -6,6 +6,14 @@
             <img src="../img/logo-sena-verde-complementario-svg-2022.svg" alt="Logo SENA" class="w-12 h-12">
         </div>
         <h1 class="text-2xl font-semibold ml-4 flex-grow text-center md:text-left">Encuesta de Acompañamiento</h1>
+
+        <div class="flex justify-end">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="text-sm text-blue-600 hover:text-blue-800">Cerrar sesión</button>
+            </form>
+        </div>
+
     </div>
 </header>
 
