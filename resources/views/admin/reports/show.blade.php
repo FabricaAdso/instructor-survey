@@ -120,7 +120,12 @@
                             text: 'Calificación Promedio'
                         },
                         min: 0,
-                        max: 5
+                        max: 5,
+                        labels: {
+                            formatter: function(val) {
+                                return val % 1 === 0 ? val.toFixed(0) : val.toFixed(2);
+                            }
+                        }
                     },
                     tooltip: {
                         y: {

@@ -72,44 +72,44 @@ class ReportController extends Controller
         ]);
     }
     public function showGeneral($instructorId)
-{
-    // Paso 1: Verificar que el instructor existe
-    $instructor = Instructor::find($instructorId);
-    if (!$instructor) {
-        return back()->withErrors("El instructor no existe.");
+    {
+        // Paso 1: Verificar que el instructor existe
+        $instructor = Instructor::find($instructorId);
+        if (!$instructor) {
+            return back()->withErrors("El instructor no existe.");
+        }
+
+        // Paso 2: Obtener todas las respuestas de las fichas asociadas al instructor
+        $answers = Answer::where('instructor_id', $instructorId)
+            ->whereHas('course', function ($query) {
+                // Considera solo las respuestas asociadas a cursos activos o asignados al instructor
+                $query->whereNotNull('id'); // Puedes añadir condiciones específicas si lo deseas
+            })
+            ->get();
+
+        // Paso 3: Generar el reporte agrupando por pregunta (preguntas menores a 21)
+        $reportData = $answers->where('question_id', '<', 21)
+            ->groupBy('question_id')
+            ->map(function ($group) {
+                $calificaciones = $group->pluck('qualification')->map(fn($value) => (int)$value);
+                return [
+                    'average' => $calificaciones->avg(),
+                    'count' => $group->count(),
+                ];
+            });
+
+        // Paso 4: Recoger observaciones para preguntas abiertas (ID 21 y 22)
+        $observations = $answers->whereIn('question_id', [21, 22]);
+
+        // Paso 5: Obtener las preguntas asociadas a las respuestas
+        $questions = Question::whereIn('id', $reportData->keys())->pluck('question', 'id');
+
+        // Paso 6: Retornar la vista del reporte con toda la información consolidada
+        return view('admin/reports.general', [
+            'reportData' => $reportData,
+            'questions' => $questions,
+            'observations' => $observations,
+            'instructor' => $instructor
+        ]);
     }
-
-    // Paso 2: Obtener todas las respuestas de las fichas asociadas al instructor
-    $answers = Answer::where('instructor_id', $instructorId)
-        ->whereHas('course', function ($query) {
-            // Considera solo las respuestas asociadas a cursos activos o asignados al instructor
-            $query->whereNotNull('id'); // Puedes añadir condiciones específicas si lo deseas
-        })
-        ->get();
-
-    // Paso 3: Generar el reporte agrupando por pregunta (preguntas menores a 21)
-    $reportData = $answers->where('question_id', '<', 21)
-        ->groupBy('question_id')
-        ->map(function ($group) {
-            $calificaciones = $group->pluck('qualification')->map(fn($value) => (int)$value);
-            return [
-                'average' => $calificaciones->avg(),
-                'count' => $group->count(),
-            ];
-        });
-
-    // Paso 4: Recoger observaciones para preguntas abiertas (ID 21 y 22)
-    $observations = $answers->whereIn('question_id', [21, 22]);
-
-    // Paso 5: Obtener las preguntas asociadas a las respuestas
-    $questions = Question::whereIn('id', $reportData->keys())->pluck('question', 'id');
-
-    // Paso 6: Retornar la vista del reporte con toda la información consolidada
-    return view('admin/reports.general', [
-        'reportData' => $reportData,
-        'questions' => $questions,
-        'observations' => $observations,
-        'instructor' => $instructor
-    ]);
-}
 }
