@@ -97,7 +97,7 @@ class ReportController extends Controller
     }
 
     public function reportsDownloadCourse($courseId, $instructorId, $programId)
-    {   
+    {
         try {
         // Paso 1: Verificar que el curso exista y esté relacionado con el instructor
         $course = Course::with('instructors')->find($courseId);
@@ -149,25 +149,25 @@ class ReportController extends Controller
             'instructor' => $instructor,
             'course' => $course,
             'program' => Program::find($programId),
-        ]);
+            ])->render();
 
-        $pdfName = "reporte-instructor-{$instructorId}-{$courseId}" . now()->format('Y-m-d') . ".pdf";
-        
-        Pdf::html($htmlContent)
-                ->withBrowserShot(function (Browsershot $browsershot){
+            // Generar el PDF en memoria
+            $pdf = Pdf::html($htmlContent)
+                ->withBrowserShot(function (Browsershot $browsershot) {
                     $browsershot
-                        ->margins(1,1,1,1,"px")
-                        ->waitUntilNetworkIdle();
-                })
-                ->save($pdfName);
 
+                    ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node') // Ruta personalizada de Node.js
+                    ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')   // Ruta personalizada de npm
+                        ->margins(1, 1, 1, 1, "px")
+                        ->waitUntilNetworkIdle();
+                });
             // Descargar
-            return response()->download(public_path($pdfName));
+            return $pdf->download("reporte-instructor-{$instructorId}-" . now()->format('Y-m-d') . ".pdf");
 
         } catch (\Exception $e) {
             return back()->withErrors('No se pudo generar el PDF: ' . $e->getMessage());
         }
-    
+
     }
 
     public function showGeneral($instructorId)
@@ -215,10 +215,10 @@ class ReportController extends Controller
             'instructor' => $instructor
         ]);
     }
-    
 
-    
-    
+
+
+
 
     public function showGeneralDownload($instructorId)
 {
@@ -269,6 +269,9 @@ class ReportController extends Controller
         $pdf = Pdf::html($htmlContent)
             ->withBrowserShot(function (Browsershot $browsershot) {
                 $browsershot
+
+                ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node') // Ruta personalizada de Node.js
+                ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')   // Ruta personalizada de npm
                     ->margins(1, 1, 1, 1, "px")
                     ->waitUntilNetworkIdle();
             });
