@@ -30,7 +30,7 @@ class AuthController extends Controller
 
             // Verifica si algún aprendiz coincide con el identity_document proporcionado
             $apprentice = $apprentice->first(function ($item) use ($request) {
-                if(!env('APP_DEBUG')) return $item->identity_document == $request->identity_document;
+                if(env('APP_DEBUG')) return $item->identity_document == $request->identity_document;
                 return Hash::check($request->identity_document, $item->identity_document);
             });
 

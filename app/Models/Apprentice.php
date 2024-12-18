@@ -21,9 +21,9 @@ class Apprentice extends Authenticatable
 
     protected function casts(): array
     {
-        return [
-            'identity_document' => env('APP_DEBUG',true) ? '' : 'hashed'
-        ];
+        $cast = [];
+        if(!env('APP_DEBUG')) $cast['identity_document'] = 'hashed';
+        return $cast;
     }
 
     public function survey ()
