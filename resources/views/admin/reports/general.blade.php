@@ -13,10 +13,10 @@
 
     <div class="container">
         <h2>REPORTE GENERAL DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN.</h2>
-        <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}} {{$instructor->second_last_name}}</h3>
-        <a target="download" href="{{ route('reportsGeneralDownload', $instructor->id) }}" class="btn btn-primary">
+        <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}}</h3>
+        {{-- <a target="download" href="{{ route('reportsGeneralDownload', $instructor->id) }}" class="btn btn-primary">
             Descargar Reporte General
-        </a>
+        </a> --}}
 
 
         <div class="container-grafic">
@@ -34,14 +34,14 @@
             </div>
             <div class="chart-section"
                 style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                <h2 style="text-align: center; color: #28a745;">5. Observaciones y Recomendaciones</h2>
-
+{{--                 <h2 style="text-align: center; color: #28a745;">5. Observaciones</h2>
+ --}}
                 <div style="display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
     <!-- Observaciones -->
     <div
         style="width: 48%; max-width: 100%; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden; box-sizing: border-box;">
         <h3 style="color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 8px; word-wrap: break-word;">
-            Observaciones
+            RECOMENDACIÓN O SUGERENCIAS
         </h3>
         <ul style="list-style: none; padding: 0; margin: 0;">
             @foreach ($observations->filter(fn($answer) => $answer->question_id == 21) as $observation)
@@ -79,7 +79,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-        
+
         // Función para dividir el texto en varias líneas
         function splitText(text, maxLength) {
             const words = text.split(' '); // Dividimos el texto en palabras

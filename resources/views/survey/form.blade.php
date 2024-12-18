@@ -179,7 +179,7 @@
                                                 <tr class="border-b hover:bg-green-50">
                                                     <td class="px-4 py-3 text-sm text-gray-800 w-1/2">
                                                         <strong>{{ $instructor->name }} {{ $instructor->last_name }}
-                                                            {{ $instructor->second_last_name }}</strong>
+                                                            </strong>
                                                     </td>
                                                     @foreach ($question->options as $option)
                                                         <td class="px-2 py-2 text-center">
@@ -225,7 +225,7 @@
                                 <div class="mb-6">
                                     <p class="text-sm font-semibold text-gray-800"><strong>Instructor:
                                             {{ $instructor->name }} {{ $instructor->last_name }}
-                                            {{ $instructor->second_last_name }}</strong></p>
+                                        </strong></p>
                                     <div class="w-full text-sm text-left border border-gray-300 rounded-lg p-4">
                                         @if ($question->type == 'radio')
                                             @foreach ($question->options as $option)

@@ -12,12 +12,12 @@
 <body>
     <div class="container">
         <h2>REPORTE DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN: FICHA {{ $course->code }}</h2>
-        <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}} {{$instructor->second_last_name}}</h3>
+        <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}}</h3>
         <h3>programa:{{ $program->name }}</h3>
 
-        <a target="download" href="{{route('reportsDownloadCourse', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $program->id]) }}" class="btn btn-primary">
+        {{-- <a target="download" href="{{route('reportsDownloadCourse', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $program->id]) }}" class="btn btn-primary">
             Descargar Reporte Ficha
-        </a>
+        </a> --}}
 
         <div class="container-grafic">
             <div class="chart-section" id="chart1">
@@ -34,7 +34,6 @@
             </div>
             <div class="chart-section"
                 style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                <h2 style="text-align: center; color: #28a745;">5. Observaciones y Recomendaciones</h2>
 
                 <div style="display: flex; justify-content: space-between;  gap: 20px; flex-wrap: wrap;">
                     <!-- Observaciones -->
@@ -55,7 +54,7 @@
                     <div
                         style="width: 48%; max-width: 100%; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden; box-sizing: border-box;">
                         <h3 style="color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 8px; word-wrap: break-word;">
-                            Recomendaciones</h3>
+                            RECOMENDACIÓN O SUGERENCIAS</h3>
                         <ul style="list-style: none; padding: 0; margin: 0;">
                             @foreach ($observations->filter(fn($answer) => $answer->question_id == 22) as $recommendation)
                                 <li
@@ -183,5 +182,3 @@ function splitText(text, maxLength) {
         });
     </script>
 </body>
-
-</html>
