@@ -22,7 +22,7 @@ class AdminUserSeeder extends Seeder
         ]);
 
         $course = Course::create([
-            'code' => env('ADMIN_PASSWORD','usuarioadmin'),
+            'code' => env('ADMIN_PASSWORD'),
             'program_id' => $program->id,
             'municipality_id' => $municipality->id,
         ]);
