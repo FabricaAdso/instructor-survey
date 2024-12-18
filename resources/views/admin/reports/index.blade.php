@@ -168,8 +168,7 @@
 
                 <div class="space-y-2">
                     @foreach ($instructor->courses as $course)
-                        @if ($course->hasAnswers)
-                            <button>
+                    @if ($course->hasAnswers && $course->program)                            <button>
                                 <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
                                     class="block px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-green-700 focus:outline-none">
                                     {{ $course->code }}
