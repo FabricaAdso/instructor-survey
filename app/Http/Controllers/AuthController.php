@@ -6,6 +6,7 @@ use App\Models\Apprentice;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -18,15 +19,20 @@ class AuthController extends Controller
     {
         $request->validate([
             'course_code' => 'required|exists:courses,code',
-            'identity_document' => 'required|exists:apprentices,identity_document',
+            'identity_document' => 'required',
         ]);
 
         $course = Course::where('code', $request->course_code)->first();
 
         if ($course) {
-            $apprentice = Apprentice::where('course_id', $course->id)
-                ->where('identity_document', $request->identity_document)
-                ->first();
+
+            $apprentice = Apprentice::where('course_id', $course->id)->get();
+
+            // Verifica si algún aprendiz coincide con el identity_document proporcionado
+            $apprentice = $apprentice->first(function ($item) use ($request) {
+                if(!env('APP_DEBUG')) return $item->identity_document == $request->identity_document;
+                return Hash::check($request->identity_document, $item->identity_document);
+            });
 
 
 

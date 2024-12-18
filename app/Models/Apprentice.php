@@ -19,6 +19,13 @@ class Apprentice extends Authenticatable
 
     public $timestamps = false;
 
+    protected function casts(): array
+    {
+        return [
+            'identity_document' => env('APP_DEBUG',true) ? '' : 'hashed'
+        ];
+    }
+
     public function survey ()
     {
         return $this->belongsTo(Survey::class);
