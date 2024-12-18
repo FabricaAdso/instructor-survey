@@ -13,6 +13,8 @@ class ImportController extends Controller
 {
     public function import(Request $request)
     {
+        set_time_limit(0);
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);

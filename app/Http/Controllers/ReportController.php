@@ -41,6 +41,7 @@ class ReportController extends Controller
 
         return view('admin.reports.index', compact('instructors'));
     }
+
     public function show($courseId, $instructorId, $programId)
     {
         // Paso 1: Verificar que el curso exista y esté relacionado con el instructor

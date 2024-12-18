@@ -137,7 +137,7 @@
             <tbody>
                 @foreach ($instructors as $instructor)
                 <tr class="border-b">
-                    <td class="px-4 py-2">{{ $instructor->name }} {{ $instructor->last_name}}/td>
+                    <td class="px-4 py-2">{{ $instructor->name }} {{ $instructor->last_name}}</td>
                     <td class="px-4 py-2 text-center">
                         <button onclick="openModal({{ $instructor->id }})"
                             class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none">
