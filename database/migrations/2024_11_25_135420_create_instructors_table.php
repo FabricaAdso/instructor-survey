@@ -16,7 +16,6 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('last_name');
-            $table->string('second_last_name')->nullable();
             $table->string('identity_document')->unique();
 
             $table->timestamps();
