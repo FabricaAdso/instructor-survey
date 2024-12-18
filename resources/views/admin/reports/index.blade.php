@@ -137,7 +137,7 @@
             <tbody>
                 @foreach ($instructors as $instructor)
                 <tr class="border-b">
-                    <td class="px-4 py-2">{{ $instructor->name }} {{ $instructor->last_name}} {{$instructor->second_last_name}}</td>
+                    <td class="px-4 py-2">{{ $instructor->name }} {{ $instructor->last_name}}/td>
                     <td class="px-4 py-2 text-center">
                         <button onclick="openModal({{ $instructor->id }})"
                             class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none">
@@ -146,7 +146,7 @@
                     </td>
 
                     <td class="px-4 py-2 text-center">
-                        <button 
+                        <button
                             @if (!$instructor->hasGeneralAnswers) disabled @endif
                             onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
                             class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none
@@ -164,7 +164,7 @@
         @foreach ($instructors as $instructor)
         <div id="modal-{{ $instructor->id }}" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Fichas Asociadas a {{ $instructor->name }} {{ $instructor->last_name}} {{$instructor->second_last_name}}</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Fichas Asociadas a {{ $instructor->name }} {{ $instructor->last_name}}</h2>
 
                 <div class="space-y-2">
                     @foreach ($instructor->courses as $course)
@@ -184,7 +184,7 @@
                         @endif
                     @endforeach
                 </div>
-                
+
 
                 <button onclick="closeModal({{ $instructor->id }})"
                     class="mt-4 w-full py-2 px-4 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
