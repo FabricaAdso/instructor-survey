@@ -25,18 +25,21 @@ class ReportController extends Controller
 
     public function index()
     {
-        $instructors = Instructor::with(['courses.program'])->get();
 
         // Agregar las propiedades necesarias
-        $instructors->each(function ($instructor) {
-            // Verificar si tiene respuestas generales
-            $instructor->hasGeneralAnswers = Answer::where('instructor_id', $instructor->id)->exists();
-
-            // Verificar si sus cursos tienen respuestas
-            $instructor->courses->each(function ($course) {
-                $course->hasAnswers = Answer::where('course_id', $course->id)->exists();
-            });
-        });
+        $instructors = Instructor::with(['courses.program'])
+        ->leftJoin('course_instructor', 'course_instructor.instructor_id', '=', 'instructors.id')
+        ->leftJoin('courses', 'courses.id', '=', 'course_instructor.course_id')
+        ->leftJoin('answers as instructor_answers', 'instructors.id', '=', 'instructor_answers.instructor_id')
+        ->leftJoin('answers as course_answers', 'courses.id', '=', 'course_answers.course_id')
+        ->select('instructors.*')
+        ->groupBy('instructors.id')
+        ->selectRaw('EXISTS(SELECT 1 FROM answers WHERE answers.instructor_id = instructors.id) as has_general_answers')
+        ->with(['courses' => function($query) {
+            $query->selectRaw('courses.*, EXISTS(SELECT 1 FROM answers WHERE answers.course_id = courses.id) as has_answers');
+        }])
+        ->distinct()
+        ->get();
 
 
         return view('admin.reports.index', compact('instructors'));
