@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('instructors', function (Blueprint $table) {
-            $table->id();
 
-            $table->string('name');
-            $table->string('last_name');
-            $table->string('identity_document')->unique();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+
+            $table->id();
+            $table->enum('state',['Activo','Inactivo']);
+            $table->boolean('is_course_leader')->default(false);
 
             $table->timestamps();
         });

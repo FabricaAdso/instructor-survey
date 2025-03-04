@@ -8,13 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Instructor extends Model
 {
     protected $fillable = [
-        'name',
-        'last_name',
-        'second_last_name',
-        'identity_document',
+        
     ];
 
     protected $allowIncluded = ['courses'];
+
+    public function user ()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function answers ()
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+    public function courses ()
+    {
+        return $this->belongsToMany(Course::class,'course_instructor');
+    }
 
     public function scopeIncluded(Builder $query)
     {
@@ -30,16 +42,6 @@ class Instructor extends Model
             }
         }
         $query->with($relations);
-    }
-
-    public function answers ()
-    {
-        return $this->hasMany(Answer::class);
-    }
-
-    public function courses ()
-    {
-        return $this->belongsToMany(Course::class,'course_instructor');
     }
 
 }

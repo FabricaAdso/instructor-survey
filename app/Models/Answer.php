@@ -15,8 +15,11 @@ class Answer extends Model
         'question_id',
         'course_id'
     ];
-    protected $allowIncluded = ['question', 'instructor'];
-    
+    protected $allowIncluded = [
+        'question',
+        'instructor'
+    ];
+
     public function course()
     {
         return $this->belongsTo(Course::class);

@@ -11,14 +11,13 @@ use function Spatie\LaravelPdf\Support\pdf;
 
 // Rutas de autenticación
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
+
 Route::get('login/admin', function() {
     return view('auth.loginAdmin');
 })->name('login.admin');
+
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-
 
 Route::get('login/admin', function() {
     return view('auth.loginAdmin');

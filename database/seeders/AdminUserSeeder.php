@@ -12,28 +12,28 @@ class AdminUserSeeder extends Seeder
 {
     public function run()
     {
-        $municipality = Municipality::create([
-            'name' => 'AdminMunicipality',
-        ]);
+        // $municipality = Municipality::create([
+        //     'name' => 'AdminMunicipality',
+        // ]);
 
-        $program = Program::create([
-            'code' => 'Admin',
-            'name' => 'Admin Program',
-        ]);
+        // $program = Program::create([
+        //     'code' => 'Admin',
+        //     'name' => 'Admin Program',
+        // ]);
 
-        $course = Course::create([
-            'code' => env('ADMIN_PASSWORD'),
-            'program_id' => $program->id,
-            'municipality_id' => $municipality->id,
-        ]);
+        // $course = Course::create([
+        //     'code' => env('ADMIN_PASSWORD'),
+        //     'program_id' => $program->id,
+        //     'municipality_id' => $municipality->id,
+        // ]);
 
-        Apprentice::create([
-            'name' => 'Administrador',
-            'last_name' => 'User',
-            'second_last_name' => 'Admin',
-            'identity_document' => 'usuarioadmin',
-            'course_id' => $course->id,
-            'role' => 'admin',
-        ]);
+        // Apprentice::create([
+        //     'name' => 'Administrador',
+        //     'last_name' => 'User',
+        //     'second_last_name' => 'Admin',
+        //     'identity_document' => 'usuarioadmin',
+        //     'course_id' => $course->id,
+        //     'role' => 'admin',
+        // ]);
     }
 }

@@ -8,10 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Apprentice extends Authenticatable
 {
     protected $fillable = [
-        'name',
-        'last_name',
-        'second_last_name',
-        'identity_document',
         'course_id'
     ];
 
@@ -24,6 +20,11 @@ class Apprentice extends Authenticatable
         $cast = [];
         if(!env('APP_DEBUG')) $cast['identity_document'] = 'hashed';
         return $cast;
+    }
+
+    public function user ()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function survey ()

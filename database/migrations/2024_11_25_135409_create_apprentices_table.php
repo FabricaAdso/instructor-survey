@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('apprentices', function (Blueprint $table) {
+
             $table->id();
 
-            $table->string('name');
-            $table->string('last_name');
-            $table->string('second_last_name')->nullable();
-            $table->string('identity_document')->unique();
-
-            $table->string('role')->default('apprentice');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            
+            $table->enum('state',['Formacion', 'Etapa_productiva', 'En_comite', 'Desertado', 'Retiro_voluntario']);
 
             $table->unsignedBigInteger('course_id');
             $table->foreign('course_id')->references('id')->on('courses');

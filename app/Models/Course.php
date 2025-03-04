@@ -13,10 +13,15 @@ class Course extends Model
         'program_id',
         'municipality_id'
     ];
-    protected $allowIncluded = ['instructors', 'instructor.answers', 'question.answers','program'];
+    protected $allowIncluded = [
+        'instructors',
+        'instructor.answers',
+        'question.answers',
+        'program'
+    ];
 
-    public function program() {
-
+    public function program()
+    {
         return $this->belongsTo(Program::class,'id');
     }
     public function apprentices()
