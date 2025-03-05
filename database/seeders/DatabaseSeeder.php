@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
         $course1 = Course::create(['code' => '001', 'program_id' => $program1->id, 'municipality_id' => 1]);
         $course2 = Course::create(['code' => '002', 'program_id' => $program2->id, 'municipality_id' => 1]);
 
-        $user2 = User::create([
+        $user1 = User::create([
             'identity_document' => '1002958845',
             'name' => 'Antonio',
             'last_name' => 'Rodriguez',
@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
         ]);
 
-        $user3 = User::create([
+        $user2 = User::create([
             'identity_document' => '1002958846',
             'name' => 'Camilo',
             'last_name' => 'Maca',
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
         ]);
 
-        $user4 = User::create([
+        $user3 = User::create([
             'identity_document' => '1002958847',
             'name' => 'Alexander',
             'last_name' => 'Pardo',
@@ -56,8 +56,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Crear aprendices
-        $apprentice1 = Apprentice::create(['user_id' => $user2->id, 'state' => 'Formacion', 'course_id' => $course1->id]);
-        $apprentice2 = Apprentice::create(['user_id' => $user4->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
+        $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'Formacion', 'course_id' => $course1->id]);
+        $apprentice2 = Apprentice::create(['user_id' => $user2->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
 
         // Crear instructores
         $instructor1 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => true]);

@@ -9,17 +9,18 @@ use Illuminate\Support\Facades\Auth;
 class EnsureCodeIsVerified
 {
     public function handle(Request $request, Closure $next)
-    {
-        // Verifica si el usuario está autenticado
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        // Verifica si el usuario ha pasado la verificación del código
-        if (!session('code_verified')) {
-            return redirect()->route('login')->withErrors(['error' => 'Debes verificar tu código primero.']);
-        }
-
-        return $next($request);
+{
+    if (!Auth::check()) {
+        \Log::info('Middleware: Usuario no autenticado');
+        return redirect()->route('login');
     }
+
+    if (!session('code_verified')) {
+        \Log::info('Middleware: Código no verificado', ['user_id' => Auth::id()]);
+        return redirect()->route('login')->withErrors(['error' => 'Debes verificar tu código primero.']);
+    }
+
+    \Log::info('Middleware: Código verificado', ['user_id' => Auth::id()]);
+    return $next($request);
+}
 }

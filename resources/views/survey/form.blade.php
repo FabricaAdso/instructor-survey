@@ -49,7 +49,7 @@
     }
 </script>
 
-<form action="{{ route('survey.submit', $survey->id) }}" method="POST"
+<form action="{{ route('survey.submit', ['id' => $survey->id]) }}" method="POST"
     class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
     @csrf
 
@@ -266,11 +266,16 @@
                 </button>
             </div>
 
+            <!-- <div class="flex justify-end mt-6" x-show="page === 6">
+                <button type="submit"
+                    class="bg-gradient-to-r from-green-500 to-green-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-green-600 hover:to-green-800"
+                    aria-label="Ir a la siguiente página">Enviar Encuesta</button>
+            </div> -->
+
             <div class="flex justify-end mt-6" x-show="page === 6">
                 <button type="submit"
                     class="bg-gradient-to-r from-green-500 to-green-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-green-600 hover:to-green-800"
                     aria-label="Ir a la siguiente página">Enviar Encuesta</button>
-
             </div>
 
         </div>

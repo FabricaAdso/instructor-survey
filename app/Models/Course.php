@@ -26,7 +26,7 @@ class Course extends Model
     }
     public function apprentices()
     {
-        return $this->hasMany(Apprentice::class);
+        return $this->hasMany(Apprentice::class, 'course_id');
     }
 
     public function municipality()

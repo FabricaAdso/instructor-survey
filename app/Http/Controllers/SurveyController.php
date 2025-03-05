@@ -13,15 +13,14 @@ class SurveyController extends Controller
         $survey = Survey::with('questions')->find($surveyId);
         $user = Auth::user();
 
-        if (!$user->course) {
+        if (!$user->apprentice || !$user->apprentice->course) {
             abort(403, 'No estás inscrito en un curso válido.');
         }
 
-        $instructors = $user->course->instructors;
+        $instructors = $user->apprentice->course->instructors;
 
         return view('survey.form', compact('survey', 'instructors'));
     }
-
 
     public function storeAnswers(Request $request, $surveyId)
     {
@@ -34,16 +33,16 @@ class SurveyController extends Controller
         $user = Auth::user();
 
         if (!$user->course) {
-            return redirect()->route('survey.form')->withErrors(['error' => 'No estás inscrito en un curso válido.']);
+            return redirect()->route('survey.form', ['apprenticeId' => $user->apprentice->id, 'surveyId' => $surveyId])
+                            ->withErrors(['error' => 'No estás inscrito en un curso válido.']);
         }
 
         $course = $user->course;
 
-
         foreach ($data['answers'] as $questionId => $answer) {
             Answer::create([
                 'qualification' => $answer ?? null,
-                'apprentice_id' => null,
+                'apprentice_id' => $user->apprentice->id, // Usar el apprentice_id del usuario autenticado
                 'question_id' => $questionId,
                 'instructor_id' => $data['instructor_id'],
                 'course_id' => $course->id,
@@ -58,16 +57,17 @@ class SurveyController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->course) {
-            return redirect()->route('survey.form')->withErrors(['error' => 'No estás inscrito en un curso válido.']);
+        if (!$user->apprentice || !$user->apprentice->course) {
+            return redirect()->route('survey.form', ['apprenticeId' => $user->apprentice->id, 'surveyId' => $surveyId])
+                            ->withErrors(['error' => 'No estás inscrito en un curso válido.']);
         }
 
-        $course = $user->course;
+        $course = $user->apprentice->course;
 
         foreach ($request->answers as $instructorId => $questions) {
             foreach ($questions as $questionId => $answer) {
                 Answer::create([
-                    'apprentice_id' => null,
+                    'apprentice_id' => $user->apprentice->id,
                     'instructor_id' => $instructorId,
                     'question_id' => $questionId,
                     'qualification' => is_array($answer) ? json_encode($answer) : $answer,

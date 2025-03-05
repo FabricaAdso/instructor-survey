@@ -11,7 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Reportes</title>
     <style>
-        /* Estilo para la tabla */
         #reportTable {
             width: 100%;
             border-collapse: collapse;
@@ -19,7 +18,6 @@
             overflow: hidden;
         }
 
-        /* Encabezado de la tabla */
         #reportTable thead th {
             background-color: #4CAF50;
             color: white;
@@ -27,7 +25,6 @@
             text-align: left;
         }
 
-        /* Filas alternas */
         #reportTable tbody tr:nth-child(odd) {
             background-color: #f9f9f9;
         }
@@ -36,12 +33,10 @@
             background-color: #f2f2f2;
         }
 
-        /* Hover en filas */
         #reportTable tbody tr:hover {
             background-color: #e0f7fa;
         }
 
-        /* Paginación */
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             padding: 8px 12px;
             margin: 2px;
@@ -57,7 +52,6 @@
             color: #e0f7fa
         }
 
-        /* Caja de búsqueda */
         .dataTables_wrapper .dataTables_filter input {
             padding: 6px;
             border: 1px solid #ddd;
@@ -65,7 +59,6 @@
             border-radius: 4px;
         }
 
-        /* Información de la tabla */
         .dataTables_wrapper .dataTables_info {
             margin-top: 10px;
             color: #666;
@@ -93,8 +86,6 @@
 
     <div class="container mx-auto mt-6 px-4">
 
-
-        <!-- Modal -->
         <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel</h2>
@@ -118,7 +109,6 @@
             </div>
         </div>
 
-        <!-- Tabla de Reportes -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Reporte de Instructores</h2>
             <button id="open-modal"
@@ -135,16 +125,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($instructors as $instructor)
+            @foreach ($instructors as $instructor)
                 <tr class="border-b">
-                    <td class="px-4 py-2">{{ $instructor->name }} {{ $instructor->last_name}}</td>
+                    <td class="px-4 py-2">
+                        {{ $instructor->user->name }} {{ $instructor->user->last_name }}
+                    </td>
                     <td class="px-4 py-2 text-center">
                         <button onclick="openModal({{ $instructor->id }})"
                             class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none">
                             Ver Fichas Asociadas
                         </button>
                     </td>
-
                     <td class="px-4 py-2 text-center">
                         <button
                             @if (!$instructor->hasGeneralAnswers) disabled @endif
@@ -154,7 +145,6 @@
                             Reporte General
                         </button>
                     </td>
-
                 </tr>
                 @endforeach
             </tbody>

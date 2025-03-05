@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Instructor extends Model
 {
     protected $fillable = [
-        
+
     ];
 
     protected $allowIncluded = ['courses'];
 
     public function user ()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function answers ()

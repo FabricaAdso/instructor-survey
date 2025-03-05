@@ -23,15 +23,20 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function apprentices ()
+    public function apprentice ()
     {
-        return $this->hasMany(Apprentice::class);
+        return $this->hasOne (Apprentice::class, 'user_id');
     }
 
     public function instructors ()
     {
         return $this->hasMany(Instructor::class);
     }
+
+    // public function courses()
+    // {
+    //     return $this->belongsTo(Course::class, 'user_id', 'course_id');
+    // }
 
     protected function casts(): array
     {

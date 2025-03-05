@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Apprentice;
 use App\Models\Course;
-use App\Models\VerificationCode;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Models\VerificationCode;
 use App\Mail\VerificationMail;
 
 class AuthController extends Controller {
@@ -55,11 +55,11 @@ class AuthController extends Controller {
         $course = Course::where('code', $request->course_code)->first();
 
         $apprentice = Apprentice::whereHas('user', function ($query) use ($request) {
-            $query->where('identity_document', $request->identity_document);
-        })
-        ->where('course_id', $course->id)
-        ->with('user')
-        ->first();
+                $query->where('identity_document', $request->identity_document);
+            })
+            ->where('course_id', $course->id)
+            ->with('user')
+            ->first();
 
         if (!$apprentice || !$apprentice->user) {
             return back()->withErrors(['error' => 'Datos incorrectos.']);
@@ -110,10 +110,10 @@ class AuthController extends Controller {
         $verificationCode->delete();
 
         $apprentice = Apprentice::find($request->apprentice_id);
-        Auth::login($apprentice);
+        Auth::login($apprentice->user);
         session(['course_id' => $apprentice->course_id]);
 
-        session(['code_verified' => true]);
+        session(['code_verified' => true]); // Establecer la sesión correctamente
 
         return redirect()->route('survey.show', ['apprenticeId' => $apprentice->id, 'surveyId' => 1]);
     }
