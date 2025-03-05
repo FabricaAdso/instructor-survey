@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-
-
- public function run(): void
+    public function run(): void
     {
         $this->call([MunicipalitySeeder::class, SurveySeeder::class, AdminUserSeeder::class]);
 
@@ -30,16 +28,6 @@ class DatabaseSeeder extends Seeder
         $course1 = Course::create(['code' => '001', 'program_id' => $program1->id, 'municipality_id' => 1]);
         $course2 = Course::create(['code' => '002', 'program_id' => $program2->id, 'municipality_id' => 1]);
 
-        // Crear usuarios
-        $user1 = User::create([
-            'identity_document' => '1002',
-            'name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@gmail.com',
-            'is_superuser' => true,
-            'password' => Hash::make('password123'),
-        ]);
-
         $user2 = User::create([
             'identity_document' => '1002958845',
             'name' => 'Antonio',
@@ -49,20 +37,20 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
         ]);
 
-        $user4 = User::create([
-            'identity_document' => '1002958847',
-            'name' => 'Alexander',
-            'last_name' => 'Pardo',
-            'email' => 'jhonalexander2016.com@gmail.com',
-            'is_superuser' => false,
-            'password' => Hash::make('password123'),
-        ]);
-
         $user3 = User::create([
             'identity_document' => '1002958846',
             'name' => 'Camilo',
             'last_name' => 'Maca',
             'email' => 'camilomaca741@gmail.com',
+            'is_superuser' => false,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $user4 = User::create([
+            'identity_document' => '1002958847',
+            'name' => 'Alexander',
+            'last_name' => 'Pardo',
+            'email' => 'jhonalexander2016.com@gmail.com',
             'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);
@@ -79,24 +67,7 @@ class DatabaseSeeder extends Seeder
             ['instructor_id' => $instructor1->id, 'course_id' => $course1->id],
         ]);
 
-        // // Crear códigos de verificación
-        // VerificationCode::create([
-        //     'apprentice_id' => $apprentice1->id,
-        //     'code' => '1234',
-        //     'expires_at' => Carbon::now()->addMinutes(10),
-        // ]);
-
-        // VerificationCode::create([
-        //     'apprentice_id' => $apprentice2->id,
-        //     'code' => '5678',
-        //     'expires_at' => Carbon::now()->addMinutes(10),
-        // ]);
     }
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
 }
 
 

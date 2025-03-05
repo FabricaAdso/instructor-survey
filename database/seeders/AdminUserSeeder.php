@@ -2,38 +2,28 @@
 
 namespace Database\Seeders;
 
-use App\Models\Apprentice;
-use App\Models\Course;
-use App\Models\Program;
-use App\Models\Municipality;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        // $municipality = Municipality::create([
-        //     'name' => 'AdminMunicipality',
-        // ]);
+        $adminPassword = env('ADMIN_PASSWORD');
 
-        // $program = Program::create([
-        //     'code' => 'Admin',
-        //     'name' => 'Admin Program',
-        // ]);
+        $user = User::create([
+            'identity_document' => '1002',
+            'name' => 'Admin',
+            'last_name' => 'User',
+            'email' => 'admin@gmail.com',
+            'is_superuser' => true,
+            'password' => Hash::make($adminPassword),
+        ]);
 
-        // $course = Course::create([
-        //     'code' => env('ADMIN_PASSWORD'),
-        //     'program_id' => $program->id,
-        //     'municipality_id' => $municipality->id,
-        // ]);
-
-        // Apprentice::create([
-        //     'name' => 'Administrador',
-        //     'last_name' => 'User',
-        //     'second_last_name' => 'Admin',
-        //     'identity_document' => 'usuarioadmin',
-        //     'course_id' => $course->id,
-        //     'role' => 'admin',
-        // ]);
+        $this->command->info('Usuario administrador creado correctamente.');
     }
 }
