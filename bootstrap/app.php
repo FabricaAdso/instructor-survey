@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        
+        $middleware->alias([
+            'code.verified' => \App\Http\Middleware\EnsureCodeIsVerified::class,
+            'superuser' => \App\Http\Middleware\EnsureUserIsSuperuser::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

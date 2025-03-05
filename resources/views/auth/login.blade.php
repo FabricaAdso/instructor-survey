@@ -32,7 +32,7 @@
                         <input type="number" id="course_code" name="course_code" placeholder="Ingresa tu ficha" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none" required>
                     </div>
                     <button type="submit" class="w-full px-4 py-2 text-white bg-[#38a901] rounded-lg hover:bg-[#38a901] focus:ring focus:ring-green-300">
-                        INGRESAR
+                            Enviar Código
                     </button>
                 </form>
                 @if ($errors->any())
