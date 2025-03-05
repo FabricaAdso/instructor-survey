@@ -113,7 +113,7 @@ class AuthController extends Controller {
         Auth::login($apprentice->user);
         session(['course_id' => $apprentice->course_id]);
 
-        session(['code_verified' => true]); // Establecer la sesión correctamente
+        session(['code_verified' => true]);
 
         return redirect()->route('survey.show', ['apprenticeId' => $apprentice->id, 'surveyId' => 1]);
     }

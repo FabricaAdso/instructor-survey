@@ -42,7 +42,7 @@ class SurveyController extends Controller
         foreach ($data['answers'] as $questionId => $answer) {
             Answer::create([
                 'qualification' => $answer ?? null,
-                'apprentice_id' => $user->apprentice->id, // Usar el apprentice_id del usuario autenticado
+                'apprentice_id' => $user->apprentice->id,
                 'question_id' => $questionId,
                 'instructor_id' => $data['instructor_id'],
                 'course_id' => $course->id,
@@ -51,7 +51,6 @@ class SurveyController extends Controller
 
         return redirect()->route('survey.complete')->with('success', 'Tus respuestas han sido guardadas correctamente');
     }
-
 
     public function submitSurvey(Request $request, $surveyId)
     {

@@ -25,7 +25,7 @@ class ReportController extends Controller
 
     public function index()
     {
-        $instructors = Instructor::with(['user', 'courses.program']) // Cargar la relación 'user'
+        $instructors = Instructor::with(['user', 'courses.program'])
             ->leftJoin('course_instructor', 'course_instructor.instructor_id', '=', 'instructors.id')
             ->leftJoin('courses', 'courses.id', '=', 'course_instructor.course_id')
             ->leftJoin('answers as instructor_answers', 'instructors.id', '=', 'instructor_answers.instructor_id')
