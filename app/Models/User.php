@@ -30,7 +30,7 @@ class User extends Authenticatable
 
     public function instructors ()
     {
-        return $this->hasMany(Instructor::class);
+        return $this->hasOne(Instructor::class, 'user_id');
     }
 
     protected function casts(): array

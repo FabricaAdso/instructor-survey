@@ -175,27 +175,25 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($instructors as $instructor)
-                                                <tr class="border-b hover:bg-green-50">
-                                                    <td class="px-4 py-3 text-sm text-gray-800 w-1/2">
-                                                        <strong>{{ $instructor->name }} {{ $instructor->last_name }}
-                                                            </strong>
+                                        @foreach ($instructors as $instructor)
+                                            <tr class="border-b hover:bg-green-50">
+                                                <td class="px-4 py-3 text-sm text-gray-800 w-1/2">
+                                                    <strong>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</strong>
+                                                </td>
+                                                @foreach ($question->options as $option)
+                                                    <td class="px-2 py-2 text-center">
+                                                        <input type="radio" class="h-6 w-6 border border-red-500"
+                                                            name="answers[{{ $instructor->id }}][{{ $question->id }}]"
+                                                            value="{{ $option }}"
+                                                            id="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
+                                                            required tabindex="3">
+                                                        <label
+                                                            for="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
+                                                            class="sr-only">Seleccionar opción {{ $option }}</label>
                                                     </td>
-                                                    @foreach ($question->options as $option)
-                                                        <td class="px-2 py-2 text-center">
-                                                            <input type="radio" class="h-6 w-6 border border-red-500"
-                                                                name="answers[{{ $instructor->id }}][{{ $question->id }}]"
-                                                                value="{{ $option }}"
-                                                                id="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
-                                                                required tabindex="3">
-                                                            <label
-                                                                for="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
-                                                                class="sr-only">Seleccionar opción
-                                                                {{ $option }}</label>
-                                                        </td>
-                                                    @endforeach
-                                                </tr>
-                                            @endforeach
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -265,12 +263,6 @@
                     Siguiente
                 </button>
             </div>
-
-            <!-- <div class="flex justify-end mt-6" x-show="page === 6">
-                <button type="submit"
-                    class="bg-gradient-to-r from-green-500 to-green-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-green-600 hover:to-green-800"
-                    aria-label="Ir a la siguiente página">Enviar Encuesta</button>
-            </div> -->
 
             <div class="flex justify-end mt-6" x-show="page === 6">
                 <button type="submit"

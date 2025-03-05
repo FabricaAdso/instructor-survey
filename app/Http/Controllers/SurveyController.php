@@ -17,7 +17,7 @@ class SurveyController extends Controller
             abort(403, 'No estás inscrito en un curso válido.');
         }
 
-        $instructors = $user->apprentice->course->instructors;
+        $instructors = $user->apprentice->course->instructors()->with('user')->get();
 
         return view('survey.form', compact('survey', 'instructors'));
     }
