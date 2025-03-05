@@ -33,6 +33,9 @@ Route::get('login/admin', function() {
 Route::post('login/admin', [AuthController::class, 'loginAdmin'])->name('login.admin.submit');
 
 Route::middleware(['auth', 'superuser'])->group(function () {
+
+    Route::get('/admin/dashboard', [ReportController::class, 'index'])->name('admin.dashboard');
+    
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{courseId}/{instructorId}/{programId}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('/reports/downloadcourse/{courseId}/{instructorId}/{programId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');

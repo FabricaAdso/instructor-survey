@@ -45,6 +45,49 @@ class AuthController extends Controller {
         return redirect()->route('admin.dashboard');
     }
 
+    // public function login(Request $request) {
+    //     // Validar los datos del formulario
+    //     $request->validate([
+    //         'course_code' => 'required|exists:courses,code',
+    //         'identity_document' => 'required',
+    //     ]);
+
+    //     // Buscar el curso
+    //     $course = Course::where('code', $request->course_code)->first();
+
+    //     // Buscar el aprendiz junto con su usuario
+    //     $apprentice = Apprentice::whereHas('user', function ($query) use ($request) {
+    //         $query->where('identity_document', $request->identity_document);
+    //     })
+    //     ->where('course_id', $course->id)
+    //     ->with('user') // Cargar la relación con user
+    //     ->first();
+
+    //     // Si no se encuentra el aprendiz o su usuario, retornar error
+    //     if (!$apprentice || !$apprentice->user) {
+    //         return back()->withErrors(['error' => 'Datos incorrectos.']);
+    //     }
+
+    //     // Obtener el email
+    //     $email = $apprentice->user->email;
+    //     if (!$email) {
+    //         return back()->withErrors(['error' => 'No se encontró un email asociado a este aprendiz.']);
+    //     }
+
+    //     // Generar código de verificación
+    //     $code = rand(1000, 9999);
+    //     VerificationCode::updateOrCreate(
+    //         ['apprentice_id' => $apprentice->id],
+    //         ['code' => $code, 'expires_at' => Carbon::now()->addMinutes(5)]
+    //     );
+
+    //     // Enviar el código por correo
+    //     Mail::to($email)->send(new VerificationMail($code));
+
+    //     // Redirigir a la vista de verificación
+    //     return redirect()->route('verification.form', ['apprenticeId' => $apprentice->id]);
+    // }
+
     public function login(Request $request) {
         // Validar los datos del formulario
         $request->validate([
@@ -66,6 +109,11 @@ class AuthController extends Controller {
         // Si no se encuentra el aprendiz o su usuario, retornar error
         if (!$apprentice || !$apprentice->user) {
             return back()->withErrors(['error' => 'Datos incorrectos.']);
+        }
+
+        // Validar el estado del aprendiz
+        if (!in_array($apprentice->state, ['Formacion', 'Etapa_productiva'])) {
+            return back()->withErrors(['error' => 'El aprendiz no está habilitado para realizar la encuesta.']);
         }
 
         // Obtener el email
@@ -131,4 +179,6 @@ class AuthController extends Controller {
         Auth::logout();
         return redirect()->route('login');
     }
+
+
 }

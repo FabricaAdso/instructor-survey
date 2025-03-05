@@ -32,6 +32,15 @@ class DatabaseSeeder extends Seeder
 
         // Crear usuarios
         $user1 = User::create([
+            'identity_document' => '1002',
+            'name' => 'Admin',
+            'last_name' => 'User',
+            'email' => 'admin@gmail.com',
+            'is_superuser' => true,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $user2 = User::create([
             'identity_document' => '1002958845',
             'name' => 'Antonio',
             'last_name' => 'Rodriguez',
@@ -40,41 +49,48 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
         ]);
 
-        $user2 = User::create([
+        $user4 = User::create([
+            'identity_document' => '1002958847',
+            'name' => 'Alexander',
+            'last_name' => 'Pardo',
+            'email' => 'jhonalexander2016.com@gmail.com',
+            'is_superuser' => false,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $user3 = User::create([
             'identity_document' => '1002958846',
-            'name' => 'Maria',
-            'last_name' => 'López',
-            'email' => 'maria.lopez@example.com',
-            'is_superuser' => true,
+            'name' => 'Camilo',
+            'last_name' => 'Maca',
+            'email' => 'camilomaca741@gmail.com',
+            'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);
 
         // Crear aprendices
-        $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'Formacion', 'course_id' => $course1->id]);
-        $apprentice2 = Apprentice::create(['user_id' => $user2->id, 'state' => 'Etapa_productiva', 'course_id' => $course2->id]);
+        $apprentice1 = Apprentice::create(['user_id' => $user2->id, 'state' => 'Formacion', 'course_id' => $course1->id]);
+        $apprentice2 = Apprentice::create(['user_id' => $user4->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
 
         // Crear instructores
-        $instructor1 = Instructor::create(['user_id' => $user1->id, 'state' => 'Activo', 'is_course_leader' => true]);
-        $instructor2 = Instructor::create(['user_id' => $user2->id, 'state' => 'Activo', 'is_course_leader' => false]);
+        $instructor1 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => true]);
 
         // Asignar instructores a cursos
         DB::table('course_instructor')->insert([
             ['instructor_id' => $instructor1->id, 'course_id' => $course1->id],
-            ['instructor_id' => $instructor2->id, 'course_id' => $course2->id]
         ]);
 
-        // Crear códigos de verificación
-        VerificationCode::create([
-            'apprentice_id' => $apprentice1->id,
-            'code' => '1234',
-            'expires_at' => Carbon::now()->addMinutes(10),
-        ]);
+        // // Crear códigos de verificación
+        // VerificationCode::create([
+        //     'apprentice_id' => $apprentice1->id,
+        //     'code' => '1234',
+        //     'expires_at' => Carbon::now()->addMinutes(10),
+        // ]);
 
-        VerificationCode::create([
-            'apprentice_id' => $apprentice2->id,
-            'code' => '5678',
-            'expires_at' => Carbon::now()->addMinutes(10),
-        ]);
+        // VerificationCode::create([
+        //     'apprentice_id' => $apprentice2->id,
+        //     'code' => '5678',
+        //     'expires_at' => Carbon::now()->addMinutes(10),
+        // ]);
     }
 
         // User::factory()->create([
