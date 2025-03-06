@@ -21,7 +21,8 @@ class AuthController extends Controller {
         return view('auth.login');
     }
 
-    public function loginAdmin(Request $request) {
+    public function loginAdmin(Request $request)
+    {
         $request->validate([
             'username' => 'required',
             'password' => 'required',
@@ -31,19 +32,12 @@ class AuthController extends Controller {
                     ->orWhere('identity_document', $request->username)
                     ->first();
 
-        if (!$user) {
+        if (!$user || !$user->is_superuser || !Hash::check($request->password, $user->password)) {
             return back()->withErrors(['error' => 'Credenciales incorrectas o no tienes permisos de administrador.']);
         }
 
-        if (!$user->is_superuser) {
-            return back()->withErrors(['error' => 'Credenciales incorrectas o no tienes permisos de administrador.']);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['error' => 'Credenciales incorrectas o no tienes permisos de administrador.']);
-        }
-
-        Auth::login($user);
+        // Usar el guard 'admin' para autenticar
+        Auth::guard('admin')->login($user);
 
         return redirect()->route('admin.dashboard');
     }
@@ -140,7 +134,8 @@ class AuthController extends Controller {
     }
 
 
-    public function verifyCode(Request $request) {
+    public function verifyCode(Request $request)
+    {
         $request->validate([
             'apprentice_id' => 'required|exists:apprentices,id',
             'code' => 'required|digits:4',
@@ -150,20 +145,18 @@ class AuthController extends Controller {
             ->where('code', $request->code)
             ->first();
 
-        if (!$verificationCode) {
-            return back()->withErrors(['error' => 'Código incorrecto.']);
-        }
-
-        if (!$verificationCode->isValid()) {
-            return back()->withErrors(['error' => 'El código ha expirado. Solicita uno nuevo.']);
+        if (!$verificationCode || !$verificationCode->isValid()) {
+            return back()->withErrors(['error' => 'Código incorrecto o ha expirado. Solicita uno nuevo.']);
         }
 
         $verificationCode->delete();
 
         $apprentice = Apprentice::find($request->apprentice_id);
-        Auth::login($apprentice->user);
-        session(['course_id' => $apprentice->course_id]);
 
+        // Usar el guard 'apprentice' para autenticar
+        Auth::guard('apprentice')->login($apprentice->user);
+
+        session(['course_id' => $apprentice->course_id]);
         session(['code_verified' => true]);
 
         return redirect()->route('survey.show', ['apprenticeId' => $apprentice->id, 'surveyId' => 1]);
@@ -171,17 +164,20 @@ class AuthController extends Controller {
 
     public function logoutAdmin(Request $request)
     {
-        Auth::logout();
+        // Cerrar sesión solo para el guard 'admin'
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('/login');
     }
 
-    public function logoutApprentice()
+    public function logoutApprentice(Request $request)
     {
+        // Cerrar sesión solo para el guard 'apprentice'
+        Auth::guard('apprentice')->logout();
         session()->forget('code_verified');
-        Auth::logout();
+
         return redirect()->route('login');
     }
 
