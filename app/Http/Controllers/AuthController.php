@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Apprentice;
 use App\Models\Course;
+use App\Models\Answer;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +75,17 @@ class AuthController extends Controller {
         if (!in_array($apprentice->state, ['Formacion', 'Etapa_productiva'])) {
             return back()->withErrors(['error' => 'El aprendiz no está habilitado para realizar la encuesta.']);
         }
+
+        // Verificar si el estudiante ya realizó la encuesta en los últimos 30 días
+        $lastSurvey = Answer::where('apprentice_id', $apprentice->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+            if ($lastSurvey && $lastSurvey->created_at->diffInDays(now()) < 30) {
+                $daysRemaining = 30 - $lastSurvey->created_at->diffInDays(now());
+                $daysRemaining = intval($daysRemaining);
+                return back()->withErrors(['error' => "Solo puedes realizar la encuesta una vez al mes. Podrás responder nuevamente en $daysRemaining días si la encuesta se encuestra abierta."]);
+            }
 
         $email = $apprentice->user->email;
         if (!$email) {
