@@ -46,13 +46,19 @@ class AuthController extends Controller {
         return redirect()->route('admin.dashboard');
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $request->validate([
             'course_code' => 'required|exists:courses,code',
             'identity_document' => 'required',
         ]);
 
         $course = Course::where('code', $request->course_code)->first();
+
+        // Verificar si la encuesta está cerrada globalmente
+        if (!$course->is_survey_open) {
+            return back()->withErrors(['error' => 'La encuesta se encuentra cerrada.']);
+        }
 
         $apprentice = Apprentice::whereHas('user', function ($query) use ($request) {
                 $query->where('identity_document', $request->identity_document);

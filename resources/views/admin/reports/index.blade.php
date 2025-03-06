@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Reportes</title>
     <style>
         #reportTable {
@@ -85,6 +86,106 @@
     </header>
 
     <div class="container mx-auto mt-6 px-4">
+
+    <!-- Botón para abrir/cerrar la encuesta -->
+    <button id="toggle-survey-status" class="text-white px-4 py-2 rounded {{ $isSurveyOpen ? 'bg-red-500' : 'bg-green-500' }}">
+        {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
+    </button>
+
+    <style>
+        .toast {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s;
+        }
+
+        .toast-success {
+            background-color: #38a901; /* Verde */
+        }
+
+        .toast-error {
+            background-color: #e53e3e; /* Rojo */
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+
+    <script>
+        function showToast(message, type) {
+            // Crear el contenedor de la notificación
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+
+            // Agregar la notificación al cuerpo del documento
+            document.body.appendChild(toast);
+
+            // Eliminar la notificación después de 3 segundos
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleButton = document.getElementById('toggle-survey-status');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+
+            if (!csrfToken) {
+                console.error('Error: No se encontró el token CSRF.');
+                return;
+            }
+
+            toggleButton.addEventListener('click', function () {
+                fetch('/admin/toggle-survey-status', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken.content,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_survey_open) {
+                        this.textContent = 'Cerrar Encuesta';
+                        this.classList.remove('bg-green-600');
+                        this.classList.add('bg-red-600');
+                        showToast('Encuesta abierta', 'success'); // Notificación de éxito
+                    } else {
+                        this.textContent = 'Abrir Encuesta';
+                        this.classList.remove('bg-red-600');
+                        this.classList.add('bg-green-600');
+                        showToast('Encuesta cerrada', 'error'); // Notificación de error
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error al actualizar la encuesta', 'error'); // Notificación de error
+                });
+            });
+        });
+    </script>
 
         <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">

@@ -18,10 +18,10 @@ use function Spatie\LaravelPdf\Support\pdf;
 
 class ReportController extends Controller
 {
-    public function admin()
-    {
-        return view('admin.admin');
-    }
+    // public function admin()
+    // {
+    //     return view('admin.admin');
+    // }
 
     public function index()
     {
@@ -39,7 +39,22 @@ class ReportController extends Controller
             ->distinct()
             ->get();
 
-        return view('admin.reports.index', compact('instructors'));
+        // Obtener el estado global de la encuesta
+        $isSurveyOpen = Course::where('is_survey_open', true)->exists();
+
+        return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
+    }
+
+    public function toggleSurveyStatus(Request $request)
+    {
+        // Cambiar el estado de la encuesta para todos los cursos
+        $newStatus = !Course::where('is_survey_open', true)->exists();
+        Course::query()->update(['is_survey_open' => $newStatus]);
+
+        return response()->json([
+            'message' => 'Estado de la encuesta actualizado',
+            'is_survey_open' => $newStatus
+        ]);
     }
 
     public function show($courseId, $instructorId, $programId)

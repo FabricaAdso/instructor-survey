@@ -23,7 +23,7 @@ Route::middleware('code.verified')->group(function () {
     Route::post('/survey/{id}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
     Route::get('/survey/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 Route::get('login/admin', function() {
@@ -35,12 +35,13 @@ Route::post('login/admin', [AuthController::class, 'loginAdmin'])->name('login.a
 Route::middleware(['auth', 'superuser'])->group(function () {
 
     Route::get('/admin/dashboard', [ReportController::class, 'index'])->name('admin.dashboard');
-
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{courseId}/{instructorId}/{programId}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('/reports/downloadcourse/{courseId}/{instructorId}/{programId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
     Route::get('reports/general/{instructorId}', [ReportController::class, 'showGeneral'])->name('reportsGeneral');
     Route::get('reports/download/{instructorId}', [ReportController::class, 'showGeneralDownload'])->name('reportsGeneralDownload');
+
+    Route::post('/admin/toggle-survey-status', [ReportController::class, 'toggleSurveyStatus'])->name('admin.toggle-survey-status');
 
     Route::post('/import-apprentices', [ImportController::class, 'importUsers'])->name('import-apprentices');
 
