@@ -86,7 +86,7 @@
 
     <div class="container mx-auto mt-6 px-4">
 
-        <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <!-- <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel</h2>
                 <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -107,7 +107,38 @@
                     Cancelar
                 </button>
             </div>
+        </div> -->
+
+        <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">
+                <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
+                    ✖
+                </button>
+
+                <!-- Pestañas -->
+                <div class="flex border-b mb-4">
+                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-gray-800 active-tab" data-tab="aprendices">
+                        Aprendices e Instructores
+                    </button>
+                </div>
+
+                <!-- Contenido de pestañas -->
+                <div id="aprendices" class="tab-content">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel - Usuarios</h2>
+                    <form action="{{ route('') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
+                        @csrf
+                        <input type="file" name="file" id="file" accept=".xlsx, .xls"
+                            class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <button type="submit"
+                            class="ml-4 py-2 px-4 bg-[#38a901] text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            Cargar
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         </div>
+
 
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Reporte de Instructores</h2>
@@ -183,7 +214,8 @@
         </div>
         @endforeach
     </div>
-    <script>
+
+    <!-- <script>
         function openModal(id) {
             document.getElementById(`modal-${id}`).style.display = 'flex';
         }
@@ -221,7 +253,72 @@
         document.getElementById('close-modal').addEventListener('click', function() {
             document.getElementById('modal').classList.add('hidden');
         });
-    </script>
+    </script> -->
+
+    <script>
+    function openModal(id) {
+        document.getElementById(`modal-${id}`).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(`modal-${id}`).classList.add('hidden');
+    }
+
+    $(document).ready(function () {
+        $('#reportTable').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            searchDelay: 200,
+            initComplete: function (settings, json) {
+                const table = this.api();
+                $.fn.DataTable.ext.type.search.string = function (data) {
+                    return !data ? '' : data.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                };
+                table.draw();
+            }
+        });
+
+        // Abre y cierra el modal de carga masiva
+        document.getElementById('open-modal').addEventListener('click', function () {
+            document.getElementById('modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function () {
+            document.getElementById('modal').classList.add('hidden');
+        });
+
+        // Cambia entre pestañas Aprendices/Instructores
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const tab = this.dataset.tab;
+
+                // Remueve la clase activa de todos los botones y oculta el contenido
+                tabButtons.forEach(btn => btn.classList.remove("active-tab"));
+                tabContents.forEach(content => content.classList.add("hidden"));
+
+                // Activa la pestaña seleccionada
+                this.classList.add("active-tab");
+                document.getElementById(tab).classList.remove("hidden");
+            });
+        });
+    });
+</script>
+
+<style>
+    .active-tab {
+        border-bottom: 2px solid #38a901;
+        font-weight: bold;
+        color: #38a901;
+    }
+</style>
 
 </body>
 

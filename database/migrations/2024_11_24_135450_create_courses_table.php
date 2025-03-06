@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('program_id');
             $table->foreign('program_id')->references('id')->on('programs');
 
-            $table->unsignedBigInteger('municipality_id');
+            $table->unsignedBigInteger('municipality_id')->nullable();
             $table->foreign('municipality_id')->references('id')->on('municipalities');
 
             $table->timestamps();
