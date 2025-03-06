@@ -59,7 +59,10 @@ class AuthController extends Controller {
 
         // Verificar si la encuesta está cerrada globalmente
         if (!$course->is_survey_open) {
-            return back()->withErrors(['error' => 'La encuesta se encuentra cerrada.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'La encuesta se encuentra cerrada.',
+            ]);
         }
 
         $apprentice = Apprentice::whereHas('user', function ($query) use ($request) {
@@ -70,11 +73,17 @@ class AuthController extends Controller {
             ->first();
 
         if (!$apprentice || !$apprentice->user) {
-            return back()->withErrors(['error' => 'Datos incorrectos.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Datos incorrectos.',
+            ]);
         }
 
         if (!in_array($apprentice->state, ['Formacion', 'Etapa_productiva'])) {
-            return back()->withErrors(['error' => 'El aprendiz no está habilitado para realizar la encuesta.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'El aprendiz no está habilitado para realizar la encuesta.',
+            ]);
         }
 
         // Verificar si el estudiante ya realizó la encuesta en los últimos 30 días
@@ -82,15 +91,22 @@ class AuthController extends Controller {
             ->orderBy('created_at', 'desc')
             ->first();
 
-            if ($lastSurvey && $lastSurvey->created_at->diffInDays(now()) < 30) {
-                $daysRemaining = 30 - $lastSurvey->created_at->diffInDays(now());
-                $daysRemaining = intval($daysRemaining);
-                return back()->withErrors(['error' => "Solo puedes realizar la encuesta una vez al mes. Podrás responder nuevamente en $daysRemaining días si la encuesta se encuestra abierta."]);
-            }
+        if ($lastSurvey && $lastSurvey->created_at->diffInDays(now()) < 30) {
+            $daysRemaining = 30 - $lastSurvey->created_at->diffInDays(now());
+            $daysRemaining = intval($daysRemaining);
+            return response()->json([
+                'success' => false,
+                'message' => "Solo puedes realizar la encuesta una vez por trimestre. Podrás responder nuevamente en algunos días si la encuesta se encuentra abierta.",
+                // 'message' => "Solo puedes realizar la encuesta una vez al mes. Podrás responder nuevamente en $daysRemaining días si la encuesta se encuentra abierta.",
+            ]);
+        }
 
         $email = $apprentice->user->email;
         if (!$email) {
-            return back()->withErrors(['error' => 'No se encontró un email asociado a este aprendiz.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró un email asociado a este aprendiz.',
+            ]);
         }
 
         $code = rand(1000, 9999);
@@ -101,12 +117,28 @@ class AuthController extends Controller {
 
         Mail::to($email)->send(new VerificationMail($code));
 
-        return redirect()->route('verification.form', ['apprenticeId' => $apprentice->id]);
+        // Devolver una respuesta JSON con el correo
+        return response()->json([
+            'success' => true,
+            'message' => 'Código enviado correctamente.',
+            'apprentice_id' => $apprentice->id,
+            'email' => $email, // Asegúrate de incluir el correo aquí
+        ]);
     }
 
-    public function showVerificationForm($apprenticeId) {
-        return view('auth.verify', ['apprenticeId' => $apprenticeId]);
+    public function showVerificationForm($apprenticeId)
+    {
+        $apprentice = Apprentice::find($apprenticeId);
+
+        if (!$apprentice || !$apprentice->user) {
+            return redirect()->route('login')->withErrors(['error' => 'Aprendiz no encontrado.']);
+        }
+
+        $email = $apprentice->user->email ?? 'No se encontró email';
+
+        return view('auth.verification', compact('apprenticeId', 'email'));
     }
+
 
     public function verifyCode(Request $request) {
         $request->validate([
@@ -139,7 +171,7 @@ class AuthController extends Controller {
 
     public function logoutAdmin(Request $request)
     {
-        Auth::logout(); // Cierra la sesión
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
