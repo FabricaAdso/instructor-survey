@@ -31,18 +31,22 @@
                 ¡Gracias por ser parte de este proceso de mejora continua!
             </p>
             <div class="flex justify-center">
-                <a href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                    class="bg-[#38a901] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#38a901] focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300">
-                    Finalizar
-                </a>
+                <form id="logout-form" action="{{ route('logout.apprentice') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="bg-[#38a901] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#38a901] focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300">
+                        Finalizar
+                    </button>
+                </form>
             </div>
+
         </div>
     </main>
 
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    <!-- <form action="{{ route('logout.apprentice') }}" method="POST">
         @csrf
-    </form>
+        <button type="submit" class="text-sm text-green-500 hover:text-green-700">Cerrar sesión</button>
+    </form> -->
 
 </body>
 

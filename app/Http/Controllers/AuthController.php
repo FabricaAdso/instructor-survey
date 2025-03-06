@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\VerificationCode;
 use App\Mail\VerificationMail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller {
 
@@ -136,7 +137,17 @@ class AuthController extends Controller {
         return redirect()->route('survey.show', ['apprenticeId' => $apprentice->id, 'surveyId' => 1]);
     }
 
-    public function logout() {
+    public function logoutAdmin(Request $request)
+    {
+        Auth::logout(); // Cierra la sesión
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
+    }
+
+    public function logoutApprentice()
+    {
         session()->forget('code_verified');
         Auth::logout();
         return redirect()->route('login');

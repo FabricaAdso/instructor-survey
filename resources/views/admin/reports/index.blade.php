@@ -77,13 +77,33 @@
             <h1 class="text-2xl font-semibold ml-4 flex-grow text-center md:text-left">Encuesta de Acompañamiento</h1>
 
             <div class="flex justify-end">
-                <form action="{{ route('logout') }}" method="POST">
+                <form action="{{ route('logout.admin') }}" method="POST">
                     @csrf
-                    <button type="submit" class="text-sm text-green-500 hover:text-green-700">Cerrar sesión</button>
+                    <button id="logout-button" class="text-sm text-green-500 hover:text-green-700">
+                        Cerrar sesión
+                    </button>
                 </form>
             </div>
         </div>
     </header>
+
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function () {
+            fetch("{{ route('logout.admin') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirige al login
+                }
+            })
+            .catch(error => console.error("Error al cerrar sesión:", error));
+        });
+    </script>
 
     <div class="container mx-auto mt-6 px-4">
 
@@ -316,16 +336,16 @@
         @endforeach
     </div>
 
-    <!-- <script>
+    <script>
         function openModal(id) {
-            document.getElementById(`modal-${id}`).style.display = 'flex';
+            document.getElementById(`modal-${id}`).classList.remove('hidden');
         }
 
         function closeModal(id) {
-            document.getElementById(`modal-${id}`).style.display = 'none';
+            document.getElementById(`modal-${id}`).classList.add('hidden');
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#reportTable').DataTable({
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
@@ -335,92 +355,51 @@
                 ordering: true,
                 info: true,
                 searchDelay: 200,
-                initComplete: function(settings, json) {
+                initComplete: function (settings, json) {
                     const table = this.api();
-                    $.fn.DataTable.ext.type.search.string = function(data) {
-                        return !data ? '' : data.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                            .toLowerCase();
+                    $.fn.DataTable.ext.type.search.string = function (data) {
+                        return !data ? '' : data.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                     };
                     table.draw();
                 }
             });
-        });
 
-        // Abre y cierra el modal de carga masiva
-        document.getElementById('open-modal').addEventListener('click', function() {
-            document.getElementById('modal').classList.remove('hidden');
-        });
+            // Abre y cierra el modal de carga masiva
+            document.getElementById('open-modal').addEventListener('click', function () {
+                document.getElementById('modal').classList.remove('hidden');
+            });
 
-        document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('modal').classList.add('hidden');
-        });
-    </script> -->
+            document.getElementById('close-modal').addEventListener('click', function () {
+                document.getElementById('modal').classList.add('hidden');
+            });
 
-    <script>
-    function openModal(id) {
-        document.getElementById(`modal-${id}`).classList.remove('hidden');
-    }
+            // Cambia entre pestañas Aprendices/Instructores
+            const tabButtons = document.querySelectorAll(".tab-button");
+            const tabContents = document.querySelectorAll(".tab-content");
 
-    function closeModal(id) {
-        document.getElementById(`modal-${id}`).classList.add('hidden');
-    }
+            tabButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const tab = this.dataset.tab;
 
-    $(document).ready(function () {
-        $('#reportTable').DataTable({
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-            },
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            searchDelay: 200,
-            initComplete: function (settings, json) {
-                const table = this.api();
-                $.fn.DataTable.ext.type.search.string = function (data) {
-                    return !data ? '' : data.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                };
-                table.draw();
-            }
-        });
+                    // Remueve la clase activa de todos los botones y oculta el contenido
+                    tabButtons.forEach(btn => btn.classList.remove("active-tab"));
+                    tabContents.forEach(content => content.classList.add("hidden"));
 
-        // Abre y cierra el modal de carga masiva
-        document.getElementById('open-modal').addEventListener('click', function () {
-            document.getElementById('modal').classList.remove('hidden');
-        });
-
-        document.getElementById('close-modal').addEventListener('click', function () {
-            document.getElementById('modal').classList.add('hidden');
-        });
-
-        // Cambia entre pestañas Aprendices/Instructores
-        const tabButtons = document.querySelectorAll(".tab-button");
-        const tabContents = document.querySelectorAll(".tab-content");
-
-        tabButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const tab = this.dataset.tab;
-
-                // Remueve la clase activa de todos los botones y oculta el contenido
-                tabButtons.forEach(btn => btn.classList.remove("active-tab"));
-                tabContents.forEach(content => content.classList.add("hidden"));
-
-                // Activa la pestaña seleccionada
-                this.classList.add("active-tab");
-                document.getElementById(tab).classList.remove("hidden");
+                    // Activa la pestaña seleccionada
+                    this.classList.add("active-tab");
+                    document.getElementById(tab).classList.remove("hidden");
+                });
             });
         });
-    });
-</script>
+    </script>
 
-<style>
-    .active-tab {
-        border-bottom: 2px solid #38a901;
-        font-weight: bold;
-        color: #38a901;
-    }
-</style>
+    <style>
+        .active-tab {
+            border-bottom: 2px solid #38a901;
+            font-weight: bold;
+            color: #38a901;
+        }
+    </style>
 
 </body>
-
 </html>

@@ -23,7 +23,7 @@ Route::middleware('code.verified')->group(function () {
     Route::post('/survey/{id}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
     Route::get('/survey/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 
-    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout/apprentice', [AuthController::class, 'logoutApprentice'])->name('logout.apprentice');
 });
 
 Route::get('login/admin', function() {
@@ -45,7 +45,7 @@ Route::middleware(['auth', 'superuser'])->group(function () {
 
     Route::post('/import-apprentices', [ImportController::class, 'importUsers'])->name('import-apprentices');
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout/admin', [AuthController::class, 'logoutAdmin'])->name('logout.admin');
 });
 
 Route::fallback(function () {
