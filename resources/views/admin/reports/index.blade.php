@@ -86,29 +86,6 @@
 
     <div class="container mx-auto mt-6 px-4">
 
-        <!-- <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel</h2>
-                <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    @csrf
-                    <div class="space-y-2">
-                        <label for="file" class="block font-medium text-gray-700">Selecciona el archivo
-                            Excel</label>
-                        <input type="file" name="file" id="file" required
-                            class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                    <button type="submit"
-                        class="w-full py-2 px-4 bg-[#38a901] text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Importar Excel
-                    </button>
-                </form>
-                <button id="close-modal"
-                    class="mt-4 w-full py-2 px-4 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                    Cancelar
-                </button>
-            </div>
-        </div> -->
-
         <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">
                 <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
@@ -125,7 +102,7 @@
                 <!-- Contenido de pestañas -->
                 <div id="aprendices" class="tab-content">
                     <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel - Usuarios</h2>
-                    <form action="{{ route('') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
+                    <form action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
                         @csrf
                         <input type="file" name="file" id="file" accept=".xlsx, .xls"
                             class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
@@ -138,6 +115,29 @@
 
             </div>
         </div>
+
+        <script>
+            document.querySelector('form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        </script>
 
 
         <div class="flex justify-between items-center mb-4">

@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'identity_document' => '1002958846',
             'name' => 'Camilo',
             'last_name' => 'Maca',
-            'email' => 'camilomaca741@gmail.com',
+            'email' => 'camilo@gmail.com',
             'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);
@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
             'identity_document' => '1002958847',
             'name' => 'Alexander',
             'last_name' => 'Pardo',
-            'email' => 'jhonalexander2016.com@gmail.com',
+            'email' => 'jhon@gmail.com',
             'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);

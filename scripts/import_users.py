@@ -12,7 +12,7 @@ signal.alarm(600)  # 600 segundos (10 minutos)
 db_config = {
     'host': 'localhost',
     'user': 'root',  # Cambia por tu usuario de MySQL
-    'password': 'antonio123',  # Cambia por tu contraseña de MySQL
+    'password': 'fabrica123',  # Cambia por tu contraseña de MySQL
     'database': 'instructor_survey'  # Cambia por el nombre de tu base de datos
 }
 
@@ -153,6 +153,7 @@ def import_users(file_path):
         if conn:
             conn.rollback()
         print(f"Error al importar el archivo: {e}")
+        sys.exit(1)
     finally:
         if cursor:
             cursor.close()
