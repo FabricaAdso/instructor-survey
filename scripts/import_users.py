@@ -140,10 +140,16 @@ def import_users(file_path):
             course = cursor.fetchone()
             if course:
                 course_id = course[0]
+                # Verificar si la relación ya existe
                 cursor.execute(
-                    "INSERT INTO course_instructor (instructor_id, course_id) VALUES (%s, %s)",
+                    "SELECT id FROM course_instructor WHERE instructor_id = %s AND course_id = %s",
                     (instructor_id, course_id)
                 )
+                if not cursor.fetchone():
+                    cursor.execute(
+                        "INSERT INTO course_instructor (instructor_id, course_id) VALUES (%s, %s)",
+                        (instructor_id, course_id)
+                    )
 
         conn.commit()
         print("Archivo importado correctamente")

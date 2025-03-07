@@ -207,59 +207,111 @@
         });
     </script>
 
-        <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">
-                <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
-                    ✖
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">
+            <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
+                ✖
+            </button>
+
+            <div class="flex border-b mb-4">
+                <button class="tab-button px-4 py-2 text-gray-600 hover:text-gray-800 active-tab" data-tab="aprendices">
+                    Aprendices e Instructores
                 </button>
+            </div>
 
-                <!-- Pestañas -->
-                <div class="flex border-b mb-4">
-                    <button class="tab-button px-4 py-2 text-gray-600 hover:text-gray-800 active-tab" data-tab="aprendices">
-                        Aprendices e Instructores
+            <div id="aprendices" class="tab-content">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel - Usuarios</h2>
+                <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
+                    @csrf
+                    <input type="file" name="file" id="file" accept=".xlsx, .xls"
+                        class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <button type="submit"
+                        class="ml-4 py-2 px-4 bg-[#38a901] text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        Cargar
                     </button>
-                </div>
+                </form>
 
-                <!-- Contenido de pestañas -->
-                <div id="aprendices" class="tab-content">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel - Usuarios</h2>
-                    <form action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
-                        @csrf
-                        <input type="file" name="file" id="file" accept=".xlsx, .xls"
-                            class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <button type="submit"
-                            class="ml-4 py-2 px-4 bg-[#38a901] text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            Cargar
-                        </button>
-                    </form>
-                </div>
+            </div>
 
+            <!-- Modal de carga -->
+        <div id="loading-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+                <div class="flex items-center justify-center">
+                    <div class="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="ml-2 text-gray-700">Cargando...</span>
+                </div>
             </div>
         </div>
 
-        <script>
-            document.querySelector('form').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(this);
+        <!-- Modal de resultado -->
+        <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+                <h2 id="result-title" class="text-lg font-bold mb-4"></h2>
+                <p id="result-message" class="text-sm text-gray-600 mb-4"></p>
+                <button id="close-result-modal" class="w-full bg-green-500 text-white py-2 rounded">Cerrar</button>
+            </div>
+        </div>
+        </div>
 
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message);
-                    } else if (data.error) {
-                        alert(data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita el envío tradicional del formulario
+
+            const formData = new FormData(this); // Obtiene los datos del formulario
+            const loadingModal = document.getElementById('loading-modal'); // Modal de carga
+            const resultModal = document.getElementById('result-modal'); // Modal de resultado
+            const resultTitle = document.getElementById('result-title'); // Título del resultado
+            const resultMessage = document.getElementById('result-message'); // Mensaje del resultado
+
+            // Muestra el modal de carga
+            loadingModal.classList.remove('hidden');
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Si la respuesta no es exitosa, lanza un error
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Oculta el modal de carga
+                loadingModal.classList.add('hidden');
+
+                // Configura el modal de resultado
+                if (data.message) {
+                    resultTitle.textContent = 'Éxito';
+                    resultMessage.textContent = data.message;
+                } else if (data.error) {
+                    resultTitle.textContent = 'Error';
+                    resultMessage.textContent = data.error;
+                }
+
+                // Muestra el modal de resultado
+                resultModal.classList.remove('hidden');
+            })
+            .catch(error => {
+                // Oculta el modal de carga y muestra el modal de resultado con un mensaje de error
+                loadingModal.classList.add('hidden');
+                resultTitle.textContent = 'Error';
+                resultMessage.textContent = 'Error al procesar el archivo. Inténtalo de nuevo.';
+                resultModal.classList.remove('hidden');
+                console.error('Error:', error);
             });
-        </script>
+        });
 
+        // Cerrar el modal de resultado y recargar la página
+        document.getElementById('close-result-modal').addEventListener('click', () => {
+            document.getElementById('result-modal').classList.add('hidden');
+            window.location.reload(); // Recarga la página
+        });
+    </script>
 
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Reporte de Instructores</h2>
@@ -399,6 +451,34 @@
             font-weight: bold;
             color: #38a901;
         }
+
+        @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Animación para el modal */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fixed {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilo para el botón de cerrar */
+#close-result-modal {
+    transition: background-color 0.3s ease;
+}
+
+#close-result-modal:hover {
+    background-color: #38a901;
+}
     </style>
 
 </body>
