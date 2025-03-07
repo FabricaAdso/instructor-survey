@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Answer;
 use App\Models\SurveySummary;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ConsolidateSurveyData extends Command
 {
@@ -14,6 +15,8 @@ class ConsolidateSurveyData extends Command
 
     public function handle()
     {
+
+        Log::info("Holasss");
         // Obtener todos los instructores únicos que tienen respuestas
         $instructors = Answer::select('instructor_id')->distinct()->get();
 
