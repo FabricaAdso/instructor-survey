@@ -15,8 +15,6 @@ class ConsolidateSurveyData extends Command
 
     public function handle()
     {
-
-        Log::info("Holasss");
         // Obtener todos los instructores únicos que tienen respuestas
         $instructors = Answer::select('instructor_id')->distinct()->get();
 
