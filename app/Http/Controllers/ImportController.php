@@ -37,15 +37,33 @@ class ImportController extends Controller
             }
 
             if ($returnVar === 0) {
-                // Éxito: El archivo se cargó correctamente
-                return response()->json(['message' => 'Archivo importado correctamente', 'output' => implode("\n", $output)], 200);
+                // Verificar si se generó un archivo de errores
+                $failedFilePath = str_replace(".xlsx", "_errores.xlsx", $fullPath);
+                if (file_exists($failedFilePath)) {
+                    // Devolver el archivo de errores como respuesta
+                    return response()->download($failedFilePath)->deleteFileAfterSend(true);
+                } else {
+                    // Éxito: El archivo se cargó correctamente
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Archivo importado correctamente',
+                        'output' => implode("\n", $output)
+                    ], 200);
+                }
             } else {
                 // Error: El script de Python falló
-                return response()->json(['error' => 'Error al importar el archivo', 'output' => implode("\n", $output)], 500);
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Error al importar el archivo',
+                    'output' => implode("\n", $output)
+                ], 500);
             }
         } catch (\Exception $e) {
             // Error en el servidor
-            return response()->json(['error' => 'Error en el servidor: ' . $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'Error en el servidor: ' . $e->getMessage()
+            ], 500);
         }
     }
 

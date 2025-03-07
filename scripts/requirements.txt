@@ -25,3 +25,6 @@ openpyxl
 # # activa el entorno virtual
 # .venv\Scripts\activate - windows
 # source .venv/bin/activate - linux
+
+# # para los excels interactivos que descarga
+# pip install openpyxl

@@ -278,23 +278,45 @@
                     // Si la respuesta no es exitosa, lanza un error
                     throw new Error('Error en la respuesta del servidor');
                 }
-                return response.json();
+
+                // Verificar el tipo de contenido de la respuesta
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json(); // Manejar como JSON
+                } else {
+                    return response.blob(); // Manejar como archivo
+                }
             })
             .then(data => {
                 // Oculta el modal de carga
                 loadingModal.classList.add('hidden');
 
-                // Configura el modal de resultado
-                if (data.message) {
+                if (data instanceof Blob) {
+                    // Si la respuesta es un archivo, descargarlo
+                    const url = window.URL.createObjectURL(data);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'errores.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    // Mostrar un mensaje en el modal de resultado
+                    resultTitle.textContent = 'Advertencia';
+                    resultMessage.textContent = 'Algunas filas no se importaron correctamente. Se ha descargado un archivo con los errores.';
+                    resultModal.classList.remove('hidden');
+                } else if (data && data.success) {
+                    // Si la respuesta es JSON y es exitosa, mostrar el mensaje de éxito
                     resultTitle.textContent = 'Éxito';
                     resultMessage.textContent = data.message;
-                } else if (data.error) {
+                    resultModal.classList.remove('hidden');
+                } else {
+                    // Si la respuesta es JSON pero no es exitosa, mostrar el mensaje de error
                     resultTitle.textContent = 'Error';
-                    resultMessage.textContent = data.error;
+                    resultMessage.textContent = data.error || 'Error al procesar el archivo. Inténtalo de nuevo.';
+                    resultModal.classList.remove('hidden');
                 }
-
-                // Muestra el modal de resultado
-                resultModal.classList.remove('hidden');
             })
             .catch(error => {
                 // Oculta el modal de carga y muestra el modal de resultado con un mensaje de error

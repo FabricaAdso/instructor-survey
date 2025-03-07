@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import sys
 import signal
+from openpyxl.styles import PatternFill  # Para aplicar estilos a las celdas
 
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
 signal.alarm(600)  # 600 segundos (10 minutos)
@@ -34,6 +35,9 @@ instructor_state_mapping = {
 def import_users(file_path):
     conn = None
     cursor = None
+    failed_rows = []  # Lista para guardar filas con errores
+    failed_indices = []  # Lista para guardar los índices de las filas con errores
+
     try:
         # Verificar si el archivo existe
         if not os.path.exists(file_path):
@@ -50,109 +54,139 @@ def import_users(file_path):
         # Procesar la hoja de Aprendices
         print("Procesando aprendices...")
         for index, row in apprentices_df.iterrows():
-            print(f"Procesando aprendiz {index + 1}: {row}")  # Depuración
-
-            # Insertar o actualizar el programa
-            cursor.execute("SELECT id FROM programs WHERE code = %s", (row['CODIGO_PROGRAMA'],))
-            program = cursor.fetchone()
-            if not program:
-                cursor.execute(
-                    "INSERT INTO programs (code, name) VALUES (%s, %s)",
-                    (row['CODIGO_PROGRAMA'], row['PROGRAMA'])
-                )
-                program_id = cursor.lastrowid
-            else:
-                program_id = program[0]
-
-            # Insertar o actualizar el usuario
-            cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
-            user = cursor.fetchone()
-            if not user:
-                cursor.execute(
-                    "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
-                    (
-                        row['NOMBRE'],
-                        f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
-                        row['NUMERO_DOCUMENTO'],
-                        row['CORREO_ELECTRONICO']
+            try:
+                # Insertar o actualizar el programa
+                cursor.execute("SELECT id FROM programs WHERE code = %s", (row['CODIGO_PROGRAMA'],))
+                program = cursor.fetchone()
+                if not program:
+                    cursor.execute(
+                        "INSERT INTO programs (code, name) VALUES (%s, %s)",
+                        (row['CODIGO_PROGRAMA'], row['PROGRAMA'])
                     )
-                )
-                user_id = cursor.lastrowid
-            else:
-                user_id = user[0]
+                    program_id = cursor.lastrowid
+                else:
+                    program_id = program[0]
 
-            # Insertar o actualizar el curso (ficha)
-            cursor.execute("SELECT id FROM courses WHERE code = %s", (row['FICHA'],))
-            course = cursor.fetchone()
-            if not course:
-                cursor.execute(
-                    "INSERT INTO courses (code, program_id) VALUES (%s, %s)",
-                    (row['FICHA'], program_id)
-                )
-                course_id = cursor.lastrowid
-            else:
-                course_id = course[0]
+                # Insertar o actualizar el usuario
+                cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
+                user = cursor.fetchone()
+                if not user:
+                    cursor.execute(
+                        "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
+                        (
+                            row['NOMBRE'],
+                            f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
+                            row['NUMERO_DOCUMENTO'],
+                            row['CORREO_ELECTRONICO']
+                        )
+                    )
+                    user_id = cursor.lastrowid
+                else:
+                    user_id = user[0]
 
-            # Insertar o actualizar el aprendiz
-            cursor.execute("SELECT id FROM apprentices WHERE user_id = %s AND course_id = %s", (user_id, course_id))
-            if not cursor.fetchone():
-                cursor.execute(
-                    "INSERT INTO apprentices (user_id, course_id, state) VALUES (%s, %s, %s)",
-                    (user_id, course_id, apprentice_state_mapping.get(row['ESTADO'], 'Formacion'))
-                )
+                # Insertar o actualizar el curso (ficha)
+                cursor.execute("SELECT id FROM courses WHERE code = %s", (row['FICHA'],))
+                course = cursor.fetchone()
+                if not course:
+                    cursor.execute(
+                        "INSERT INTO courses (code, program_id) VALUES (%s, %s)",
+                        (row['FICHA'], program_id)
+                    )
+                    course_id = cursor.lastrowid
+                else:
+                    course_id = course[0]
+
+                # Insertar o actualizar el aprendiz
+                cursor.execute("SELECT id FROM apprentices WHERE user_id = %s AND course_id = %s", (user_id, course_id))
+                if not cursor.fetchone():
+                    cursor.execute(
+                        "INSERT INTO apprentices (user_id, course_id, state) VALUES (%s, %s, %s)",
+                        (user_id, course_id, apprentice_state_mapping.get(row['ESTADO'], 'Formacion'))
+                    )
+
+            except Exception as e:
+                # Si hay un error, guardar la fila en la lista de filas fallidas
+                print(f"Error en la fila {index + 1}: {e}")
+                failed_rows.append(row)
+                failed_indices.append(index)
 
         # Procesar la hoja de Instructores
         print("Procesando instructores...")
         for index, row in instructors_df.iterrows():
-            print(f"Procesando instructor {index + 1}: {row}")  # Depuración
-
-            # Insertar o actualizar el usuario
-            cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
-            user = cursor.fetchone()
-            if not user:
-                cursor.execute(
-                    "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
-                    (
-                        row['NOMBRE'],
-                        f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
-                        row['NUMERO_DOCUMENTO'],
-                        row['CORREO_ELECTRONICO']
-                    )
-                )
-                user_id = cursor.lastrowid
-            else:
-                user_id = user[0]
-
-            # Insertar o actualizar el instructor
-            cursor.execute("SELECT id FROM instructors WHERE user_id = %s", (user_id,))
-            instructor = cursor.fetchone()
-            if not instructor:
-                cursor.execute(
-                    "INSERT INTO instructors (user_id, state, is_course_leader) VALUES (%s, %s, %s)",
-                    (user_id, instructor_state_mapping.get(row['ESTADO'], 'Activo'), row['ES_LIDER'] == 'SI')
-                )
-                instructor_id = cursor.lastrowid
-            else:
-                instructor_id = instructor[0]
-
-            # Insertar o actualizar la relación curso-instructor
-            cursor.execute("SELECT id FROM courses WHERE code = %s", (row['FICHA'],))
-            course = cursor.fetchone()
-            if course:
-                course_id = course[0]
-                # Verificar si la relación ya existe
-                cursor.execute(
-                    "SELECT id FROM course_instructor WHERE instructor_id = %s AND course_id = %s",
-                    (instructor_id, course_id)
-                )
-                if not cursor.fetchone():
+            try:
+                # Insertar o actualizar el usuario
+                cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
+                user = cursor.fetchone()
+                if not user:
                     cursor.execute(
-                        "INSERT INTO course_instructor (instructor_id, course_id) VALUES (%s, %s)",
+                        "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
+                        (
+                            row['NOMBRE'],
+                            f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
+                            row['NUMERO_DOCUMENTO'],
+                            row['CORREO_ELECTRONICO']
+                        )
+                    )
+                    user_id = cursor.lastrowid
+                else:
+                    user_id = user[0]
+
+                # Insertar o actualizar el instructor
+                cursor.execute("SELECT id FROM instructors WHERE user_id = %s", (user_id,))
+                instructor = cursor.fetchone()
+                if not instructor:
+                    cursor.execute(
+                        "INSERT INTO instructors (user_id, state, is_course_leader) VALUES (%s, %s, %s)",
+                        (user_id, instructor_state_mapping.get(row['ESTADO'], 'Activo'), row['ES_LIDER'] == 'SI')
+                    )
+                    instructor_id = cursor.lastrowid
+                else:
+                    instructor_id = instructor[0]
+
+                # Insertar o actualizar la relación curso-instructor
+                cursor.execute("SELECT id FROM courses WHERE code = %s", (row['FICHA'],))
+                course = cursor.fetchone()
+                if course:
+                    course_id = course[0]
+                    cursor.execute(
+                        "SELECT id FROM course_instructor WHERE instructor_id = %s AND course_id = %s",
                         (instructor_id, course_id)
                     )
+                    if not cursor.fetchone():
+                        cursor.execute(
+                            "INSERT INTO course_instructor (instructor_id, course_id) VALUES (%s, %s)",
+                            (instructor_id, course_id)
+                        )
+
+            except Exception as e:
+                # Si hay un error, guardar la fila en la lista de filas fallidas
+                print(f"Error en la fila {index + 1}: {e}")
+                failed_rows.append(row)
+                failed_indices.append(index)
 
         conn.commit()
         print("Archivo importado correctamente")
+
+        # Si hay filas con errores, generar un archivo Excel con estilos
+        if failed_rows:
+            failed_df = pd.DataFrame(failed_rows)
+            failed_file_path = file_path.replace(".xlsx", "_errores.xlsx")
+
+            # Guardar el DataFrame en un archivo Excel
+            with pd.ExcelWriter(failed_file_path, engine='openpyxl') as writer:
+                failed_df.to_excel(writer, index=False, sheet_name='Errores')
+
+                # Aplicar estilo de fondo rojizo a las celdas con errores
+                workbook = writer.book
+                worksheet = writer.sheets['Errores']
+                red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")  # Fondo rojo
+
+                for index in failed_indices:
+                    for col in range(1, len(failed_df.columns) + 1):
+                        worksheet.cell(row=index + 2, column=col).fill = red_fill  # +2 porque la primera fila es el encabezado
+
+            print(f"Se generó un archivo con las filas fallidas: {failed_file_path}")
+
     except FileNotFoundError as e:
         print(f"Error: {e}")
     except Exception as e:
