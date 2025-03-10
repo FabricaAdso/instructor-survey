@@ -6,12 +6,14 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tota;
+use App\Http\Controllers\TotalReportController;
 
 use function Spatie\LaravelPdf\Support\pdf;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::get('/verify/{apprenticeId}', [AuthController::class, 'showVerificationForm'])->name('verification.form');
@@ -32,9 +34,15 @@ Route::get('login/admin', function() {
 
 Route::post('login/admin', [AuthController::class, 'loginAdmin'])->name('login.admin.submit');
 
+
 Route::middleware(['auth:admin', 'superuser'])->group(function () {
 
     Route::get('/admin/dashboard', [ReportController::class, 'index'])->name('admin.dashboard');
+
+
+
+// Route::group([],function () {
+ //   Route::get('/admin/dashboard', [ReportController::class, 'index'])->name('admin.dashboard');
     // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{courseId}/{instructorId}/{programId}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('/reports/downloadcourse/{courseId}/{instructorId}/{programId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
@@ -46,11 +54,21 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
     Route::post('/import-apprentices', [ImportController::class, 'importUsers'])->name('import-apprentices');
 
     Route::post('/logout/admin', [AuthController::class, 'logoutAdmin'])->name('logout.admin');
-});
+    Route::get('/totalReport', [TotalReportController::class, 'totalReport'])
+     ->name('reportsClose');
+     Route::get('/descargar-pdf/{id}', [TotalReportController::class, 'totalpdf'])->name('totalreport');;
+     Route::get('/descargar-todos-pdfs', [TotalReportController::class, 'downloadAllIndividualPDFs'])->name('totalreportpdf.all');
 
-Route::fallback(function () {
-    return redirect()->route('login');
-});
+     Route::get('/api/instructors', [TotalReportController::class, 'getInstructorsBySurveyIdentifier'])->name('api.instructors');
+
+    });
+
+Route::get('/totalreport', [TotalreportController::class, 'totalpdf'])->name('totalreportpdf');
+
+
+// Route::fallback(function () {
+//    return redirect()->route('login');
+//});
 
 
 

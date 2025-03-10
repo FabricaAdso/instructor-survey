@@ -1,507 +1,434 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reportes</title>
-    <style>
-        #reportTable {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        #reportTable thead th {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-
-        #reportTable tbody tr:nth-child(odd) {
-            background-color: #f9f9f9;
-        }
-
-        #reportTable tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        #reportTable tbody tr:hover {
-            background-color: #e0f7fa;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 8px 12px;
-            margin: 2px;
-            border-radius: 4px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background-color: #45a049;
-            color: #e0f7fa
-        }
-
-        .dataTables_wrapper .dataTables_filter input {
-            padding: 6px;
-            border: 1px solid #ddd;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-
-        .dataTables_wrapper .dataTables_info {
-            margin-top: 10px;
-            color: #666;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Instructores</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <style>
+    /* Estilos Globales */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      color: #1F2937;
+      padding: 10px
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      color: #1F2937;
+    }
+    /* Botones */
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    .cancel-button {
+      margin-top: 16px;
+      padding: 10px 20px;
+      background-color: #D1D5DB;
+      color: #1F2937;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .cancel-button:hover {
+      background-color: #B0B7C3;
+    }
+    #searchInput {
+      width: 100%;
+      max-width: 400px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #e0f7fa;
+    }
+    .modal {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+    .modal-content h2 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      color: #333;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .modal-close:hover {
+      color: #333;
+    }
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-form label {
+      font-weight: bold;
+      color: #555;
+    }
+    .modal-form input[type="file"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .modal-form button {
+      align-self: flex-end;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+    .pagination li {
+      margin: 0 4px;
+    }
+    .pagination a,
+    .pagination span {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #38a901;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .pagination a:hover {
+      background-color: #38a901;
+      color: #fff;
+      border-color: #38a901;
+    }
+    .pagination .active span {
+      background-color: #38a901;
+      color: #fff;
+      border-color: #38a901;
+    }
+    .pagination .disabled span {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    .toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      color: #fff;
+      z-index: 1000;
+      animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s;
+    }
+    .toast-success {
+      background-color: #38a901;
+    }
+    .toast-error {
+      background-color: #e53e3e;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
 </head>
-
-<body class="font-sans bg-gray-100">
-
-    <header class="bg-white text-gray-800 border-b border-gray-300 p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex justify-center">
-                <img src="../img/logo-sena-verde-complementario-svg-2022.svg" alt="Logo SENA" class="w-12 h-12">
-            </div>
-            <h1 class="text-2xl font-semibold ml-4 flex-grow text-center md:text-left">Encuesta de Acompañamiento</h1>
-
-            <div class="flex justify-end">
-                <form action="{{ route('logout.admin') }}" method="POST">
-                    @csrf
-                    <button id="logout-button" class="text-sm text-green-500 hover:text-green-700">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
-
-    <script>
-        document.getElementById('logout-button').addEventListener('click', function () {
-            fetch("{{ route('logout.admin') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url; // Redirige al login
-                }
-            })
-            .catch(error => console.error("Error al cerrar sesión:", error));
-        });
-    </script>
-
-    <div class="container mx-auto mt-6 px-4">
-
-    <!-- Botón para abrir/cerrar la encuesta -->
-    <button id="toggle-survey-status" class="text-white px-4 py-2 rounded {{ $isSurveyOpen ? 'bg-red-500' : 'bg-green-500' }}">
+<body>
+  @include('admin.menu.header')
+  <div class="container">
+    <h1>Reporte de Instructores</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <!-- Botón para abrir/cerrar la encuesta -->
+      <button id="toggle-survey-status" class="btn {{ $isSurveyOpen ? 'bg-red-500' : 'bg-green-500' }}">
         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
-    </button>
-
-    <style>
-        .toast {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            color: white;
-            z-index: 1000;
-            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s;
-        }
-
-        .toast-success {
-            background-color: #38a901; /* Verde */
-        }
-
-        .toast-error {
-            background-color: #e53e3e; /* Rojo */
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
-        }
-    </style>
-
-    <script>
-        function showToast(message, type) {
-            // Crear el contenedor de la notificación
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-
-            // Agregar la notificación al cuerpo del documento
-            document.body.appendChild(toast);
-
-            // Eliminar la notificación después de 3 segundos
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const toggleButton = document.getElementById('toggle-survey-status');
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
-
-            if (!csrfToken) {
-                console.error('Error: No se encontró el token CSRF.');
-                return;
-            }
-
-            toggleButton.addEventListener('click', function () {
-                fetch('/admin/toggle-survey-status', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken.content,
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_survey_open) {
-                        this.textContent = 'Cerrar Encuesta';
-                        this.classList.remove('bg-green-600');
-                        this.classList.add('bg-red-600');
-                        showToast('Encuesta abierta', 'success'); // Notificación de éxito
-                    } else {
-                        this.textContent = 'Abrir Encuesta';
-                        this.classList.remove('bg-red-600');
-                        this.classList.add('bg-green-600');
-                        showToast('Encuesta cerrada', 'error'); // Notificación de error
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error al actualizar la encuesta', 'error'); // Notificación de error
-                });
-            });
-        });
-    </script>
-
-    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="relative bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg">
-            <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
-                ✖
-            </button>
-
-            <div class="flex border-b mb-4">
-                <button class="tab-button px-4 py-2 text-gray-600 hover:text-gray-800 active-tab" data-tab="aprendices">
-                    Aprendices e Instructores
-                </button>
-            </div>
-
-            <div id="aprendices" class="tab-content">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel - Usuarios</h2>
-                <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="space-y-4 flex items-center">
-                    @csrf
-                    <input type="file" name="file" id="file" accept=".xlsx, .xls"
-                        class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    <button type="submit"
-                        class="ml-4 py-2 px-4 bg-[#38a901] text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Cargar
-                    </button>
-                </form>
-
-            </div>
-
-            <!-- Modal de carga -->
-        <div id="loading-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-                <div class="flex items-center justify-center">
-                    <div class="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="ml-2 text-gray-700">Cargando...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de resultado -->
-        <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-                <h2 id="result-title" class="text-lg font-bold mb-4"></h2>
-                <p id="result-message" class="text-sm text-gray-600 mb-4"></p>
-                <button id="close-result-modal" class="w-full bg-green-500 text-white py-2 rounded">Cerrar</button>
-            </div>
-        </div>
-        </div>
-
-
+      </button>
+      <!-- Botón para abrir el modal de Cargue Masivo -->
+      <button id="open-modal" class="btn">Cargue Masivo</button>
     </div>
 
-    <script>
-        document.getElementById('upload-form').addEventListener('submit', function (e) {
-            e.preventDefault(); // Evita el envío tradicional del formulario
+    <!-- Input de búsqueda -->
+    <input type="text" id="searchInput" placeholder="Buscar...">
 
-            const formData = new FormData(this); // Obtiene los datos del formulario
-            const loadingModal = document.getElementById('loading-modal'); // Modal de carga
-            const resultModal = document.getElementById('result-modal'); // Modal de resultado
-            const resultTitle = document.getElementById('result-title'); // Título del resultado
-            const resultMessage = document.getElementById('result-message'); // Mensaje del resultado
-
-            // Muestra el modal de carga
-            loadingModal.classList.remove('hidden');
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Si la respuesta no es exitosa, lanza un error
-                    throw new Error('Error en la respuesta del servidor');
-                }
-
-                // Verificar el tipo de contenido de la respuesta
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json(); // Manejar como JSON
-                } else {
-                    return response.blob(); // Manejar como archivo
-                }
-            })
-            .then(data => {
-                // Oculta el modal de carga
-                loadingModal.classList.add('hidden');
-
-                if (data instanceof Blob) {
-                    // Si la respuesta es un archivo, descargarlo
-                    const url = window.URL.createObjectURL(data);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'errores.xlsx';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-
-                    // Mostrar un mensaje en el modal de resultado
-                    resultTitle.textContent = 'Advertencia';
-                    resultMessage.textContent = 'Algunas filas no se importaron correctamente. Se ha descargado un archivo con los errores.';
-                    resultModal.classList.remove('hidden');
-                } else if (data && data.success) {
-                    // Si la respuesta es JSON y es exitosa, mostrar el mensaje de éxito
-                    resultTitle.textContent = 'Éxito';
-                    resultMessage.textContent = data.message;
-                    resultModal.classList.remove('hidden');
-                } else {
-                    // Si la respuesta es JSON pero no es exitosa, mostrar el mensaje de error
-                    resultTitle.textContent = 'Error';
-                    resultMessage.textContent = data.error || 'Error al procesar el archivo. Inténtalo de nuevo.';
-                    resultModal.classList.remove('hidden');
-                }
-            })
-            .catch(error => {
-                // Oculta el modal de carga y muestra el modal de resultado con un mensaje de error
-                loadingModal.classList.add('hidden');
-                resultTitle.textContent = 'Error';
-                resultMessage.textContent = 'Error al procesar el archivo. Inténtalo de nuevo.';
-                resultModal.classList.remove('hidden');
-                console.error('Error:', error);
-            });
-        });
-
-        // Cerrar el modal de resultado y recargar la página
-        document.getElementById('close-result-modal').addEventListener('click', () => {
-            document.getElementById('result-modal').classList.add('hidden');
-            window.location.reload(); // Recarga la página
-        });
-    </script>
-
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Reporte de Instructores</h2>
-            <button id="open-modal"
-                class="px-6 py-3 text-white bg-[#38a901] rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                Cargue Masivo
-            </button>
-        </div>
-        <table id="reportTable" class="display w-full table-auto text-sm text-left text-gray-600">
-            <thead>
-                <tr class="bg-gray-200 text-gray-800">
-                    <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Reporte por Fichas</th>
-                    <th class="px-4 py-2">Reporte General</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach ($instructors as $instructor)
-                <tr class="border-b">
-                    <td class="px-4 py-2">
-                        {{ $instructor->user->name }} {{ $instructor->user->last_name }}
-                    </td>
-                    <td class="px-4 py-2 text-center">
-                        <button onclick="openModal({{ $instructor->id }})"
-                            class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none">
-                            Ver Fichas Asociadas
-                        </button>
-                    </td>
-                    <td class="px-4 py-2 text-center">
-                        <button
-                            @if (!$instructor->hasGeneralAnswers) disabled @endif
-                            onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
-                            class="px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-[#38a980] focus:outline-none
-                                @if (!$instructor->hasGeneralAnswers) bg-gray-400 text-white cursor-not-allowed @endif">
-                            Reporte General
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Modales para Fichas -->
+    <!-- Tabla de Reportes -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Reporte por Fichas</th>
+          <th>Reporte General</th>
+        </tr>
+      </thead>
+      <tbody>
         @foreach ($instructors as $instructor)
-        <div id="modal-{{ $instructor->id }}" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Fichas Asociadas a {{ $instructor->name }} {{ $instructor->last_name}}</h2>
-
-                <div class="space-y-2">
-                    @foreach ($instructor->courses as $course)
-                    @if ($course->hasAnswers && $course->program)                            <button>
-                                <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
-                                    class="block px-4 py-2 bg-[#38a901] text-white rounded-lg hover:bg-green-700 focus:outline-none">
-                                    {{ $course->code }}
-                                </a>
-                            </button>
-                        @else
-                            <button disabled>
-                                <a class="block px-4 py-2 bg-gray-400 text-white rounded-lg focus:outline-none cursor-not-allowed">
-                                    {{ $course->code }}
-                                </a>
-                            </button>
-                        @endif
-                    @endforeach
-                </div>
-
-
-                <button onclick="closeModal({{ $instructor->id }})"
-                    class="mt-4 w-full py-2 px-4 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                    Cerrar
-                </button>
-            </div>
-        </div>
+        <tr>
+          <td>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</td>
+          <td style="text-align: center;">
+            <button onclick="openInstructorModal({{ $instructor->id }})" class="btn">
+              Ver Fichas Asociadas
+            </button>
+          </td>
+          <td style="text-align: center;">
+            <button @if (!$instructor->hasGeneralAnswers) disabled @endif
+              onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
+              class="btn"
+              style="@if (!$instructor->hasGeneralAnswers) background-color: #D1D5DB; color: #fff; cursor: not-allowed; @endif">
+              Reporte General
+            </button>
+          </td>
+        </tr>
         @endforeach
+      </tbody>
+    </table>
+
+    <!-- Paginación  -->
+    <div class="pagination-wrapper">
+      <ul class="pagination">
+        @if ($instructors->onFirstPage())
+          <li class="disabled"><span>Anterior</span></li>
+        @else
+          <li><a href="{{ $instructors->previousPageUrl() }}">Anterior</a></li>
+        @endif
+
+        @php
+          $currentPage = $instructors->currentPage();
+          $lastPage = $instructors->lastPage();
+          $maxPages = 5;
+          $startPage = max(1, $currentPage - floor($maxPages / 2));
+          $endPage = $startPage + $maxPages - 1;
+          if ($endPage > $lastPage) {
+            $endPage = $lastPage;
+            $startPage = max(1, $endPage - $maxPages + 1);
+          }
+        @endphp
+
+        @if ($startPage > 1)
+          <li><a href="{{ $instructors->url(1) }}">1</a></li>
+          @if ($startPage > 2)
+            <li class="disabled"><span>...</span></li>
+          @endif
+        @endif
+
+        @for ($page = $startPage; $page <= $endPage; $page++)
+          @if ($page == $currentPage)
+            <li class="active"><span>{{ $page }}</span></li>
+          @else
+            <li><a href="{{ $instructors->url($page) }}">{{ $page }}</a></li>
+          @endif
+        @endfor
+
+        @if ($endPage < $lastPage)
+          @if ($endPage < $lastPage - 1)
+            <li class="disabled"><span>...</span></li>
+          @endif
+          <li><a href="{{ $instructors->url($lastPage) }}">{{ $lastPage }}</a></li>
+        @endif
+
+        @if ($instructors->hasMorePages())
+          <li><a href="{{ $instructors->nextPageUrl() }}">Siguiente</a></li>
+        @else
+          <li class="disabled"><span>Siguiente</span></li>
+        @endif
+      </ul>
     </div>
 
-    <script>
-        function openModal(id) {
-            document.getElementById(`modal-${id}`).classList.remove('hidden');
-        }
+    <!-- Modales para Fichas de cada Instructor -->
+    @foreach ($instructors as $instructor)
+    <div id="modal-{{ $instructor->id }}" class="modal">
+      <div class="modal-content">
+        <h2>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h2>
+        <div style="margin-bottom: 16px;">
+          @foreach ($instructor->courses as $course)
+            @if ($course->program)
+              <button style="margin-bottom: 8px; width: 100%;" class="btn">
+                <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
+                   style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
+                  {{ $course->code }}
+                </a>
+              </button>
+            @else
+              <button disabled style="margin-bottom: 8px; width: 100%;" class="cancel-button">
+                <a style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
+                  {{ $course->code }}
+                </a>
+              </button>
+            @endif
+          @endforeach
+        </div>
+        <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button" style="width: 100%;">Cerrar</button>
+      </div>
+    </div>
+    @endforeach
 
-        function closeModal(id) {
-            document.getElementById(`modal-${id}`).classList.add('hidden');
-        }
+    <!-- Modal de Cargue Masivo -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <button id="close-modal" class="modal-close">&times;</button>
+        <h2>Subir Archivo Excel</h2>
+        <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="modal-form">
+          @csrf
+          <label for="excel_file">Selecciona el archivo (.xlsx, .xls):</label>
+          <input type="file" name="excel_file" id="excel_file" accept=".xlsx, .xls">
+          <button type="submit" class="btn">Subir</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
-        $(document).ready(function () {
-            $('#reportTable').DataTable({
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-                },
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                searchDelay: 200,
-                initComplete: function (settings, json) {
-                    const table = this.api();
-                    $.fn.DataTable.ext.type.search.string = function (data) {
-                        return !data ? '' : data.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                    };
-                    table.draw();
-                }
-            });
+  <script>
+    // Funciones de Modal para el Cargue Masivo
+    const openModalBtn = document.getElementById('open-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const modal = document.getElementById('modal');
 
-            // Abre y cierra el modal de carga masiva
-            document.getElementById('open-modal').addEventListener('click', function () {
-                document.getElementById('modal').classList.remove('hidden');
-            });
+    openModalBtn.addEventListener('click', function() {
+      modal.classList.add('show');
+    });
+    closeModalBtn.addEventListener('click', function() {
+      modal.classList.remove('show');
+    });
+    window.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+      }
+    });
 
-            document.getElementById('close-modal').addEventListener('click', function () {
-                document.getElementById('modal').classList.add('hidden');
-            });
+    // Funciones para abrir y cerrar modales individuales de cada instructor
+    function openInstructorModal(id) {
+      document.getElementById('modal-' + id).classList.add('show');
+    }
+    function closeInstructorModal(id) {
+      document.getElementById('modal-' + id).classList.remove('show');
+    }
 
-            // Cambia entre pestañas Aprendices/Instructores
-            const tabButtons = document.querySelectorAll(".tab-button");
-            const tabContents = document.querySelectorAll(".tab-content");
+    // Buscador simple para la tabla
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const filter = this.value.toLowerCase();
+      const rows = document.querySelectorAll("tbody tr");
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(filter) > -1 ? "" : "none";
+      });
+    });
 
-            tabButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const tab = this.dataset.tab;
+    // Función para mostrar notificaciones (Toast)
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
 
-                    // Remueve la clase activa de todos los botones y oculta el contenido
-                    tabButtons.forEach(btn => btn.classList.remove("active-tab"));
-                    tabContents.forEach(content => content.classList.add("hidden"));
-
-                    // Activa la pestaña seleccionada
-                    this.classList.add("active-tab");
-                    document.getElementById(tab).classList.remove("hidden");
-                });
-            });
+    // Botón para abrir/cerrar encuesta
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleButton = document.getElementById('toggle-survey-status');
+      if (!toggleButton) return;
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (!csrfToken) {
+        console.error('Error: No se encontró el token CSRF.');
+        return;
+      }
+      toggleButton.addEventListener('click', function() {
+        fetch('/admin/toggle-survey-status', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.is_survey_open) {
+            this.textContent = 'Cerrar Encuesta';
+            this.classList.remove('bg-green-500');
+            this.classList.add('bg-red-500');
+            showToast('Encuesta abierta', 'success');
+          } else {
+            this.textContent = 'Abrir Encuesta';
+            this.classList.remove('bg-red-500');
+            this.classList.add('bg-green-500');
+            showToast('Encuesta cerrada', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('Error al actualizar la encuesta', 'error');
         });
-    </script>
-
-    <style>
-        .active-tab {
-            border-bottom: 2px solid #38a901;
-            font-weight: bold;
-            color: #38a901;
-        }
-
-        @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-/* Animación para el modal */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.fixed {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Estilo para el botón de cerrar */
-#close-result-modal {
-    transition: background-color 0.3s ease;
-}
-
-#close-result-modal:hover {
-    background-color: #38a901;
-}
-    </style>
-
+      });
+    });
+  </script>
 </body>
 </html>
