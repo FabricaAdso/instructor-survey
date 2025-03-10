@@ -7,215 +7,323 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <style>
     /* Estilos Globales */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
-      color: #1F2937;
-      padding: 10px
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 16px;
-      color: #1F2937;
-    }
-    /* Botones */
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: #fff;
-      text-decoration: none;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .btn:hover {
-      background-color: #45a049;
-      transform: translateY(-2px);
-    }
-    .cancel-button {
-      margin-top: 16px;
-      padding: 10px 20px;
-      background-color: #D1D5DB;
-      color: #1F2937;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .cancel-button:hover {
-      background-color: #B0B7C3;
-    }
-    #searchInput {
-      width: 100%;
-      max-width: 400px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-bottom: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 16px;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    th {
-      background-color: #4CAF50;
-      color: #fff;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    tr:hover {
-      background-color: #e0f7fa;
-    }
-    .modal {
-      display: flex;
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .modal.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .modal-content {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 24px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      position: relative;
-    }
-    .modal-content h2 {
-      font-size: 1.5rem;
-      margin-bottom: 16px;
-      color: #333;
-    }
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: #aaa;
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-    .modal-close:hover {
-      color: #333;
-    }
-    .modal-form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .modal-form label {
-      font-weight: bold;
-      color: #555;
-    }
-    .modal-form input[type="file"] {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 100%;
-    }
-    .modal-form button {
-      align-self: flex-end;
-    }
-    .pagination {
-      display: flex;
-      justify-content: center;
-      list-style: none;
-      padding: 0;
-      margin: 16px 0;
-    }
-    .pagination li {
-      margin: 0 4px;
-    }
-    .pagination a,
-    .pagination span {
-      display: inline-block;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      text-decoration: none;
-      color: #38a901;
-      font-size: 14px;
-      transition: background-color 0.3s ease;
-    }
-    .pagination a:hover {
-      background-color: #38a901;
-      color: #fff;
-      border-color: #38a901;
-    }
-    .pagination .active span {
-      background-color: #38a901;
-      color: #fff;
-      border-color: #38a901;
-    }
-    .pagination .disabled span {
-      color: #ccc;
-      cursor: not-allowed;
-    }
-    .toast {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      color: #fff;
-      z-index: 1000;
-      animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s;
-    }
-    .toast-success {
-      background-color: #38a901;
-    }
-    .toast-error {
-      background-color: #e53e3e;
-    }
-    @keyframes slideIn {
-      from { transform: translateX(100%); }
-      to { transform: translateX(0); }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
+    /* ======================
+   Estilos Globales
+========================= */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+  color: #1F2937;
+  padding: 10px;
+}
+
+.container {
+  max-width: auto;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: #1F2937;
+}
+
+/* ======================
+   Botones Base
+========================= */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+  font-size: 1rem;
+  text-align: center;
+  width: auto;
+  max-width: 200px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Grupo de botones para evitar que se estiren */
+.button-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+  justify-content: flex-start;
+}
+
+/* ======================
+   Botón de Abrir/Cerrar Encuesta
+========================= */
+/* Usamos el mismo tono de verde pero diferenciamos con opacidad */
+.btn-toggle.survey-closed {
+  background-color: #4CAF50; /* Verde */
+  color: #fff;
+  opacity: 1;
+}
+
+.btn-toggle.survey-open {
+  background-color: #4CAF50; /* Mismo verde, pero con menor opacidad para indicar estado "abierto" */
+  color: #fff;
+  opacity: 0.8;
+}
+
+/* ======================
+   Botón de Cargue Masivo
+========================= */
+/* Color neutro para diferenciar, sin ser rojo o azul */
+.btn-mass {
+  background-color: #555;
+  color: #fff;
+}
+
+/* ======================
+   Botón de Cancelación (para modales u otras acciones)
+========================= */
+.cancel-button {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px 16px;
+  background-color: #ccc;
+  color: #fff;
+  text-align: center;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-button:hover {
+  background-color: #b3b3b3;
+}
+
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ======================
+   Input de Búsqueda
+========================= */
+#searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* ======================
+   Tabla y Paginación
+========================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
+  background-color: #388E3C;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid #2E7D32;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #e0f7fa;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.pagination li {
+  margin: 0 4px;
+}
+
+.pagination a,
+.pagination span {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #38a901;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination a:hover {
+  background-color: #38a901;
+  color: #fff;
+  border-color: #38a901;
+}
+
+.pagination .active span {
+  background-color: #38a901;
+  color: #fff;
+  border-color: #38a901;
+}
+
+.pagination .disabled span {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ======================
+   Toasts (Notificaciones)
+========================= */
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  z-index: 1000;
+  animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s;
+}
+
+.toast-success {
+  background-color: #38a901;
+}
+
+.toast-error {
+  background-color: #e53e3e;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ======================
+   Modal
+========================= */
+.modal {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+/* ======================
+   Formulario en Modal
+========================= */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form label {
+  font-weight: bold;
+  color: #555;
+}
+
+.modal-form input[type="file"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.modal-form button {
+  align-self: flex-end;
+}
+
   </style>
 </head>
 <body>
   @include('admin.menu.header')
   <div class="container">
     <h1>Reporte de Instructores</h1>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <!-- Botón para abrir/cerrar la encuesta -->
-      <button id="toggle-survey-status" class="btn {{ $isSurveyOpen ? 'bg-red-500' : 'bg-green-500' }}">
-        {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
-      </button>
-      <!-- Botón para abrir el modal de Cargue Masivo -->
-      <button id="open-modal" class="btn">Cargue Masivo</button>
-    </div>
+    <div class="button-group">
+        <!-- Botón para abrir/cerrar la encuesta -->
+        <button id="toggle-survey-status" class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
+          {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
+        </button>
+        <!-- Botón para abrir el modal de Cargue Masivo -->
+        <button id="open-modal" class="btn btn-mass">Cargue Masivo</button>
+      </div>
+
 
     <!-- Input de búsqueda -->
     <input type="text" id="searchInput" placeholder="Buscar...">
