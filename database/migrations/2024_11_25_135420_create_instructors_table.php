@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('instructors', function (Blueprint $table) {
 
+            $table->id();
+
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->id();
             $table->enum('state',['Activo','Inactivo']);
             $table->boolean('is_course_leader')->default(false);
 
