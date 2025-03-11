@@ -19,11 +19,12 @@ db_config = {
 
 # Mapeo de estados para aprendices
 apprentice_state_mapping = {
-    'Formacion': 'Formacion',
+    'En formacion': 'En_formacion',
     'Etapa productiva': 'Etapa_productiva',
     'En comite': 'En_comite',
     'Desertado': 'Desertado',
-    'Retiro voluntario': 'Retiro_voluntario'
+    'Retiro voluntario': 'Retiro_voluntario',
+    'Induccion': 'Induccion',
 }
 
 # Mapeo de estados para instructores
