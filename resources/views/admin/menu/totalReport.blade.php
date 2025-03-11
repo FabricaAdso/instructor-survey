@@ -8,7 +8,10 @@
     <meta name="description" content="Tabla de reporte con filtros y boton de descarga de los datos filtrados">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        /* Estilos Globales */
+        .tittle-close {
+            color: #2E7D32
+        }
+
         body {
             padding: 10px;
             margin: 0;
@@ -29,7 +32,6 @@
             color: #1F2937;
         }
 
-        /* Formulario de Filtros */
         form {
             display: flex;
             flex-wrap: wrap;
@@ -47,7 +49,8 @@
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            min-width: 200px;
+            min-width: 50px;
+            max-width: 200;
         }
 
         form button {
@@ -75,17 +78,6 @@
             background-color: #45a049;
         }
 
-        /* Buscador simple */
-        #searchInput {
-            width: 100%;
-            max-width: 400px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 16px;
-        }
-
-        /* Tabla */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -107,7 +99,6 @@
             font-weight: bold;
             border: 2px solid #2E7D32;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-
         }
 
         tr:nth-child(even) {
@@ -117,103 +108,57 @@
         tr:hover {
             background-color: #e0f7fa;
         }
-
-        /* Botón de descarga */
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #388E3C;
-            color: #fff;
-            font-size: 1.1rem;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 4px;
-            margin-top: 16px;
-            border: 2px solid #2E7D32; /* Borde más grueso y oscuro */
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra sutil */
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        /* Paginación */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            padding: 0;
-            margin: 16px 0;
-        }
-
-        .pagination li {
-            margin: 0 4px;
-        }
-
-        .pagination a,
-        .pagination span {
-            display: inline-block;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-decoration: none;
-            color: #38a901;
-            transition: background-color 0.3s ease;
-        }
-
-        .pagination a:hover {
-            background-color: #38a901;
-            color: white;
-            border-color: #38a901;
-        }
-
-        .pagination .active span {
-            background-color: #38a901;
-            color: white;
-            border-color: #38a901;
-        }
-
-        .pagination .disabled span {
-            color: #ccc;
-            cursor: not-allowed;
-        }
     </style>
 </head>
 
 <body>
     @include('admin.menu.header')
     <div class="container">
-        <h1>Reporte de Encuestas Cerradas</h1>
-        <form method="GET" action="{{ route('reportsClose') }}">
+        <div style="display: flex; justify-content: space-between">
+            <h2 class="tittle-close">Reporte de Encuestas Cerradas</h2>
             <div>
-                <label for="survey_identifier">Cuestionario:</label>
-                <select name="survey_identifier" id="survey_identifier">
-                    <option value="">Todos</option>
-                    @foreach ($surveyIdentifiers as $identifier)
-                        <option value="{{ $identifier }}" @if ($surveyIdentifier == $identifier) selected @endif>
-                            {{ $identifier }}
-                        </option>
-                    @endforeach
-                </select>
+                <a href="{{ route('totalreportpdf.all', [
+                    'survey_identifier' => request('survey_identifier'),
+                    'instructor_search' => request('instructor_search'),
+                ]) }}"
+                    class="btn">Descargar PDFs Filtrados</a>
             </div>
-            <div>
-                <label for="instructor_search">Buscar instructor (nombre o documento):</label>
-                <input type="text" name="instructor_search" id="instructor_search"
-                    value="{{ request('instructor_search') }}">
-            </div>
-            <button type="submit">Filtrar</button>
-        </form>
-
+        </div>
+        <div class="Search">
+            <form method="GET" action="{{ route('reportsClose') }}">
+                <div class="search-wrapper">
+                    <div>
+                        <label for="survey_identifier">Cuestionario:</label>
+                        <select name="survey_identifier" id="survey_identifier">
+                            <option value="">Todos</option>
+                            @foreach ($surveyIdentifiers as $identifier)
+                                <option value="{{ $identifier }}" @if ($surveyIdentifier == $identifier) selected @endif>
+                                    {{ $identifier }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="instructor_search">Instructor:</label>
+                        <input placeholder="Nombre o documento" type="text" name="instructor_search"
+                            id="instructor_search" value="{{ request('instructor_search') }}">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content:flex-end">
+                    <button type="submit">Filtrar</button>
+                    <button type="button" onclick="window.location='{{ route('reportsClose') }}'">Borrar
+                        filtros</button>
+                </div>
+            </form>
+        </div>
         <table>
             <thead>
                 <tr>
-                    <th>Encuesta (survey_identifier)</th>
+                    <th>Encuesta</th>
                     <th>N° de Documento</th>
                     <th>Nombres y Apellidos</th>
-                    <th>Curso</th>
-                    <th>Promedio</th>
-                    <th>Respuestas</th>
+                    <th>Calificación Promedio</th>
+                    <th>Total Respuestas</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -221,68 +166,25 @@
                 @foreach ($summaries as $summary)
                     <tr>
                         <td>{{ $summary->survey_identifier }}</td>
-                        <td>
-                            @if ($summary->instructor && $summary->instructor->user)
-                                {{ $summary->instructor->user->identity_document }}
-                            @endif
-                        </td>
-                        <td>
-                            @if ($summary->instructor && $summary->instructor->user)
-                                {{ $summary->instructor->user->name }} {{ $summary->instructor->user->last_name }}
-                            @endif
-                        </td>
-                        <td>
-                            @if ($summary->course)
-                                {{ $summary->course->code }}
-                                @if ($summary->course->program)
-                                    ({{ $summary->course->program->name }})
-                                @endif
-                            @endif
-                        </td>
-                        <td>{{ $summary->average_qualification }}</td>
+                        <td>{{ $summary->identity_document }}</td>
+                        <td>{{ $summary->instructor_name }} {{ $summary->instructor_last_name }}</td>
+                        <td>{{ number_format($summary->average_qualification, 2) }}</td>
                         <td>{{ $summary->total_responses }}</td>
                         <td>
-                            <a href="{{ route('totalreport', ['id' => $summary->id]) }}">Ver detalles</a>
+                            <a href="{{ route('totalreport', [
+                                'id' => $summary->instructor_id,
+                                'survey_identifier' => $summary->survey_identifier,
+                                'instructor_search' => request('instructor_search'),
+                            ]) }}"
+                                style="color: #2E7D32; font-weight: bold; text-decoration: none;">
+                                Descargar PDF
+                            </a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-
-        {{ $summaries->links() }}
-
-        <a href="{{ route('totalreportpdf.all', [
-            'survey_identifier' => request('survey_identifier'),
-            'instructor_search' => request('instructor_search'),
-        ]) }}"
-            class="btn">Descargar PDFs Individuales Filtrados</a>
     </div>
-
-
-    <script>
-        // Actualización dinámica del select de instructores
-        document.getElementById('survey_identifier').addEventListener('change', function() {
-            var surveyIdentifier = this.value;
-            var instructorSelect = document.getElementById('instructor_id');
-            if (!instructorSelect) return; // Si no existe, no hace nada.
-            var url = "{{ route('api.instructors') }}" + "?survey_identifier=" + encodeURIComponent(
-                surveyIdentifier);
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    instructorSelect.innerHTML = '<option value="">Todos</option>';
-                    data.forEach(function(inst) {
-                        var option = document.createElement('option');
-                        option.value = inst.id;
-                        option.text = inst.name;
-                        instructorSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error al obtener los instructores:", error);
-                });
-        });
-    </script>
 </body>
 
 </html>
