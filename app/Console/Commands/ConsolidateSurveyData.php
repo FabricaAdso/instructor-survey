@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Log;
 
 class ConsolidateSurveyData extends Command
 {
-    protected $signature = 'survey:consolidate';
+    protected $signature = 'survey:consolidate {closure_date}';
     protected $description = 'Consolidate survey data into summary table';
 
     public function handle()
     {
+        $closureDate = $this->argument('closure_date');
+
         // Obtener todos los instructores únicos que tienen respuestas
         $instructors = Answer::select('instructor_id')->distinct()->get();
 
@@ -38,10 +40,9 @@ class ConsolidateSurveyData extends Command
                 SurveySummary::create([
                     'instructor_id' => $instructor->instructor_id,
                     'question_id' => $question->question_id,
-                    'course_id' => $answers->first()->course_id, // Asumimos que todas las respuestas son del mismo curso
                     'average_qualification' => $averageQualification,
                     'total_responses' => $totalResponses,
-                    'survey_identifier' => 'Encuesta ' . Carbon::now()->format('Y-m-d'), // Identificador único
+                    'survey_identifier' => $closureDate, // Fecha de cierre de la encuesta
                 ]);
             }
         }
