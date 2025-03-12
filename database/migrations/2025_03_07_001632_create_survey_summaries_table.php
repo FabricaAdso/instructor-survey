@@ -21,13 +21,10 @@ return new class extends Migration
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
 
-            $table->unsignedBigInteger('course_id');
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-
             $table->float('average_qualification')->nullable();
             $table->integer('total_responses')->default(0);
 
-            $table->string('survey_identifier');
+            $table->string('survey_identifier'); // Fecha de cierre de la encuesta
 
             $table->timestamps();
         });

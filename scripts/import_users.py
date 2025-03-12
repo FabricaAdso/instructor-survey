@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 import sys
 import signal
-from openpyxl.styles import PatternFill  # Para aplicar estilos a las celdas
+from openpyxl.styles import PatternFill
 
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
 signal.alarm(600)  # 600 segundos (10 minutos)
@@ -12,18 +12,20 @@ signal.alarm(600)  # 600 segundos (10 minutos)
 # Configuración de la base de datos
 db_config = {
     'host': 'localhost',
-    'user': 'root',  # Cambia por tu usuario de MySQL
-    'password': 'fabrica123',  # Cambia por tu contraseña de MySQL
-    'database': 'instructor_survey'  # Cambia por el nombre de tu base de datos
+    'user': 'root',  # usuario de MySQL
+    'password': 'fabrica123',  # contraseña de MySQL
+    'database': 'instructor_survey'  #  nombre base de datos
 }
 
 # Mapeo de estados para aprendices
 apprentice_state_mapping = {
-    'Formacion': 'Formacion',
+    'En formacion': 'En_formacion',
     'Etapa productiva': 'Etapa_productiva',
     'En comite': 'En_comite',
     'Desertado': 'Desertado',
-    'Retiro voluntario': 'Retiro_voluntario'
+    'Retiro voluntario': 'Retiro_voluntario',
+    'Por certificar': 'Por_certificar',
+    'Induccion': 'Induccion',
 }
 
 # Mapeo de estados para instructores
@@ -35,8 +37,8 @@ instructor_state_mapping = {
 def import_users(file_path):
     conn = None
     cursor = None
-    failed_rows = []  # Lista para guardar filas con errores
-    failed_indices = []  # Lista para guardar los índices de las filas con errores
+    failed_rows = []
+    failed_indices = []
 
     try:
         # Verificar si el archivo existe
@@ -179,11 +181,11 @@ def import_users(file_path):
                 # Aplicar estilo de fondo rojizo a las celdas con errores
                 workbook = writer.book
                 worksheet = writer.sheets['Errores']
-                red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")  # Fondo rojo
+                red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
 
                 for index in failed_indices:
                     for col in range(1, len(failed_df.columns) + 1):
-                        worksheet.cell(row=index + 2, column=col).fill = red_fill  # +2 porque la primera fila es el encabezado
+                        worksheet.cell(row=index + 2, column=col).fill = red_fill
 
             print(f"Se generó un archivo con las filas fallidas: {failed_file_path}")
 
@@ -205,5 +207,5 @@ if __name__ == "__main__":
         print("Uso: python3 import_users.py <ruta_al_archivo>")
         sys.exit(1)
 
-    file_path = sys.argv[1]  # Ruta del archivo Excel
+    file_path = sys.argv[1] 
     import_users(file_path)

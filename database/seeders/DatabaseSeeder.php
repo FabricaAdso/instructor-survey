@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Crear aprendices
-        $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'Formacion', 'course_id' => $course1->id]);
+        $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'En_formacion', 'course_id' => $course1->id]);
         $apprentice2 = Apprentice::create(['user_id' => $user2->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
 
         // Crear instructores

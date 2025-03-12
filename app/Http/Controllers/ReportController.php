@@ -8,6 +8,8 @@ use App\Models\Instructor;
 use App\Models\Program;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Collection;
 use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Unit;
@@ -40,14 +42,31 @@ class ReportController extends Controller
 
     public function toggleSurveyStatus(Request $request)
     {
-        // Cambiar el estado de la encuesta para todos los cursos
-        $newStatus = !Course::where('is_survey_open', true)->exists();
-        Course::query()->update(['is_survey_open' => $newStatus]);
+        try {
+            // Cambiar el estado de la encuesta para todos los cursos
+            $newStatus = !Course::where('is_survey_open', true)->exists();
+            Course::query()->update(['is_survey_open' => $newStatus]);
 
-        return response()->json([
-            'message' => 'Estado de la encuesta actualizado',
-            'is_survey_open' => $newStatus
-        ]);
+            // Si se está cerrando la encuesta, consolidar los datos
+            if (!$newStatus) {
+                $closureDate = Carbon::now()->format('Y-m-d');
+                Artisan::call('survey:consolidate', ['closure_date' => $closureDate]);
+            }
+
+            return response()->json([
+                'message' => 'Estado de la encuesta actualizado',
+                'is_survey_open' => $newStatus
+            ]);
+        } catch (\Exception $e) {
+            // Registrar el error en el log
+            Log::error('Error al cambiar el estado de la encuesta: ' . $e->getMessage());
+
+            // Devolver una respuesta de error en formato JSON
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($courseId, $instructorId, $programId)

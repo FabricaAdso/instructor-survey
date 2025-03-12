@@ -75,7 +75,7 @@ class AuthController extends Controller {
             ]);
         }
 
-        if (!in_array($apprentice->state, ['Formacion', 'Etapa_productiva'])) {
+        if (!in_array($apprentice->state, ['En_formacion', 'Etapa_productiva'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'El aprendiz no está habilitado para realizar la encuesta.',
