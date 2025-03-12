@@ -6,32 +6,33 @@ import sys
 import signal
 from openpyxl.styles import PatternFill
 
+# Configurar un timeout de 10 minutos
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
 signal.alarm(600)  # 600 segundos (10 minutos)
 
 # Configuración de la base de datos
 db_config = {
     'host': 'localhost',
-    'user': 'root',  # usuario de MySQL
-    'password': 'fabrica123',  # contraseña de MySQL
-    'database': 'instructor_survey'  #  nombre base de datos
+    'user': 'root',           # usuario de MySQL
+    'password': '5665556563.',  # contraseña de MySQL
+    'database': 'instructor_survey'  # nombre de la base de datos
 }
 
-# Mapeo de estados para aprendices
+# Mapeo de estados para aprendices (con claves en mayúsculas)
 apprentice_state_mapping = {
-    'En formacion': 'En_formacion',
-    'Etapa productiva': 'Etapa_productiva',
-    'En comite': 'En_comite',
-    'Desertado': 'Desertado',
-    'Retiro voluntario': 'Retiro_voluntario',
-    'Por certificar': 'Por_certificar',
-    'Induccion': 'Induccion',
+    'EN FORMACION': 'En_formacion',
+    'ETAPA PRODUCTIVA': 'Etapa_productiva',
+    'EN COMITE': 'En_comite',
+    'DESERTADO': 'Desertado',
+    'RETIRO VOLUNTARIO': 'Retiro_voluntario',
+    'POR CERTIFICAR': 'Por_certificar',
+    'INDUCCION': 'Induccion'
 }
 
-# Mapeo de estados para instructores
+# Mapeo de estados para instructores (con claves en mayúsculas)
 instructor_state_mapping = {
-    'Activo': 'Activo',
-    'Inactivo': 'Inactivo'
+    'ACTIVO': 'Activo',
+    'INACTIVO': 'Inactivo'
 }
 
 def import_users(file_path):
@@ -98,17 +99,20 @@ def import_users(file_path):
                 else:
                     course_id = course[0]
 
+                # Procesar el estado del aprendiz convirtiendo a mayúsculas y quitando espacios
+                estado_aprendiz = str(row['ESTADO']).strip().upper()
+                state_value = apprentice_state_mapping.get(estado_aprendiz, 'En_formacion')
+
                 # Insertar o actualizar el aprendiz
                 cursor.execute("SELECT id FROM apprentices WHERE user_id = %s AND course_id = %s", (user_id, course_id))
                 if not cursor.fetchone():
                     cursor.execute(
                         "INSERT INTO apprentices (user_id, course_id, state) VALUES (%s, %s, %s)",
-                        (user_id, course_id, apprentice_state_mapping.get(row['ESTADO'], 'Formacion'))
+                        (user_id, course_id, state_value)
                     )
 
             except Exception as e:
-                # Si hay un error, guardar la fila en la lista de filas fallidas
-                print(f"Error en la fila {index + 1}: {e}")
+                print(f"Error en la fila {index + 1} (Aprendices): {e}")
                 failed_rows.append(row)
                 failed_indices.append(index)
 
@@ -133,13 +137,21 @@ def import_users(file_path):
                 else:
                     user_id = user[0]
 
+                # Procesar el estado del instructor
+                estado_instructor = str(row['ESTADO']).strip().upper()
+                instructor_state = instructor_state_mapping.get(estado_instructor, 'Activo')
+
                 # Insertar o actualizar el instructor
                 cursor.execute("SELECT id FROM instructors WHERE user_id = %s", (user_id,))
                 instructor = cursor.fetchone()
                 if not instructor:
                     cursor.execute(
                         "INSERT INTO instructors (user_id, state, is_course_leader) VALUES (%s, %s, %s)",
-                        (user_id, instructor_state_mapping.get(row['ESTADO'], 'Activo'), row['ES_LIDER'] == 'SI')
+                        (
+                            user_id,
+                            instructor_state,
+                            str(row['ES_LIDER']).strip().upper() == 'SI'
+                        )
                     )
                     instructor_id = cursor.lastrowid
                 else:
@@ -161,8 +173,7 @@ def import_users(file_path):
                         )
 
             except Exception as e:
-                # Si hay un error, guardar la fila en la lista de filas fallidas
-                print(f"Error en la fila {index + 1}: {e}")
+                print(f"Error en la fila {index + 1} (Instructores): {e}")
                 failed_rows.append(row)
                 failed_indices.append(index)
 
@@ -174,11 +185,9 @@ def import_users(file_path):
             failed_df = pd.DataFrame(failed_rows)
             failed_file_path = file_path.replace(".xlsx", "_errores.xlsx")
 
-            # Guardar el DataFrame en un archivo Excel
             with pd.ExcelWriter(failed_file_path, engine='openpyxl') as writer:
                 failed_df.to_excel(writer, index=False, sheet_name='Errores')
 
-                # Aplicar estilo de fondo rojizo a las celdas con errores
                 workbook = writer.book
                 worksheet = writer.sheets['Errores']
                 red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
@@ -207,5 +216,5 @@ if __name__ == "__main__":
         print("Uso: python3 import_users.py <ruta_al_archivo>")
         sys.exit(1)
 
-    file_path = sys.argv[1] 
+    file_path = sys.argv[1]
     import_users(file_path)
