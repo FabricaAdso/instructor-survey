@@ -15,6 +15,7 @@ use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Unit;
 use Spatie\LaravelPdf\Facades\Pdf;
 use App\Models\Survey;
+use Illuminate\Support\Facades\Log;
 
 use function Spatie\LaravelPdf\Support\pdf;
 

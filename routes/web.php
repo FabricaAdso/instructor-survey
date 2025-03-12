@@ -22,7 +22,7 @@ Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verificatio
 Route::middleware(['auth:apprentice', 'code.verified'])->group(function () {
 
     Route::get('/survey/{apprenticeId}/{surveyId}', [SurveyController::class, 'showSurvey'])->name('survey.show');
-    Route::post('/survey/{id}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
+    Route::post('/survey/{apprenticeId}/{surveyId}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
     Route::get('/survey/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 
     Route::post('/logout/apprentice', [AuthController::class, 'logoutApprentice'])->name('logout.apprentice');

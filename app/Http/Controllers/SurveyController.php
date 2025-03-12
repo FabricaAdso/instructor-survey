@@ -9,48 +9,29 @@ use Illuminate\Support\Facades\Auth;
 class SurveyController extends Controller
 {
     public function showSurvey($apprenticeId, $surveyId)
-    {
-        $survey = Survey::with('questions')->find($surveyId);
-        $user = Auth::user();
+{
+    $survey = Survey::with('questions')->find($surveyId);
+    $user = Auth::user();
 
-        if (!$user->apprentice || !$user->apprentice->course) {
-            abort(403, 'No estás inscrito en un curso válido.');
-        }
-
-        $instructors = $user->apprentice->course->instructors()->with('user')->get();
-
-        return view('survey.form', compact('survey', 'instructors'));
+    if (!$user->apprentice || !$user->apprentice->course) {
+        abort(403, 'No estás inscrito en un curso válido.');
     }
 
-    public function storeAnswers(Request $request, $surveyId)
-    {
-        $data = $request->validate([
-            'answers' => 'required|array',
-            'answers.*' => 'required|string',
-            'instructor_id' => 'required|exists:instructors,id',
-        ]);
+    $instructors = $user->apprentice->course->instructors()->with('user')->get();
 
-        $user = Auth::user();
+    $questionsCopy = $survey->questions->toBase();
+    $closedQuestions = $questionsCopy->take(20);
+    $openQuestions = $questionsCopy->slice(20);
 
-        if (!$user->course) {
-            return redirect()->route('survey.form', ['apprenticeId' => $user->apprentice->id, 'surveyId' => $surveyId])
-                            ->withErrors(['error' => 'No estás inscrito en un curso válido.']);
-        }
-
-        $course = $user->course;
-
-        foreach ($data['answers'] as $questionId => $answer) {
-            Answer::create([
-                'qualification' => $answer ?? null,
-                'apprentice_id' => $user->apprentice->id,
-                'question_id' => $questionId,
-                'instructor_id' => $data['instructor_id'],
-                'course_id' => $course->id,
-            ]);
-        }
-
-        return redirect()->route('survey.complete')->with('success', 'Tus respuestas han sido guardadas correctamente');
+    $pageSizes = [6, 4, 6, 4];
+    $pages = [];
+    foreach ($pageSizes as $size) {
+        $pages[] = $closedQuestions->splice(0, $size);
     }
+
+    return view('survey.form', compact('survey', 'instructors', 'pages', 'openQuestions', 'user'));
+}
+
 
     public function submitSurvey(Request $request, $surveyId)
     {

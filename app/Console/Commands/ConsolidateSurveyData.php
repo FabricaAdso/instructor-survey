@@ -34,8 +34,9 @@ class ConsolidateSurveyData extends Command
                     ->get();
 
                 $totalResponses = $answers->count();
-                $averageQualification = $answers->avg('qualification');
-
+                $averageQualification = $answers->avg(function($answer) {
+                    return (float) $answer->qualification;
+                });
                 // Guardar los datos consolidados en la tabla survey_summaries
                 SurveySummary::create([
                     'instructor_id' => $instructor->instructor_id,

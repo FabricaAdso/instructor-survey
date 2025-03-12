@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Encuestas Cerradas</title>
@@ -108,11 +107,185 @@
         tr:hover {
             background-color: #e0f7fa;
         }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #388E3C;
+            color: #fff;
+            font-size: 1.1rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-top: 16px;
+            border: 2px solid #2E7D32;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+        }
+
+        .pagination li {
+            margin: 0 4px;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: inline-block;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #38a901;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #38a901;
+            color: white;
+            border-color: #38a901;
+        }
+
+        .pagination .active span {
+            background-color: #38a901;
+            color: white;
+            border-color: #38a901;
+        }
+
+        .pagination .disabled span {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .Search {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .Search form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: space-between;
+        }
+
+        .Search form>div {
+            flex: 1 1 100%;
+            display: flex;
+            gap: 16px;
+            flex-direction:
+        }
+
+        .Search form>div:nth-child(1) {
+            justify-content: flex-start;
+        }
+
+        .Search form>div:nth-child(2) {
+            justify-content: flex-start;
+        }
+
+        .Search form>div:nth-child(3) {
+            justify-content: flex-end;
+        }
+
+        .Search form div>div {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+        }
+
+        .Search form label {
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .Search form input,
+        {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        min-width: 100px;
+        max-width: 400PX;
+        }
+
+        .Search form select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 200px;
+            max-width: 400PX;
+        }
+
+        .Search form button {
+            padding: 10px 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .Search form button:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 500px) {
+            .Search form>div {
+                flex-direction: column;
+            }
+        }
+
+        .search-wrapper {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .search-wrapper>div {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .averages-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .averages-container>div {
+            flex: 0 0 100px;
+        }
+        .small-input {
+            width: 100%;
+        }
     </style>
 </head>
 
+
+
 <body>
+
     @include('admin.menu.header')
+
     <div class="container">
         <div style="display: flex; justify-content: space-between">
             <h2 class="tittle-close">Reporte de Encuestas Cerradas</h2>
@@ -124,6 +297,7 @@
                     class="btn">Descargar PDFs Filtrados</a>
             </div>
         </div>
+
         <div class="Search">
             <form method="GET" action="{{ route('reportsClose') }}">
                 <div class="search-wrapper">
@@ -143,6 +317,20 @@
                         <input placeholder="Nombre o documento" type="text" name="instructor_search"
                             id="instructor_search" value="{{ request('instructor_search') }}">
                     </div>
+                    <div class="averages-container">
+                        <div>
+                            <label for="min_average"></label>
+                            <input placeholder="Promedio Mínimo" type="number" step="0.01" name="min_average"
+                                id="min_average" value="{{ request('min_average') }}" onblur="formatDecimal(this)"
+                                class="small-input">
+                        </div>
+                        <div>
+                            <label for="max_average"></label>
+                            <input placeholder="Promedio Máximo" type="number" step="0.01" name="max_average"
+                                id="max_average" value="{{ request('max_average') }}" onblur="formatDecimal(this)"
+                                class="small-input">
+                        </div>
+                    </div>
                 </div>
                 <div style="display: flex; justify-content:flex-end">
                     <button type="submit">Filtrar</button>
@@ -151,6 +339,18 @@
                 </div>
             </form>
         </div>
+
+        <script>
+            function formatDecimal(input) {
+                if (input.value !== '') {
+                    let num = parseFloat(input.value);
+                    if (!isNaN(num)) {
+                        input.value = num.toFixed(2);
+                    }
+                }
+            }
+        </script>
+
         <table>
             <thead>
                 <tr>
@@ -184,7 +384,99 @@
                 @endforeach
             </tbody>
         </table>
+
+        <div class="pagination-wrapper">
+            <ul class="pagination">
+                @if ($summaries->onFirstPage())
+                    <li class="disabled"><span>Anterior</span></li>
+                @else
+                    <li><a href="{{ $summaries->previousPageUrl() }}">Anterior</a></li>
+                @endif
+                @php
+                    $currentPage = $summaries->currentPage();
+                    $lastPage = $summaries->lastPage();
+                    $maxPages = 5;
+                    $startPage = max(1, $currentPage - floor($maxPages / 2));
+                    $endPage = $startPage + $maxPages - 1;
+                    if ($endPage > $lastPage) {
+                        $endPage = $lastPage;
+                        $startPage = max(1, $endPage - $maxPages + 1);
+                    }
+                @endphp
+                @if ($startPage > 1)
+                    <li><a href="{{ $summaries->url(1) }}">1</a></li>
+                    @if ($startPage > 2)
+                        <li class="disabled"><span>...</span></li>
+                    @endif
+                @endif
+                @for ($page = $startPage; $page <= $endPage; $page++)
+                    @if ($page == $currentPage)
+                        <li class="active"><span>{{ $page }}</span></li>
+                    @else
+                        <li><a href="{{ $summaries->url($page) }}">{{ $page }}</a></li>
+                    @endif
+                @endfor
+                @if ($endPage < $lastPage)
+                    @if ($endPage < $lastPage - 1)
+                        <li class="disabled"><span>...</span></li>
+                    @endif
+                    <li><a href="{{ $summaries->url($lastPage) }}">{{ $lastPage }}</a></li>
+                @endif
+                @if ($summaries->hasMorePages())
+                    <li><a href="{{ $summaries->nextPageUrl() }}">Siguiente</a></li>
+                @else
+                    <li class="disabled"><span>Siguiente</span></li>
+                @endif
+            </ul>
+        </div>
     </div>
+    <script>
+        document.getElementById('survey_identifier').addEventListener('change', function() {
+
+            var surveyIdentifier = this.value;
+
+            var instructorSelect = document.getElementById('instructor_id');
+
+            if (!instructorSelect) return; // Si no existe, no hace nada.
+
+            var url = "{{ route('api.instructors') }}" + "?survey_identifier=" + encodeURIComponent(
+
+                surveyIdentifier);
+
+            fetch(url)
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    instructorSelect.innerHTML = '<option value="">Todos</option>';
+
+                    data.forEach(function(inst) {
+
+                        var option = document.createElement('option');
+
+                        option.value = inst.id;
+
+                        option.text = inst.name;
+
+                        instructorSelect.appendChild(option);
+
+                    });
+
+                })
+
+                .catch(error => {
+
+                    console.error("Error al obtener los instructores:", error);
+
+                });
+
+        });
+
+    </script>
+
 </body>
+
+
 
 </html>
