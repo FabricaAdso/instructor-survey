@@ -326,9 +326,12 @@
                             <button @if (!$instructor->hasGeneralAnswers) disabled @endif
                                 onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
                                 class="btn"
-                                style="@if (!$instructor->hasGeneralAnswers) background-color: #D1D5DB; color: #fff; cursor: not-allowed; @endif">
+                                style="background-color: {{ $instructor->hasGeneralAnswers ? '#38a901' : '#D1D5DB' }};
+         color: #fff;
+         cursor: {{ $instructor->hasGeneralAnswers ? 'pointer' : 'not-allowed' }};">
                                 Reporte General
                             </button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -385,22 +388,22 @@
                     <h2>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h2>
                     <div style="margin-bottom: 16px;">
                         @foreach ($instructor->courses as $course)
-                            @if ($course->program)
-                                <button style="margin-bottom: 8px; width: 100%;" class="btn">
-                                    <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
-                                        style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
-                                        {{ $course->code }}
-                                    </a>
-                                </button>
-                            @else
-                                <button disabled style="margin-bottom: 8px; width: 100%;" class="cancel-button">
-                                    <a
-                                        style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
-                                        {{ $course->code }}
-                                    </a>
-                                </button>
-                            @endif
-                        @endforeach
+    @if ($course->program)
+        <button style="margin-bottom: 8px; width: 100%; background-color: {{ $course->hasAnswers ? '#38a901' : '#D1D5DB' }};" class="btn">
+            <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
+               style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
+                {{ $course->code }}
+            </a>
+        </button>
+    @else
+        <button disabled style="margin-bottom: 8px; width: 100%; background-color: #D1D5DB;" class="cancel-button">
+            <a style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
+                {{ $course->code }}
+            </a>
+        </button>
+    @endif
+@endforeach
+
                     </div>
                     <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button"
                         style="width: 100%;">Cerrar</button>

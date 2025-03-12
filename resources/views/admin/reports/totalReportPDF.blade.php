@@ -99,7 +99,7 @@
   <div class="details">
     <p><strong>Encuesta:</strong> {{ $surveyIdentifier }}</p>
     <p><strong>Instructor:</strong> {{ $instructor }}</p>
-    <p><strong>Fecha:</strong> {{ $fecha }}</p>
+    <p><strong>Fecha de cierre:</strong> {{ $fecha }}</p>
   </div>
 
   @php
