@@ -29,14 +29,16 @@ class ReportController extends Controller
         $isSurveyOpen = Course::where('is_survey_open', true)->exists();
         $instructors = Instructor::with([
             'user',
-            'courses' => function($query) {
-                $query->where('is_survey_open', true)
-                      ->with('program');
+            'coursesSurveyOpen' => function($query) {
+                $query->with('program');
             },
+            // Relación para el modal, sin filtro.
+            'courses'
         ])->paginate(10);
 
         return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
     }
+
 
 
 
@@ -82,6 +84,16 @@ class ReportController extends Controller
 
     return view('admin.menu.tableIndex', compact('instructors'));
 }
+
+// En el modelo Instructor.php
+public function getHasGeneralAnswersAttribute($id)
+{
+    // Ajusta la lógica según tu estructura de datos
+    return Answer::where('instructor_id', $this->$id)
+                 ->where('question_id', '>=', 21) // o la condición que defina "general"
+                 ->exists();
+}
+
 
 
     public function show($courseId, $instructorId, $programId)

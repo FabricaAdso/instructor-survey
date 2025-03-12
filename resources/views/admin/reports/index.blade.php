@@ -324,12 +324,13 @@
                              </button>
                          </td>
                          <td style="text-align: center;">
-                             <button @if (!$instructor->hasGeneralAnswers) disabled @endif
-                                 onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
-                                 class="btn"
-                                 style="@if (!$instructor->hasGeneralAnswers) background-color: #D1D5DB; color: #fff; cursor: not-allowed; @endif">
-                                 Reporte General
-                             </button>
+                            <button @if (!$instructor->hasGeneralAnswers) disabled @endif
+                                onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
+                                class="btn"
+                                style="@if (!$instructor->hasGeneralAnswers) background-color: #D1D5DB; color: #fff; cursor: not-allowed; @endif">
+                                Reporte General
+                            </button>
+
                          </td>
                      </tr>
                  @endforeach
@@ -380,33 +381,32 @@
              </ul>
          </div>
          @foreach ($instructors as $instructor)
-             <div id="modal-{{ $instructor->id }}" class="modal">
-                 <div class="modal-content">
-                     <h2>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h2>
-                     <div style="margin-bottom: 16px;">
-                         @foreach ($instructor->courses as $course)
-                             @if ($course->program)
-                                 <button style="margin-bottom: 8px; width: 100%;" class="btn">
-                                     <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
-                                         style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
-                                         {{ $course->code }}
-                                     </a>
-                                 </button>
-                             @else
-                                 <button disabled style="margin-bottom: 8px; width: 100%;" class="cancel-button">
-                                     <a
-                                         style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
-                                         {{ $course->code }}
-                                     </a>
-                                 </button>
-                             @endif
-                         @endforeach
-                     </div>
-                     <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button"
-                         style="width: 100%;">Cerrar</button>
+         <div id="modal-{{ $instructor->id }}" class="modal">
+             <div class="modal-content">
+                 <h2>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h2>
+                 <div style="margin-bottom: 16px;">
+                     @foreach ($instructor->courses as $course)
+                         @if ($course->program)
+                             <button style="margin-bottom: 8px; width: 100%;" class="btn">
+                                 <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
+                                     style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
+                                     {{ $course->code }}
+                                 </a>
+                             </button>
+                         @else
+                             <button disabled style="margin-bottom: 8px; width: 100%;" class="cancel-button">
+                                 <a style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
+                                     {{ $course->code }}
+                                 </a>
+                             </button>
+                         @endif
+                     @endforeach
                  </div>
+                 <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button" style="width: 100%;">Cerrar</button>
              </div>
-         @endforeach
+         </div>
+     @endforeach
+
          <div id="modal" class="modal">
              <div class="modal-content">
                  <button id="close-modal" class="modal-close">&times;</button>
@@ -415,7 +415,7 @@
                      enctype="multipart/form-data" class="modal-form">
                      @csrf
                      <label for="excel_file">Selecciona el archivo (.xlsx, .xls):</label>
-                     <input type="file" name="excel_file" id="excel_file" accept=".xlsx, .xls">
+                     <input type="file" name="file" id="file" accept=".xlsx, .xls">
                      <button type="submit" class="btn">Subir</button>
                  </form>
              </div>
