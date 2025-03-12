@@ -459,54 +459,60 @@
 
          //show ///////////////
          function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;  // Asegúrate de usar backticks aquí
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
-    }
+             const toast = document.createElement('div');
+             toast.className = `toast toast-${type}`; // Asegúrate de usar backticks aquí
+             toast.textContent = message;
+             document.body.appendChild(toast);
+             setTimeout(() => {
+                 toast.remove();
+             }, 3000);
+         }
 
-    // listiner ///////////////////
+         // listiner ///////////////////
          document.addEventListener('DOMContentLoaded', function() {
-        const toggleButton = document.getElementById('toggle-survey-status');
-        if (!toggleButton) return;
-        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
-            console.error('Error: No se encontró el token CSRF.');
-            return;
-        }
-        toggleButton.addEventListener('click', function() {
-            fetch('/admin/toggle-survey-status', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken.content,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.is_survey_open) {
-                    this.textContent = 'Cerrar Encuesta';
-                    this.classList.remove('survey-closed');
-                    this.classList.add('survey-open');
-                    showToast('Encuesta abierta', 'success');
-                } else {
-                    this.textContent = 'Abrir Encuesta';
-                    this.classList.remove('survey-open');
-                    this.classList.add('survey-closed');
-                    showToast('Encuesta cerrada', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error al actualizar la encuesta', 'error');
-            });
-        });
-    });
+             const toggleButton = document.getElementById('toggle-survey-status');
+             if (!toggleButton) return;
+             const csrfToken = document.querySelector('meta[name="csrf-token"]');
+             if (!csrfToken) {
+                 console.error('Error: No se encontró el token CSRF.');
+                 return;
+             }
+             toggleButton.addEventListener('click', function() {
+                 fetch('/admin/toggle-survey-status', {
+                         method: 'POST',
+                         headers: {
+                             'X-CSRF-TOKEN': csrfToken.content,
+                             'Content-Type': 'application/json'
+                         }
+                     })
+                     .then(response => response.json())
+                     .then(data => {
+                         if (data.is_survey_open) {
+                             toggleButton.textContent = 'Cerrar Encuesta';
+                             toggleButton.classList.remove('survey-closed');
+                             toggleButton.classList.add('survey-open');
+                             showToast('Encuesta abierta', 'success');
+                         } else {
+                             toggleButton.textContent = 'Abrir Encuesta';
+                             toggleButton.classList.remove('survey-open');
+                             toggleButton.classList.add('survey-closed');
+                             showToast('Encuesta cerrada', 'error');
+                         }
 
-
+                         // Llamada AJAX para actualizar el contenido de la tabla
+                         fetch('{{ route("admin.instructors") }}')
+                             .then(res => res.text())
+                             .then(html => {
+                                 document.querySelector('table tbody').innerHTML = html;
+                                 showToast('Tabla actualizada', 'success');
+                             });
+                     })
+                     .catch(error => {
+                         console.error('Error:', error);
+                         showToast('Error al actualizar la encuesta', 'error');
+                     });
+             });
+         });
      </script>
  </body>
 

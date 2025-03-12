@@ -57,6 +57,7 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
      ->name('reportsClose');
      Route::get('/descargar-pdf/{id}', [TotalReportController::class, 'totalpdf'])->name('totalreport');;
      Route::get('/descargar-todos-pdfs', [TotalReportController::class, 'downloadAllIndividualPDFs'])->name('totalreportpdf.all');
+     Route::get('/admin/instructors', [ReportController::class, 'instructorsTable'])->name('admin.instructors');
 
      Route::get('/api/instructors', [TotalReportController::class, 'getInstructorsBySurveyIdentifier'])->name('api.instructors');
 

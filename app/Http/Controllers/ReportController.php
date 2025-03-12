@@ -70,6 +70,20 @@ class ReportController extends Controller
         }
     }
 
+    public function instructorsTable()
+{
+    $instructors = Instructor::with([
+        'user',
+        'courses' => function($query) {
+            $query->where('is_survey_open', true)
+                  ->with('program');
+        },
+    ])->paginate(10);
+
+    return view('admin.menu.tableIndex', compact('instructors'));
+}
+
+
     public function show($courseId, $instructorId, $programId)
     {
         $course = Course::with('instructors')->find($courseId);

@@ -275,9 +275,11 @@
             flex: 0 0 100px;
         }
         .small-input {
-            width: 100%;
+            min-width: 120px;;
         }
     </style>
+
+
 </head>
 
 
@@ -301,7 +303,7 @@
         <div class="Search">
             <form method="GET" action="{{ route('reportsClose') }}">
                 <div class="search-wrapper">
-                    <div>
+                    <div style="display: contents">
                         <label for="survey_identifier">Cuestionario:</label>
                         <select name="survey_identifier" id="survey_identifier">
                             <option value="">Todos</option>
@@ -312,20 +314,20 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div style="display: contents">
                         <label for="instructor_search">Instructor:</label>
                         <input placeholder="Nombre o documento" type="text" name="instructor_search"
                             id="instructor_search" value="{{ request('instructor_search') }}">
                     </div>
-                    <div class="averages-container">
-                        <div>
+                    <div class="averages-container" style="display:contents">
+                        <div style="display:contents">
                             <label for="min_average"></label>
                             <input placeholder="Promedio Mínimo" type="number" step="0.01" name="min_average"
                                 id="min_average" value="{{ request('min_average') }}" onblur="formatDecimal(this)"
                                 class="small-input">
                         </div>
-                        <div>
-                            <label for="max_average"></label>
+                        <div style="display:contents">
+                            <label for="max_average" style="widht:100px"></label>
                             <input placeholder="Promedio Máximo" type="number" step="0.01" name="max_average"
                                 id="max_average" value="{{ request('max_average') }}" onblur="formatDecimal(this)"
                                 class="small-input">
