@@ -28,6 +28,11 @@ class Instructor extends Model
         return $this->belongsToMany(Course::class,'course_instructor');
     }
 
+    public function knowledgeNetwork ()
+    {
+        return $this->belongsTo(knowledgeNetwork::class);
+    }
+
     public function scopeIncluded(Builder $query)
     {
         if(empty($this->allowIncluded)||empty(request('included'))){

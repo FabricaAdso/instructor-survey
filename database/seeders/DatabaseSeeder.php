@@ -7,6 +7,7 @@ use App\Models\Program;
 use App\Models\Course;
 use App\Models\Apprentice;
 use App\Models\Instructor;
+use App\Models\knowledgeNetwork;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -27,6 +28,9 @@ class DatabaseSeeder extends Seeder
         // Crear cursos
         $course1 = Course::create(['code' => '001', 'program_id' => $program1->id, 'municipality_id' => 1]);
         $course2 = Course::create(['code' => '002', 'program_id' => $program2->id, 'municipality_id' => 1]);
+
+        // Crear Red de Conocimiento
+        $knowledgeNetwork1 = knowledgeNetwork::create(['name' => 'ADSO']);
 
         $user1 = User::create([
             'identity_document' => '1002958845',
@@ -60,7 +64,7 @@ class DatabaseSeeder extends Seeder
         $apprentice2 = Apprentice::create(['user_id' => $user2->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
 
         // Crear instructores
-        $instructor1 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => true]);
+        $instructor1 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => true, 'knowledge_network_id' => $knowledgeNetwork1->id]);
 
         // Asignar instructores a cursos
         DB::table('course_instructor')->insert([

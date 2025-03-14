@@ -137,6 +137,19 @@ def import_users(file_path):
                 else:
                     user_id = user[0]
 
+                # Insertar o actualizar la red de conocimiento
+                knowledge_network_name = row['RED_CONOCIMIENTO']
+                cursor.execute("SELECT id FROM knowledge_networks WHERE name = %s", (knowledge_network_name,))
+                knowledge_network = cursor.fetchone()
+                if not knowledge_network:
+                    cursor.execute(
+                        "INSERT INTO knowledge_networks (name) VALUES (%s)",
+                        (knowledge_network_name,)
+                    )
+                    knowledge_network_id = cursor.lastrowid
+                else:
+                    knowledge_network_id = knowledge_network[0]
+
                 # Procesar el estado del instructor
                 estado_instructor = str(row['ESTADO']).strip().upper()
                 instructor_state = instructor_state_mapping.get(estado_instructor, 'Activo')
@@ -146,11 +159,12 @@ def import_users(file_path):
                 instructor = cursor.fetchone()
                 if not instructor:
                     cursor.execute(
-                        "INSERT INTO instructors (user_id, state, is_course_leader) VALUES (%s, %s, %s)",
+                        "INSERT INTO instructors (user_id, state, is_course_leader, knowledge_network_id) VALUES (%s, %s, %s, %s)",
                         (
                             user_id,
                             instructor_state,
-                            str(row['ES_LIDER']).strip().upper() == 'SI'
+                            str(row['ES_LIDER']).strip().upper() == 'SI',
+                            knowledge_network_id
                         )
                     )
                     instructor_id = cursor.lastrowid
