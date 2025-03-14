@@ -7,7 +7,7 @@ use App\Models\Program;
 use App\Models\Course;
 use App\Models\Apprentice;
 use App\Models\Instructor;
-use App\Models\knowledgeNetwork;
+use App\Models\KnowledgeNetwork;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         $course2 = Course::create(['code' => '002', 'program_id' => $program2->id, 'municipality_id' => 1]);
 
         // Crear Red de Conocimiento
-        $knowledgeNetwork1 = knowledgeNetwork::create(['name' => 'ADSO']);
+        $knowledgeNetwork1 = KnowledgeNetwork::create(['name' => 'ADSO']);
 
         $user1 = User::create([
             'identity_document' => '1002958845',

@@ -30,7 +30,7 @@ class Instructor extends Model
 
     public function knowledgeNetwork ()
     {
-        return $this->belongsTo(knowledgeNetwork::class);
+        return $this->belongsTo(KnowledgeNetwork::class);
     }
 
     public function scopeIncluded(Builder $query)

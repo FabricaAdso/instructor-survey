@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class knowledgeNetwork extends Model
+class KnowledgeNetwork extends Model
 {
     public function instructors ()
     {
