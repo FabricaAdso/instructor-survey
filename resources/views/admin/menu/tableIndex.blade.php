@@ -4,18 +4,39 @@
             <td>{{ $instructor->user->identity_document }}</td>
             <td>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</td>
             <td style="text-align: center;">
-                <button onclick="openInstructorModal({{ $instructor->id }})" class="btn">
-                    Ver Fichas Asociadas
-                </button>
+                @php
+                    $hasAnyCourseData = $instructor->courses->contains(function($course) use ($instructor) {
+                        return $course->program && $instructor->answers->contains(function($answer) use ($course) {
+                            return $answer->course_id == $course->id;
+                        });
+                    });
+                @endphp
+                @if ($hasAnyCourseData)
+                    <button onclick="openInstructorModal({{ $instructor->id }})" class="btn">
+                        Ver Fichas Asociadas
+                    </button>
+                @else
+                    <button disabled class="btn-disabled">
+                        Ver Fichas Asociadas
+                    </button>
+                @endif
             </td>
             <td style="text-align: center;">
-                <button @if (!$instructor->hasGeneralAnswers) disabled @endif
-                    onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
-                    class="btn"
-                    style="@if (!$instructor->hasGeneralAnswers) background-color: #D1D5DB; color: #fff; cursor: not-allowed; @endif">
-                    Reporte General
-                </button>
+                @if ($instructor->hasGeneralAnswers)
+                    <button onclick="window.location.href='{{ route('reportsGeneral', $instructor->id) }}'"
+                            class="btn"
+                            style="background-color: #4CAF50; color: white;">
+                        Reporte General
+                    </button>
+                @else
+                    <button disabled class="btn-disabled"
+                            style="background-color: #cccccc; color: #666666;">
+                        Reporte General
+                    </button>
+                @endif
             </td>
+
+
         </tr>
     @endforeach
 </tbody>

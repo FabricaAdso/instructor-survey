@@ -49,20 +49,20 @@ class Instructor extends Model
         $query->with($relations);
     }
 
-
     public function getHasGeneralAnswersAttribute()
-{
-    return $this->answers()
-        ->whereIn('question_id', [21, 22])
-        ->whereNotNull('qualification')
-        ->where('qualification', '<>', '')
-        ->exists();
-}
+    {
+        return $this->answers()->whereHas('course', function($query) {
+            $query->where('is_survey_open', true);
+        })->exists();
+    }
+
 
 public function coursesSurveyOpen()
 {
     return $this->belongsToMany(Course::class, 'course_instructor')
                 ->where('is_survey_open', true);
 }
+
+
 
 }
