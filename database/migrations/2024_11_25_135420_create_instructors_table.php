@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('instructors', function (Blueprint $table) {
 
             $table->id();
-
-            $table->id();
             $table->enum('state',['Activo','Inactivo']);
             $table->boolean('is_course_leader')->default(false);
 

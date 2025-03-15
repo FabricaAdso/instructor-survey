@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Encuestas Cerradas</title>
@@ -274,8 +275,10 @@
         .averages-container>div {
             flex: 0 0 100px;
         }
+
         .small-input {
-            min-width: 120px;;
+            min-width: 120px;
+            ;
         }
     </style>
 
@@ -295,16 +298,28 @@
                 <a href="{{ route('totalreportpdf.all', [
                     'survey_identifier' => request('survey_identifier'),
                     'instructor_search' => request('instructor_search'),
+                    'knowledge_network_id' => request('knowledge_network_id'),
                 ]) }}"
-                    class="btn">Descargar PDFs Filtrados</a>
+                    class="btn">Descargar PDFs</a>
             </div>
+            <a href="{{ route('downloadExcel', [
+                'survey_identifier' => request('survey_identifier'),
+                'instructor_search' => request('instructor_search'),
+                'knowledge_network_id' => request('knowledge_network_id'),
+                'min_average' => request('min_average'),
+                'max_average' => request('max_average'),
+            ]) }}"
+                class="btn">
+                Descargar Excel
+            </a>
+
         </div>
 
         <div class="Search">
             <form method="GET" action="{{ route('reportsClose') }}">
                 <div class="search-wrapper">
                     <div style="display: contents">
-                        <label for="survey_identifier">Cuestionario:</label>
+                        <label for="survey_identifier">Formulario:</label>
                         <select name="survey_identifier" id="survey_identifier">
                             <option value="">Todos</option>
                             @foreach ($surveyIdentifiers as $identifier)
@@ -319,6 +334,14 @@
                         <input placeholder="Nombre o documento" type="text" name="instructor_search"
                             id="instructor_search" value="{{ request('instructor_search') }}">
                     </div>
+
+                    <div style="display: contents">
+                        <label for="knowledge_network_id">Area de conocimiento</label>
+                        <input placeholder="Área de conocimiento" type="text" name="knowledge_network_id"
+                            id="knowledgeNetworkId" value="{{ request('knowledge_network_id') }}">
+
+                    </div>
+
                     <div class="averages-container" style="display:contents">
                         <div style="display:contents">
                             <label for="min_average"></label>
@@ -377,6 +400,7 @@
                                 'id' => $summary->instructor_id,
                                 'survey_identifier' => $summary->survey_identifier,
                                 'instructor_search' => request('instructor_search'),
+                                'knowledge_network_id' => request('knowledge_network_id'),
                             ]) }}"
                                 style="color: #2E7D32; font-weight: bold; text-decoration: none;">
                                 Descargar PDF
@@ -474,7 +498,6 @@
                 });
 
         });
-
     </script>
 
 </body>

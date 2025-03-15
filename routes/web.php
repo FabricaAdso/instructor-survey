@@ -60,10 +60,10 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
      Route::get('/admin/instructors', [ReportController::class, 'instructorsTable'])->name('admin.instructors');
 
      Route::get('/api/instructors', [TotalReportController::class, 'getInstructorsBySurveyIdentifier'])->name('api.instructors');
+     Route::get('/descargar-excel', [TotalReportController::class, 'downloadExcel'])->name('downloadExcel');
 
     });
 
-Route::get('/totalreport', [TotalreportController::class, 'totalpdf'])->name('totalreportpdf');
 
 
 Route::fallback(function () {
