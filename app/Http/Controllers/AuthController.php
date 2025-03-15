@@ -33,6 +33,8 @@ class AuthController extends Controller {
                     ->first();
 
         if (!$user || !$user->is_superuser || !Hash::check($request->password, $user->password)) {
+            //dd($user, Hash::check($request->password, $user->password));
+
             return back()->withErrors(['error' => 'Credenciales incorrectas o no tienes permisos de administrador.']);
         }
 

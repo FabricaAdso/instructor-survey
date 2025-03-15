@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <title>Encuesta SENA</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100">
     <div class="flex flex-col lg:flex-row items-center justify-center min-h-screen bg-white">
         <div class="hidden w-2/5 h-full bg-cover lg:block">
@@ -16,8 +18,7 @@
         <div class="flex items-center justify-center w-full max-w-md p-8 bg-white rounded-lg shadow-md lg:w-3/5">
             <div class="w-full space-y-6">
                 <div class="flex justify-center">
-                    <img src="../img/logo-sena-verde-complementario-svg-2022.svg" alt="Logo SENA" class="w-20 h-20">
-                </div>
+                    @include('auth.logo') </div>
 
                 <h1 class="text-2xl font-bold text-center text-gray-700">Encuesta de Acompañamiento y Satisfacción</h1>
 
@@ -25,14 +26,21 @@
                 <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
                     @csrf
                     <div>
-                        <label for="identity_document" class="block text-sm font-medium text-gray-600">Documento de Identidad</label>
-                        <input type="number" id="identity_document" name="identity_document" placeholder="Ingresa tu documento" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none" required>
+                        <label for="identity_document" class="block text-sm font-medium text-gray-600">Documento de
+                            Identidad</label>
+                        <input type="number" id="identity_document" name="identity_document"
+                            placeholder="Ingresa tu documento"
+                            class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none"
+                            required>
                     </div>
                     <div>
                         <label for="course_code" class="block text-sm font-medium text-gray-600">Ficha</label>
-                        <input type="number" id="course_code" name="course_code" placeholder="Ingresa tu ficha" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none" required>
+                        <input type="number" id="course_code" name="course_code" placeholder="Ingresa tu ficha"
+                            class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none"
+                            required>
                     </div>
-                    <button type="submit" class="w-full px-4 py-2 text-white bg-[#38a901] rounded-lg hover:bg-green-600">
+                    <button type="submit"
+                        class="w-full px-4 py-2 text-white bg-[#38a901] rounded-lg hover:bg-green-600">
                         Enviar Código
                     </button>
                 </form>
@@ -45,7 +53,8 @@
                 @endif
 
                 <div class="text-center">
-                    <p class="text-sm text-gray-500">Ingresar como <a href="{{ route('login.admin') }}" class="text-green-500 hover:underline">Administrador</a></p>
+                    <p class="text-sm text-gray-500">Ingresar como <a href="{{ route('login.admin') }}"
+                            class="text-green-500 hover:underline">Instructor</a></p>
                 </div>
             </div>
         </div>
@@ -65,10 +74,14 @@
                 <input type="hidden" name="code" id="fullCode">
 
                 <div class="flex justify-center my-4 space-x-2">
-                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1" required>
-                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1" required>
-                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1" required>
-                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1" required>
+                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1"
+                        required>
+                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1"
+                        required>
+                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1"
+                        required>
+                    <input type="text" class="code-input w-12 h-12 text-center border rounded" maxlength="1"
+                        required>
                 </div>
 
                 <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Verificar</button>
@@ -137,7 +150,7 @@
         });
 
         // Enviar el formulario de inicio de sesión mediante AJAX
-        loginForm.addEventListener('submit', function (e) {
+        loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
             // Mostrar el modal de código inmediatamente
@@ -147,38 +160,38 @@
 
             // Enviar la solicitud al servidor en segundo plano
             fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Establecer el apprentice_id en el formulario de verificación
-                    apprenticeIdInput.value = data.apprentice_id;
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Establecer el apprentice_id en el formulario de verificación
+                        apprenticeIdInput.value = data.apprentice_id;
 
-                    // Mostrar el correo en el modal si está presente
-                    if (data.email) {
-                        emailMessage.textContent = `Correo: ${data.email}`;
+                        // Mostrar el correo en el modal si está presente
+                        if (data.email) {
+                            emailMessage.textContent = `Correo: ${data.email}`;
+                        } else {
+                            emailMessage.textContent = 'Correo no disponible';
+                        }
                     } else {
-                        emailMessage.textContent = 'Correo no disponible';
+                        // Cerrar el modal de código y mostrar el modal de error
+                        modal.classList.add('hidden');
+                        errorMessage.textContent = data.message || 'Error al enviar el código.';
+                        errorModal.classList.remove('hidden');
                     }
-                } else {
-                    // Cerrar el modal de código y mostrar el modal de error
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     modal.classList.add('hidden');
-                    errorMessage.textContent = data.message || 'Error al enviar el código.';
+                    errorMessage.textContent = 'Ocurrió un error. Por favor, inténtalo de nuevo.';
                     errorModal.classList.remove('hidden');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                modal.classList.add('hidden');
-                errorMessage.textContent = 'Ocurrió un error. Por favor, inténtalo de nuevo.';
-                errorModal.classList.remove('hidden');
-            });
+                });
         });
     </script>
 
@@ -194,11 +207,12 @@
             appearance: none;
         }
 
-         /* Estilos para el modal de error */
+        /* Estilos para el modal de error */
         #errorModal {
             z-index: 1000;
         }
     </style>
 
 </body>
+
 </html>

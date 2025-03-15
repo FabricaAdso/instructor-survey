@@ -1,342 +1,531 @@
-@php
-    $questionsCopy = $survey->questions->toBase();
-    $questionsChunked = $questionsCopy->splice(0, 20);
-    $chunkSizes = [6, 4];
-    $currentSizeIndex = 0;
-    $pageIndex = 1;
-@endphp
+<!DOCTYPE html>
+<html lang="es">
 
-<style>
-    .invalid {
-        position: relative;
-    }
-
-    .invalid ::before {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        content: "";
-        width: 25px;
-        height: 25px;
-        border-radius: 50%;
-
-        border: 2px solid #EF4444;
-    }
-</style>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-    function validateForm(event) {
-        let isValid = true;
-        const requiredFields = document.querySelectorAll('input[required], select[required], text[required]');
-
-        requiredFields.forEach(field => {
-            if (!field.checked && field.type === 'radio') {
-                const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
-                if (![...radioGroup].some(radio => radio.checked)) {
-                    isValid = false;
-                }
-            } else if (field.value.trim() === '') {
-                isValid = false;
-            }
-        });
-
-        if (!isValid) {
-            event.preventDefault();
-            document.getElementById('warning-message').classList.remove('hidden');
+<head>
+    <meta charset="UTF-8">
+    <title>Encuesta con Arrays de Preguntas y Tooltips Mejorados</title>
+    <style>
+        body {
+            padding: 15px;
+            background-color: #f3f4f6;
+            margin: 0;
+            font-family: sans-serif;
         }
-    }
-</script>
 
-<form action="{{ route('survey.submit', ['id' => $survey->id]) }}" method="POST"
-    class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
-    @csrf
+        form {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
 
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
 
-    <div class="max-w-4xl w-full bg-white shadow-lg rounded-lg p-6">
+        .warning-message {
+            background-color: #fdecea;
+            color: #b91c1c;
+            padding: 1rem;
+            border: 1px solid #fca5a5;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
 
-        <div id="warning-message" class="bg-yellow-300 text-yellow-800 p-4 rounded-md mb-6 hidden">
-            <strong>¡Atención!</strong> Aún te faltan campos por completar. Por favor, llena todos los campos antes de
-            continuar.
-        </div>
+        .page {
+            display: none;
+        }
 
-        <div x-data="{ page: 1 }">
+        .active {
+            display: block;
+        }
 
-            <div :class="{ 'hidden': page !== 1 }">
-                <div class="p-6 bg-white rounded-lg shadow-lg border border-gray-300">
-                    <h1
-                        class="text-3xl font-extrabold text-gray-800 mb-6 text-center shadow-md p-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg">
-                        ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN.</h1>
+        .card {
+            background-color: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
-                        Evaluar la satisfacción de los aprendices con respecto a la ejecución de la formación en la
-                        etapa lectiva,
-                        con el fin de identificar áreas de oportunidad para mejorar la calidad del proceso educativo y
-                        optimizar las
-                        metodologías, recursos y estrategias empleadas, garantizando que las necesidades de los
-                        aprendices sean atendidas
-                        y que el aprendizaje sea efectivo y de calidad. Los resultados de esta encuesta servirán como
-                        base para implementar
-                        acciones de mejora continua en los programas de formación.
-                    </p>
+        .title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: linear-gradient(to right, #34d399, #3b82f6);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-                    <div class="bg-green-50 p-4 rounded-md mb-6">
-                        <h2 class="text-xl font-semibold text-green-700 mb-2">Agradecemos su participación</h2>
-                        <p class="text-gray-700">
-                            EVALÚE de <strong>1 a 5</strong>, a los instructores acompañantes del proceso formativo,
-                            teniendo en cuenta
-                            la siguiente escala:
-                        </p>
-                    </div>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
 
-                    <div class="mt-2 text-sm text-gray-600">
-                        <ul class="list-disc pl-5">
-                            <li><strong>1: Muy insatisfecho / Muy en desacuerdo</strong> - La experiencia o aspecto
-                                evaluado no cumple
-                                en absoluto con mis expectativas.</li>
-                            <li><strong>2: Insatisfecho / En desacuerdo</strong> - La experiencia o aspecto evaluado no
-                                cumple completamente
-                                con mis expectativas, pero presenta algunos aspectos positivos.</li>
-                            <li><strong>3: Neutral / Ni acuerdo ni desacuerdo</strong> - No tengo una opinión clara o no
-                                me siento ni
-                                satisfecho ni insatisfecho con este aspecto.</li>
-                            <li><strong>4: Satisfecho / De acuerdo</strong> - La experiencia o aspecto evaluado cumple
-                                con mis expectativas
-                                y tiene algunos puntos destacados.</li>
-                            <li><strong>5: Muy satisfecho / Muy de acuerdo</strong> - La experiencia o aspecto evaluado
-                                supera ampliamente
-                                mis expectativas como aprendiz y es altamente satisfactorio.</li>
-                        </ul>
-                    </div>
+        table,
+        th,
+        td {
+            border: 1px solid #d1d5db;
+        }
 
+        th,
+        td {
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
 
-                </div>
+        th {
+            background-color: #f0fdf4;
+            color: #065f46;
+        }
 
+        td {
+            color: #374151;
+        }
+
+        .invalid {
+            position: relative;
+        }
+
+        .invalid::before {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            content: "";
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid #EF4444;
+            pointer-events: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .button-container-end {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-green {
+            background-color: #10b981;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        input[type="radio"] {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ef4444;
+            margin: 0 auto;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 3rem;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            color: #374151;
+        }
+
+        input[type="text"]::placeholder {
+            color: #9ca3af;
+        }
+
+        label {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 10;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        label:hover .tooltip,
+        label:focus-within .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <form
+        action="{{ route('survey.submit', ['surveyId' => $survey->id, 'apprenticeId' => Auth::user()->apprentice->id]) }}"
+        method="POST" aria-labelledby="form-title">
+        @csrf
+        <div class="container">
+            <div id="warning-message" class="warning-message" role="alert" aria-live="assertive">
+                <strong>¡Atención!</strong> Aún te faltan campos por completar. Por favor, llena todos los campos antes
+                de continuar.
             </div>
-
-            @php
-                // Define los títulos
-                $titles = [
-                    '',
-                    '1.	INTEGRALIDAD DEL INSTRUCTOR',
-                    '2.	PLANEACION DEL PROCEDIMIENTO DE EJECUCION DE LA FORMACION',
-                    '3.	EJECUCION DE LA FORMACION PROFESIONAL',
-                    '4. EVALUACIÓN',
-                ];
-            @endphp
-
-            @while ($questionsChunked->isNotEmpty())
-                @php
-                    $size = $chunkSizes[$currentSizeIndex];
-                    $chunk = $questionsChunked->splice(0, $size);
-                    $currentSizeIndex = ($currentSizeIndex + 1) % 2;
-                @endphp
-                @if ($chunk->isNotEmpty())
-                    <div :class="{ 'hidden': page !== {{ $pageIndex + 1 }}, 'show': page === {{ $pageIndex + 1 }} }">
-                        <h1
-                            class="text-3xl font-extrabold text-gray-800 mb-6 text-center shadow-md p-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg">
-                            {{ $titles[$pageIndex % count($titles)] }}
-                        </h1>
-                        <details class="mb-6 p-4 bg-white rounded-lg shadow-md border border-gray-300">
-                            <summary
-                                class="font-semibold bg-green-50 text-green-700 py-2 px-4 rounded-md cursor-pointer hover:bg-green-100 transition-all">
-                                Escala de Valoración
-                            </summary>
-                            <div class="mt-2 text-sm text-gray-700">
-                                <ul class="list-disc pl-5">
-                                    <li><strong>1: Muy insatisfecho / Muy en desacuerdo</strong></li>
-                                    <li><strong>2: Insatisfecho / En desacuerdo</strong></li>
-                                    <li><strong>3: Neutral / Ni de acuerdo ni desacuerdo</strong></li>
-                                    <li><strong>4: Satisfecho / De acuerdo</strong></li>
-                                    <li><strong>5: Muy satisfecho / Muy de acuerdo</strong></li>
-                                </ul>
-                            </div>
-                        </details>
-
-                        <div id="question-container" class="overflow-x-auto p-4">
-                            <div id="error-container" class="hidden text-red-600 mt-2" aria-live="polite">
-                                Debes calificar a todos antes de continuar.
-                            </div>
-                            @foreach ($chunk as $question)
-                                <div class="mb-4 p-4 bg-white shadow-lg rounded-lg border border-gray-300">
-                                    <h4 class="text-2xl font-semibold text-green-700 mb-4">{{ $question->question }}
-                                    </h4>
-
-                                    <table class="min-w-full table-auto border-collapse border border-gray-300">
-                                        <thead>
-                                            <tr class="bg-green-50">
-                                                <th class="px-4 py-2 text-left font-medium text-green-700 w-1/2">
-                                                    Instructor</th>
-                                                @foreach ($question->options as $option)
-                                                    <th class="px-2 py-2 text-center text-sm text-green-700 w-[10%]">
-                                                        {{ $option }}</th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach ($instructors as $instructor)
-                                            <tr class="border-b hover:bg-green-50">
-                                                <td class="px-4 py-3 text-sm text-gray-800 w-1/2">
-                                                    <strong>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</strong>
-                                                </td>
-                                                @foreach ($question->options as $option)
-                                                    <td class="px-2 py-2 text-center">
-                                                        <input type="radio" class="h-6 w-6 border border-red-500"
-                                                            name="answers[{{ $instructor->id }}][{{ $question->id }}]"
-                                                            value="{{ $option }}"
-                                                            id="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
-                                                            required tabindex="3">
-                                                        <label
-                                                            for="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
-                                                            class="sr-only">Seleccionar opción {{ $option }}</label>
-                                                    </td>
-                                                @endforeach
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endforeach
+            <div id="survey-container">
+                <div class="page active" data-page="1">
+                    <div class="card">
+                        <h1 id="form-title" class="title">ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA –
+                            EJECUCIÓN DE LA FORMACIÓN.</h1>
+                        <p style="font-size: 1rem; color: #374151; line-height: 1.5; margin-bottom: 1rem;">
+                            Evaluar la satisfacción de los aprendices con respecto a la ejecución de la formación en la
+                            etapa lectiva, con el fin de identificar áreas de oportunidad para mejorar la calidad del
+                            proceso educativo y optimizar las metodologías, recursos y estrategias empleadas.
+                        </p>
+                        <div class="card" style="background-color: #d1fae5; margin-bottom: 1rem; padding: 1rem;">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">
+                                Agradecemos su participación</h2>
+                            <p style="font-size: 0.875rem; color: #374151;">
+                                EVALÚE de <strong>1 a 5</strong> a los instructores acompañantes del proceso formativo,
+                                teniendo en cuenta la siguiente escala:
+                            </p>
+                        </div>
+                        <div style="font-size: 0.875rem; color: #4b5563;">
+                            <ul style="list-style-type: disc; padding-left: 1.25rem;">
+                                <li><strong>1: Muy insatisfecho / Muy en desacuerdo</strong></li>
+                                <li><strong>2: Insatisfecho / En desacuerdo</strong></li>
+                                <li><strong>3: Neutral / Ni de acuerdo ni desacuerdo</strong></li>
+                                <li><strong>4: Satisfecho / De acuerdo</strong></li>
+                                <li><strong>5: Muy satisfecho / Muy de acuerdo</strong></li>
+                            </ul>
                         </div>
                     </div>
-                @endif
-                @php
-                    $pageIndex++;
-                @endphp
-            @endwhile
-            <div :class="{ 'hidden': page !== 6 }">
-                <h1
-                    class="text-3xl font-extrabold text-gray-800 mb-6 text-center shadow-md p-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg">
-                    Preguntas Abiertas</h1>
-                <div class="mb-6 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg text-center">
-                    <p class="text-sm font-medium">
-                        Nota: Todas las preguntas en esta sección son opcionales. Responde solo si deseas compartir tu
-                        opinión.
-                    </p>
                 </div>
-                <div id="question-container">
-                    @foreach ($survey->questions->slice(20, 2) as $question)
-                        <div class="mb-4 p-4 bg-white shadow-lg rounded-lg border border-gray-300">
-                            <h4 class="text-2xl font-semibold text-green-700 mb-4">{{ $question->question }}</h4>
+
+                <div class="page" data-page="2">
+                    <h2 class="title" style="margin-bottom: 1rem;">1. INTEGRALIDAD DEL INSTRUCTOR</h2>
+                    <div id="page2-questions"></div>
+                </div>
+                <div class="page" data-page="3">
+                    <h2 class="title" style="margin-bottom: 1rem;">2. PLANEACIÓN DEL PROCEDIMIENTO DE EJECUCIÓN</h2>
+                    <div id="page3-questions"></div>
+                </div>
+                <div class="page" data-page="4">
+                    <h2 class="title" style="margin-bottom: 1rem;">3. EJECUCIÓN DE LA FORMACIÓN PROFESIONAL</h2>
+                    <div id="page4-questions"></div>
+                </div>
+                <div class="page" data-page="5">
+                    <h2 class="title" style="margin-bottom: 1rem;">4. EVALUACIÓN</h2>
+                    <div id="page5-questions"></div>
+                </div>
+                <div class="page" data-page="6">
+                    <h2 class="title" style="margin-bottom: 1rem;">Preguntas Abiertas</h2>
+                    @foreach ($openQuestions as $question)
+                        <div class="card">
+                            <p style="font-size: 1.5rem; font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">
+                                {{ $question->question }}
+                            </p>
                             @foreach ($instructors as $instructor)
-                                <div class="mb-6">
-                                    <p class="text-sm font-semibold text-gray-800"><strong>Instructor:
-                                            {{ $instructor->name }} {{ $instructor->last_name }}
-                                        </strong></p>
-                                    <div class="w-full text-sm text-left border border-gray-300 rounded-lg p-4">
-                                        @if ($question->type == 'radio')
-                                            @foreach ($question->options as $option)
-                                                <div class="flex items-center space-x-3 mb-2">
-                                                    <input type="radio"
-                                                        class="h-5 w-5 text-green-600 border-gray-300 focus:ring-green-500"
-                                                        name="answers[{{ $instructor->id }}][{{ $question->id }}]"
-                                                        value="{{ $option }}"
-                                                        id="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}">
-                                                    <label
-                                                        for="question-{{ $question->id }}-instructor-{{ $instructor->id }}-{{ $option }}"
-                                                        class="text-gray-700">{{ $option }}</label>
-                                                </div>
-                                            @endforeach
-                                        @elseif($question->type == 'text')
-                                            <input type="text" maxlength="100"
-                                                name="answers[{{ $instructor->id }}][{{ $question->id }}]"
-                                                id="question-{{ $question->id }}-instructor-{{ $instructor->id }}"
-                                                class="w-full h-12 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500  resize-none text-gray-700 placeholder-gray-400 text-start">
-                                            </input>
-                                        @endif
-                                    </div>
+                                <div class="mb-4">
+                                    <p class="text-sm font-semibold text-gray-800">
+                                        <strong>Instructor: {{ $instructor->user->name }}
+                                            {{ $instructor->user->last_name }}</strong>
+                                    </p>
+                                    <input type="text" name="answers[{{ $instructor->id }}][{{ $question->id }}]"
+                                        maxlength="100" placeholder="Tu respuesta">
                                 </div>
                             @endforeach
                         </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="flex justify-between mt-6">
-                <button type="button" @click="if (validatePage(page)) { page--; scrollToTop(); }" x-show="page > 1"
-                    class="bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-blue-500 hover:to-blue-700">
-                    Anterior
-                </button>
-                <button type="button" @click="if (validatePage(page)) { page++; scrollToTop(); }" x-show="page < 6"
-                    class="bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-blue-500 hover:to-blue-700 ml-auto"
-                    aria-label="Volver a la página anterior">
-                    Siguiente
-                </button>
+
             </div>
 
-            <div class="flex justify-end mt-6" x-show="page === 6">
-                <button type="submit"
-                    class="bg-gradient-to-r from-green-500 to-green-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:from-green-600 hover:to-green-800"
-                    aria-label="Ir a la siguiente página">Enviar Encuesta</button>
+            <div class="button-container">
+                <button type="button" id="prevBtn" class="btn" aria-label="Botón Anterior" tabindex="0"
+                    style="display: none;">Anterior</button>
+                <button type="button" id="nextBtn" class="btn" aria-label="Botón Siguiente"
+                    tabindex="0">Siguiente</button>
             </div>
-
+            <div class="button-container-end" id="submitContainer" style="display: none;">
+                <button type="submit" class="btn btn-green" aria-label="Enviar Encuesta" tabindex="0">Enviar
+                    Encuesta</button>
+            </div>
         </div>
+    </form>
 
+    <script>
+        const scaleDescriptions = [
+            "Muy insatisfecho / Muy en desacuerdo",
+            "Insatisfecho / En desacuerdo",
+            "Neutral / Ni de acuerdo ni desacuerdo",
+            "Satisfecho / De acuerdo",
+            "Muy satisfecho / Muy de acuerdo"
+        ];
 
+        const shortScaleDescrition = [
+            "Muy instisfecho",
+            "Insatisfecho",
+            "Neutral",
+            "Satisfecho",
+            "Muy satisfecho"
+        ]
 
-        <script>
-            function validatePage(currentPage) {
-                var pagina = document.querySelectorAll('.show');
-                var valid = true;
+        const questionsSection2 = [
+            "Presentación personal",
+            "Relaciones interpersonales",
+            "Conocimiento general del área",
+            "Actitud de servicio",
+            "Lenguaje claro y sencillo",
+            "Puntualidad"
+        ];
+        const questionsSection3 = [
+            "Establece el plan de trabajo concertado",
+            "Socializa el programa de formación",
+            "Socializa el proyecto formativo",
+            "Socializa las guías de aprendizaje"
+        ];
+        const questionsSection4 = [
+            "Propone ejemplos o ejercicios que vinculan los resultados de aprendizaje con la práctica real",
+            "Orienta de manera clara los conocimientos y procesos asociados con la competencia",
+            "Propicia el desarrollo de un ambiente de respeto y confianza",
+            "Estimula la reflexión sobre la manera que aprende",
+            "Presenta y expone las sesiones de formación de manera organizada y estructurada",
+            "Utiliza diversas estrategias, métodos y materiales"
+        ];
+        const questionsSection5 = [
+            "Identifica los conocimientos y habilidades de los aprendices al inicio de cada competencia",
+            "Aplica técnicas e instrumentos de evaluación de acuerdo con la evidencia requerida",
+            "Da a conocer los resultados de la evaluación en el plazo establecido",
+            "Retroalimenta con el aprendiz las valoraciones realizadas"
+        ];
 
-                var errorContainer = document.getElementById('error-container');
+        const totalPages = 6;
+        let currentPage = 1;
 
-
-                pagina.forEach(function(page) {
-                    var tables = page.querySelectorAll('table');
-                    tables.forEach(function(table) {
-                        var tbody = table.querySelector('tbody');
-                        if (tbody) {
-                            var rows = tbody.querySelectorAll('tr');
-                            rows.forEach(function(row) {
-                                const tdsWithRadios = row.querySelectorAll('td input[type="radio"]');
-                                tdsWithRadios.forEach(function(radio) {
-                                    radio.addEventListener('change', function() {
-                                        const tds = row.querySelectorAll('td');
-                                        tds.forEach(function(td) {
-                                            td.classList.remove("invalid");
-                                        });
-                                    });
-                                });
-                                const isChecked = Array.from(tdsWithRadios).some(input => input
-                                    .checked);
-                                if (!isChecked) {
-                                    valid = false;
-
-                                    tdsWithRadios.forEach(function(input) {
-                                        input.closest('td').classList.add("invalid");
-
-                                    });
-                                } else {
-                                    tdsWithRadios.forEach(function(input) {
-                                        input.closest('td').classList.remove("invalid");
-                                    });
-                                }
-                            });
-                        }
-                    });
-                });
-
-                if (!valid) {
-                    errorContainer.classList.remove("hidden");
-                    scrollToTop();
-                } else {
-                    errorContainer.classList.add("hidden");
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(pageDiv => {
+                pageDiv.classList.remove('active');
+                if (parseInt(pageDiv.getAttribute('data-page')) === page) {
+                    pageDiv.classList.add('active');
                 }
-                return valid;
-            }
+            });
+            document.getElementById('prevBtn').style.display = (page > 1) ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').style.display = (page < totalPages) ? 'inline-block' : 'none';
+            document.getElementById('submitContainer').style.display = (page === totalPages) ? 'flex' : 'none';
+        }
 
-            function scrollToTop() {
+        var instructors = @json($instructors);
+
+        function generateQuestionsFromArray(containerId, radioNamePrefix, questionsArray, startNumber) {
+            const container = document.getElementById(containerId);
+            questionsArray.forEach((questionText, index) => {
+                const questionNumber = startNumber + index;
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const p = document.createElement('p');
+                p.style.fontSize = '1.5rem';
+                p.style.fontWeight = '600';
+                p.style.color = '#065f46';
+                p.style.marginBottom = '0.5rem';
+                p.textContent = questionNumber + '. ' + questionText;
+                card.appendChild(p);
+
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const trHead = document.createElement('tr');
+                const thEmpty = document.createElement('th');
+                thEmpty.style.textAlign = 'left';
+                thEmpty.style.width = '50%';
+                thEmpty.textContent = 'Instructor';
+                trHead.appendChild(thEmpty);
+                for (let j = 1; j <= 5; j++) {
+                    const th = document.createElement('th');
+                    th.textContent = j;
+                    th.style.width = '10%';
+                    trHead.appendChild(th);
+                }
+                thead.appendChild(trHead);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                instructors.forEach(instructor => {
+                    const trBody = document.createElement('tr');
+                    const tdName = document.createElement('td');
+                    tdName.style.textAlign = 'left';
+                    tdName.textContent = instructor.user.name + " " + instructor.user
+                        .last_name;
+                    trBody.appendChild(tdName);
+                    for (let j = 1; j <= 5; j++) {
+                        const td = document.createElement('td');
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        label.style.textAlign = 'center';
+                        label.style.position = 'relative';
+                        const input = document.createElement('input');
+                        input.type = 'radio';
+                        input.name = "answers[" + instructor.id + "][" + (startNumber + index) + "]";
+                        input.value = j;
+                        input.required = true;
+                        input.setAttribute('aria-invalid', 'false');
+                        input.setAttribute('title', scaleDescriptions[j - 1]);
+                        label.appendChild(input);
+                        const tooltip = document.createElement('span');
+                        tooltip.className = 'tooltip';
+                        tooltip.textContent = j + ': ' + shortScaleDescrition[j - 1];
+                        label.appendChild(tooltip);
+                        td.appendChild(label);
+                        trBody.appendChild(td);
+                    }
+                    tbody.appendChild(trBody);
+                });
+                table.appendChild(tbody);
+                card.appendChild(table);
+                container.appendChild(card);
+            });
+        }
+
+        generateQuestionsFromArray('page2-questions', 'p2_q_', questionsSection2, 1);
+        generateQuestionsFromArray('page3-questions', 'p3_q_', questionsSection3, 7);
+        generateQuestionsFromArray('page4-questions', 'p4_q_', questionsSection4, 11);
+        generateQuestionsFromArray('page5-questions', 'p5_q_', questionsSection5, 17);
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
+            }
+        });
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (validatePage(currentPage)) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+
+        function validatePage(page) {
+            let valid = true;
+            const warning = document.getElementById('warning-message');
+            const pageDiv = document.querySelector('.page.active');
+            const tables = pageDiv.querySelectorAll('table');
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const radios = row.querySelectorAll('input[type="radio"]');
+                    if (radios.length > 0) {
+                        let checked = false;
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                checked = true;
+                                radio.setAttribute('aria-invalid', 'false');
+                            }
+                        });
+                        if (!checked) {
+                            valid = false;
+                            radios.forEach(radio => {
+                                radio.parentElement.classList.add('invalid');
+                                radio.setAttribute('aria-invalid', 'true');
+                            });
+                        } else {
+                            radios.forEach(radio => {
+                                radio.parentElement.classList.remove('invalid');
+                            });
+                        }
+                    }
+                });
+            });
+            if (!valid) {
+                warning.style.display = 'block';
+                const firstInvalid = pageDiv.querySelector('.invalid input[type="radio"]');
+                if (firstInvalid) {
+                    const card = firstInvalid.closest('.card');
+                    if (card) {
+                        card.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                }
+
+
 
             }
+            warning.style.display = 'none';
+            return true;
+        }
 
-            document.getElementById("error-container").classList.remove("hidden");
-        </script>
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        document.getElementById('survey-container').addEventListener('change', function(event) {
+            if (event.target.type === 'radio') {
+                const radios = document.querySelectorAll('input[name="' + event.target.name + '"]');
+                radios.forEach(radio => {
+                    radio.parentElement.classList.remove('invalid');
+                    radio.setAttribute('aria-invalid', 'false');
+                });
+            }
+        });
 
-    </div>
-</form>
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage(currentPage);
+        });
+    </script>
+</body>
+
+</html>

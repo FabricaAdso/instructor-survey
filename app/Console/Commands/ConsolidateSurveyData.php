@@ -16,6 +16,8 @@ class ConsolidateSurveyData extends Command
     {
         $closureDate = $this->argument('closure_date');
 
+        $closureDate = $this->argument('closure_date');
+
         // Obtener todos los instructores únicos que tienen respuestas
         $instructors = Answer::select('instructor_id')->distinct()->get();
 

@@ -17,4 +17,17 @@ class SurveySummary extends Model
         'total_responses',
         'survey_identifier',
     ];
+
+    public function instructor()
+    {
+        return $this-> belongsto(Instructor::class);
+    }
+    public function course()
+    {
+        return $this-> belongsto(Course::class);
+    }
+    public function question()
+    {
+        return $this-> belongsto(Question::class);
+    }
 }

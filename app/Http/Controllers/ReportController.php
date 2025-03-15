@@ -14,38 +14,34 @@ use Illuminate\Support\Collection;
 use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Unit;
 use Spatie\LaravelPdf\Facades\Pdf;
+use App\Models\Survey;
+use Illuminate\Support\Facades\Log;
 
 use function Spatie\LaravelPdf\Support\pdf;
 
 
 class ReportController extends Controller
 {
-    // public function admin()
-    // {
-    //     return view('admin.admin');
-    // }
+
 
     public function index()
     {
-        $instructors = Instructor::with(['user', 'courses.program'])
-            ->leftJoin('course_instructor', 'course_instructor.instructor_id', '=', 'instructors.id')
-            ->leftJoin('courses', 'courses.id', '=', 'course_instructor.course_id')
-            ->leftJoin('answers as instructor_answers', 'instructors.id', '=', 'instructor_answers.instructor_id')
-            ->leftJoin('answers as course_answers', 'courses.id', '=', 'course_answers.course_id')
-            ->select('instructors.*')
-            ->groupBy('instructors.id')
-            ->selectRaw('EXISTS(SELECT 1 FROM answers WHERE answers.instructor_id = instructors.id) as hasGeneralAnswers')
-            ->with(['courses' => function($query) {
-                $query->selectRaw('courses.*, EXISTS(SELECT 1 FROM answers WHERE answers.course_id = courses.id) as hasAnswers');
-            }])
-            ->distinct()
-            ->get();
-
-        // Obtener el estado global de la encuesta
         $isSurveyOpen = Course::where('is_survey_open', true)->exists();
+        $instructors = Instructor::with([
+            'user',
+            'coursesSurveyOpen' => function($query) {
+                $query->with('program');
+            },
+            // Relación para el modal, sin filtro.
+            'courses'
+        ])->paginate(10);
 
         return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
     }
+
+
+
+
 
     public function toggleSurveyStatus(Request $request)
     {
@@ -75,6 +71,30 @@ class ReportController extends Controller
             ], 500);
         }
     }
+
+    public function instructorsTable()
+{
+    $instructors = Instructor::with([
+        'user',
+        'courses' => function($query) {
+            $query->where('is_survey_open', true)
+                  ->with('program');
+        },
+    ])->paginate(10);
+
+    return view('admin.menu.tableIndex', compact('instructors'));
+}
+
+// En el modelo Instructor.php
+public function getHasGeneralAnswersAttribute($id)
+{
+    // Ajusta la lógica según tu estructura de datos
+    return Answer::where('instructor_id', $this->$id)
+                 ->where('question_id', '>=', 21) // o la condición que defina "general"
+                 ->exists();
+}
+
+
 
     public function show($courseId, $instructorId, $programId)
     {
