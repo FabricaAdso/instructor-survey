@@ -43,8 +43,8 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
 
 
     // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/{courseId}/{instructorId}/{programId}', [ReportController::class, 'show'])->name('reports.show');
-    Route::get('/reports/downloadcourse/{courseId}/{instructorId}/{programId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
+    Route::get('/reports/{courseId}/{instructorId}', [ReportController::class, 'show'])->name('reports.show');
+    Route::get('/reports/downloadcourse/{courseId}/{instructorId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
     Route::get('reports/general/{instructorId}', [ReportController::class, 'showGeneral'])->name('reportsGeneral');
     Route::get('reports/download/{instructorId}', [ReportController::class, 'showGeneralDownload'])->name('reportsGeneralDownload');
 

@@ -123,7 +123,7 @@ class ReportController extends Controller
 
 
 
-    public function show($courseId, $instructorId, $programId)
+    public function show($courseId, $instructorId)
     {
         $course = Course::with('instructors')->find($courseId);
 
@@ -166,11 +166,10 @@ class ReportController extends Controller
             'observations' => $observations,
             'instructor' => $instructor,
             'course' => $course,
-            'program' => Program::find($programId),
         ]);
     }
 
-    public function reportsDownloadCourse($courseId, $instructorId, $programId)
+    public function reportsDownloadCourse($courseId, $instructorId)
     {
         try {
             $course = Course::with('instructors')->find($courseId);
@@ -214,7 +213,6 @@ class ReportController extends Controller
                 'observations' => $observations,
                 'instructor' => $instructor,
                 'course' => $course,
-                'program' => Program::find($programId),
             ])->render();
 
             $pdf = Pdf::html($htmlContent)

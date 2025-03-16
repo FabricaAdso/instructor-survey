@@ -248,14 +248,22 @@
     /* Secciones específicas para evitar conflictos */
     .index-container .btn { }
     .table-container .btn { }
-    .modal-container .btn {
+    {
       font-size: 0.9rem;
       padding: 8px 14px;
     }
 
-    .btn-report-general, .btn-fichas {
-      padding: 5px 10px;
+    .modal-container .btn {
       font-size: 0.9rem;
+      padding: 8px 14px;
+      width: max-content
+
+    }
+
+
+    .btn-report-general, .btn-fichas {
+      font-size: 0.9rem;
+      width: max-content
     }
 
     /* Ajustar columnas de la tabla */
