@@ -37,9 +37,6 @@ class ReportController extends Controller
             'courses'
         ]);
 
-
-
-
         // Si se envía el término de búsqueda (por documento o nombre)
         if ($request->filled('instructor_search')) {
             $search = $request->input('instructor_search');
@@ -51,7 +48,7 @@ class ReportController extends Controller
         }
 
         $instructors = $query->paginate(10);
-
+       // dd($instructors)
         return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
     }
 
@@ -92,27 +89,21 @@ class ReportController extends Controller
 
     public function instructorsTable(Request $request)
 {
-    $query = Instructor::with([
-        'user',
-        'courses' => function($query) {
-            $query->where('is_survey_open', true)
-                  ->with('program');
-        },
-    ]);
+    $query = Instructor::with('user', 'answers', 'courses');
 
-    // Aplica el filtro si se envía el término de búsqueda
     if ($request->filled('instructor_search')) {
         $search = $request->input('instructor_search');
-        $query->whereHas('user', function($q) use ($search) {
-            $q->where(function($subQuery) use ($search) {
-                $subQuery->where('identity_document', 'like', "%{$search}%")
-                         ->orWhere('name', 'like', "%{$search}%")
-                         ->orWhere('last_name', 'like', "%{$search}%");
-            });
+        $query->whereHas('user', function ($q) use ($search) {
+            $q->where('identity_document', 'like', "%{$search}%")
+              ->orWhere('name', 'like', "%{$search}%")
+              ->orWhere('last_name', 'like', "%{$search}%");
         });
     }
 
     $instructors = $query->paginate(10);
+
+
+    // Retorna la vista parcial con todo: la tabla y la paginación
     return view('admin.menu.tableIndex', compact('instructors'));
 }
 

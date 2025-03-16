@@ -54,7 +54,7 @@
         gap: 1.5rem;
         margin: 0;
         padding: 0;
-        flex-direction: column;
+        flex-direction: row;
     }
     .header-container .site-header .header-nav ul li a {
         text-decoration: none;
@@ -142,6 +142,12 @@
   border-bottom-right-radius: 4px;
   z-index: 99;
   }
+
+   /* Menú de navegación */
+   .header-container .site-header .header-nav ul {
+        display: flex;
+        flex-direction: column
+    }
     }
   </style>
 
