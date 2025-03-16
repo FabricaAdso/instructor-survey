@@ -21,7 +21,7 @@
     }
     h3 {
   margin: 0; /* Quita todos los márgenes */
-  font-size: 2rem;
+  font-size: 1rem;
   margin-bottom: 10px; /* O agrega el margen que desees */
   color: #1F2937;
 }
@@ -306,8 +306,14 @@
 /* Media query para cuando el ancho sea menor a 800px */
 @media (max-width: 800px) {
   .header-flex {
-    flex-wrap: wrap;
+    flex-wrap: wrap !important;
   }
+
+  #modal > div {
+    max-width: 100px;
+  }
+
+
   .left-group,
   .center-group,
   .right-group {
@@ -432,28 +438,59 @@
   </div>
 
   <!-- Modal de carga masiva -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <button id="close-modal" class="modal-close">&times;</button>
-      <h2>Subir Archivo Excel</h2>
-      <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data" class="modal-form">
+  <!-- Modal de carga masiva -->
+<div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
+    <div class="max-modal" style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 480px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+      <!-- Botón de cierre superior (X) -->
+      <button id="close-modal-top" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 1.8rem; color: #aaa; cursor: pointer;">&times;</button>
+
+      <h2 style="font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center;">Subir Archivo Excel</h2>
+
+      <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <label for="file">Selecciona el archivo (.xlsx, .xls):</label>
-        <input type="file" name="file" id="file" accept=".xlsx, .xls">
-        <button type="submit" class="btn">Subir</button>
+        <div style="margin-bottom: 20px;">
+          <label for="file" style="display: block; font-size: 1rem; font-weight: 500; color: #555; margin-bottom: 8px;">Selecciona el archivo (.xlsx, .xls):</label>
+          <input type="file" name="file" id="file" required style="display: block; width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+        </div>
+        <!-- Fila inferior con dos botones en dirección row -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <!-- Botón inferior de cierre: X -->
+          <button type="button" id="close-modal-bottom" style="padding: 6px 50px; background-color: #d00; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.2rem;">
+            &times;
+          </button>
+          <!-- Botón de Importar Excel -->
+          <button type="submit" style="padding: 10px 14px; background-color: #38a901; color: #fff; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);">
+            Importar Excel
+          </button>
+        </div>
       </form>
     </div>
   </div>
 
-  <script>
-    // Modal de carga masiva
-    const openModalBtn = document.getElementById('open-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const modal = document.getElementById('modal');
-    openModalBtn.addEventListener('click', () => modal.classList.add('show'));
-    closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
-    window.addEventListener('click', e => { if (e.target === modal) { modal.classList.remove('show'); } });
 
+
+  <script>// Abrir modal
+    // Abrir modal (asegúrate de tener un elemento con id "open-modal" en la vista)
+  document.getElementById('open-modal').addEventListener('click', function() {
+    document.getElementById('modal').style.display = 'flex';
+  });
+
+  // Cerrar modal con el botón superior
+  document.getElementById('close-modal-top').addEventListener('click', function() {
+    document.getElementById('modal').style.display = 'none';
+  });
+
+  // Cerrar modal con el botón inferior
+  document.getElementById('close-modal-bottom').addEventListener('click', function() {
+    document.getElementById('modal').style.display = 'none';
+  });
+
+  // Cerrar modal si se hace clic fuera de la caja del modal
+  window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('modal')) {
+      document.getElementById('modal').style.display = 'none';
+    }
+  });
     // Modal de fichas asociadas
     function openInstructorModal(id) {
       document.getElementById('modal-' + id).classList.add('show');

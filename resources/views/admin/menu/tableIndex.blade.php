@@ -13,11 +13,11 @@
                 @endphp
                 @if ($hasAnyCourseData)
                     <button onclick="openInstructorModal({{ $instructor->id }})" class="btn btn-fichas">
-                        Ver Fichas Asociadas
+                        Fichas
                     </button>
                 @else
                     <button disabled class="btn-disabled btn-fichas">
-                        Ver Fichas Asociadas
+                        Fichas
                     </button>
                 @endif
             </td>
@@ -26,12 +26,12 @@
                     <button onclick="window.location.href='{{ route('reportsGeneral', $instructor->id) }}'"
                             class="btn btn-report-general"
                             style="background-color: #4CAF50; color: white;">
-                        Reporte General
+                        General
                     </button>
                 @else
                     <button disabled class="btn-disabled btn-report-general"
                             style="background-color: #cccccc; color: #666666;">
-                        Reporte General
+                        General
                     </button>
                 @endif
             </td>
