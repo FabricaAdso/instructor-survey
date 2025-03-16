@@ -98,7 +98,7 @@
       border-radius: 4px;
       width: 100%;
       max-width: 300px;
-      min-width: 100px;
+      min-width: 80px;
       transition: border-color 0.3s;
     }
     #instructor_search:focus {
@@ -303,15 +303,19 @@
   transition: border-color 0.3s;
 }
 
+@media (max-width: 920px) and (min-width: 801px) {
+  .right-group {
+    flex: 0 0 100px; /* Ajusta este valor según necesites */
+  }
+}
+
 /* Media query para cuando el ancho sea menor a 800px */
 @media (max-width: 800px) {
   .header-flex {
     flex-wrap: wrap !important;
   }
 
-  #modal > div {
-    max-width: 100px;
-  }
+
 
 
   .left-group,
@@ -368,7 +372,7 @@
           <tr>
             <th class="document-number">N# Documento</th>
             <th class="name">Nombre</th>
-            <th class="report-course">Reporte por Fichas</th>
+            <th class="report-course">Reporte Fichas</th>
             <th class="report-general">Reporte General</th>
           </tr>
         </thead>

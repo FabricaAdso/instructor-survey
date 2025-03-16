@@ -18,7 +18,7 @@
         gap: 1rem;
         height: 100%;
         padding: 0; /* Evita conflicto con otros .container */
-        max-width: 1000px; /* Puedes ajustar el ancho máximo */
+        max-width: auto; /* Puedes ajustar el ancho máximo */
     }
 
     /* Sección Izquierda */
@@ -103,9 +103,8 @@
     /* Responsivo: para anchos menores a 700px */
     @media (max-width: 700px) {
         .header-container .site-header .container {
-            flex-wrap: wrap;
-            height: auto;
-            padding: 0.5rem;
+            flex-wrap: nowrap;
+            height: 90px;
         }
 
         .header-container .site-header .header-title {
@@ -115,8 +114,7 @@
   }
 
         .header-container .site-header .header-left {
-            width: 80%;
-            margin-bottom: 0.5rem;
+            flex: 1;
         }
         /* En lugar de ocultar la sección derecha, la mostramos en una nueva línea en forma de columna */
 
@@ -142,6 +140,7 @@
   border-top-right-radius: 0;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  z-index: 99;
   }
     }
   </style>
@@ -193,11 +192,14 @@ menuToggle.addEventListener('click', () => {
 
 // Opcional: cerrar el menú si se hace clic fuera del header
 document.addEventListener('click', (e) => {
-  if (!menuToggle.contains(e.target) && !headerRight.contains(e.target)) {
-    headerRight.style.display = 'none';
-    menuToggle.setAttribute('aria-expanded', 'false');
-    menuToggle.textContent = '☰';
+  if (window.innerWidth <= 700) {  // Solo se aplica en dispositivos pequeños
+    if (!menuToggle.contains(e.target) && !headerRight.contains(e.target)) {
+      headerRight.style.display = 'none';
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.textContent = '☰';
+    }
   }
 });
+
 
   </script>
