@@ -137,6 +137,9 @@ class TotalReportController extends Controller
         'summaries'        => $summaries,
         'surveyIdentifier' => $surveyIdentifier,
         'fecha'            => $fecha,
+        'instructorName'        => $instructorUser->name,
+        'instructorLastName' => $instructorUser->last_name,
+        'instructorIdentity' => $instructorUser->identity_document,
     ];
 
     $pdf = Pdf::loadView('admin.reports.allPDF', $data);
@@ -230,11 +233,13 @@ public function downloadAllIndividualPDFs(Request $request)
         $instructorFullSafe = str_replace(['/', '\\'], '', $instructorFull);
         $fecha = $firstSummary->created_at ? $firstSummary->created_at->format('d/m/Y') : 'fecha_no_disponible';
 
+        $instructorIdentity = optional($firstSummary->instructor->user)->identity_document ?? 'SinIdentidad';
         $data = [
             'surveyIdentifier' => $surveyId,
             'instructor'       => $instructorFull,
             'fecha'            => $fecha,
             'summaries'        => $group,
+            'instructorIdentity'     => $instructorIdentity,
         ];
 
         $pdf = Pdf::loadView('admin.reports.totalReportPDF', $data);
