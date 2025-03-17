@@ -109,13 +109,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 28px;
-            /* un pelín más grande que 24px */
             height: 28px;
             border: 2px solid #EF4444;
             border-radius: 50%;
             pointer-events: none;
             z-index: 2;
-            /* para que quede encima */
         }
 
 
@@ -159,7 +157,7 @@
         }
 
         input[type="text"] {
-            width: 100%;
+            width: 97%;
             height: 3rem;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -174,13 +172,10 @@
         label {
             display: inline-block;
             width: 24px;
-            /* mismo tamaño que tu input radio */
             height: 24px;
-            /* */
             position: relative;
             text-align: center;
             margin: 0 auto;
-            /* centra si hace falta */
         }
 
         .tooltip {
@@ -216,22 +211,66 @@
             opacity: 1;
             visibility: visible;
         }
-        p{
+
+        p {
             margin: 0;
+        }
+
+        .btn-lift {
+            background: linear-gradient(to right, #34d399, #3b82f6);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+
+
+        .warning-message {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            z-index: 9999;
+
+            background-color: #fdecea;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            display: none;
         }
     </style>
 </head>
 
 <body>
+
+    <div id="warning-message" class="warning-message" role="alert" aria-live="assertive">
+        <strong>¡Atención!</strong> Aún te faltan campos por completar. Por favor, llena todos los campos antes
+        de continuar.
+    </div>
     <form
         action="{{ route('survey.submit', ['surveyId' => $survey->id, 'apprenticeId' => Auth::user()->apprentice->id]) }}"
         method="POST" aria-labelledby="form-title">
         @csrf
         <div class="container">
-            <div id="warning-message" class="warning-message" role="alert" aria-live="assertive">
-                <strong>¡Atención!</strong> Aún te faltan campos por completar. Por favor, llena todos los campos antes
-                de continuar.
-            </div>
+
             <div id="survey-container">
                 <div class="page active" data-page="1">
                     <div class="card">
@@ -285,14 +324,19 @@
                             <p style="font-size: 1.5rem; font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">
                                 {{ $question->question }}
                             </p>
+
+                            <p style="font-size: 0.875rem; color: #374151; margin-bottom: 1rem;">
+                                Estas preguntas son <strong>opcionales</strong>. No es obligatorio responderlas.
+                            </p>
                             @foreach ($instructors as $instructor)
                                 <div class="mb-4">
                                     <p class="text-sm font-semibold text-gray-800">
                                         <strong>Instructor: {{ $instructor->user->name }}
                                             {{ $instructor->user->last_name }}</strong>
                                     </p>
-                                    <input type="text" name="answers[{{ $instructor->id }}][{{ $question->id }}]"
-                                        maxlength="100" placeholder="Tu respuesta">
+                                    <input class="open-cuestion-input" type="text"
+                                        name="answers[{{ $instructor->id }}][{{ $question->id }}]" maxlength="100"
+                                        placeholder="Tu respuesta">
                                 </div>
                             @endforeach
                         </div>
@@ -302,9 +346,9 @@
             </div>
 
             <div class="button-container">
-                <button type="button" id="prevBtn" class="btn" style="margin-right: 2rem" aria-label="Botón Anterior" tabindex="0"
-                    style="display: none;">Anterior</button>
-                <button type="button" id="nextBtn" class="btn" aria-label="Botón Siguiente"
+                <button type="button" id="prevBtn" class="btn-lift" style="margin-right: 2rem"
+                    aria-label="Botón Anterior" tabindex="0" style="display: none;">Anterior</button>
+                <button type="button" id="nextBtn" class="btn-lift" aria-label="Botón Siguiente"
                     tabindex="0">Siguiente</button>
             </div>
             <div class="button-container-end" id="submitContainer" style="display: none;">
@@ -366,14 +410,29 @@
         function showPage(page) {
             document.querySelectorAll('.page').forEach(pageDiv => {
                 pageDiv.classList.remove('active');
-                if (parseInt(pageDiv.getAttribute('data-page')) === page) {
-                    pageDiv.classList.add('active');
-                }
             });
+
+            const currentPageDiv = document.querySelector(`.page[data-page="${page}"]`);
+            if (currentPageDiv) {
+                currentPageDiv.classList.add('active');
+
+                const heading = currentPageDiv.querySelector('h2.title');
+                if (heading) {
+                    heading.setAttribute('tabindex', '-1');
+                    heading.focus();
+                } else {
+                    const firstInput = currentPageDiv.querySelector('input, select, textarea, button');
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+                }
+            }
+
             document.getElementById('prevBtn').style.display = (page > 1) ? 'inline-block' : 'none';
             document.getElementById('nextBtn').style.display = (page < totalPages) ? 'inline-block' : 'none';
             document.getElementById('submitContainer').style.display = (page === totalPages) ? 'flex' : 'none';
         }
+
 
         var instructors = @json($instructors);
 
