@@ -306,7 +306,7 @@ public function downloadExcel(Request $request)
 
 
     $header = [
-        'Fecha',
+        'Encuesta',
         'Area de conocimiento',
         'Documento',
         'Nombre',

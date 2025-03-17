@@ -16,16 +16,15 @@
                     <td>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</td>
                     <td style="text-align: center;">
                         @php
-                            $hasAnyCourseData = $instructor->courses->contains(function($course) use ($instructor) {
+                            $hasAnyCourseData = $instructor->courses->contains(function ($course) use ($instructor) {
                                 return $course->program &&
-                                       $instructor->answers->contains(function($answer) use ($course) {
-                                           return $answer->course_id == $course->id;
-                                       });
+                                    $instructor->answers->contains(function ($answer) use ($course) {
+                                        return $answer->course_id == $course->id;
+                                    });
                             });
                         @endphp
                         @if ($hasAnyCourseData)
-                            <button onclick="openInstructorModal({{ $instructor->id }})"
-                                    class="btn btn-fichas">
+                            <button onclick="openInstructorModal({{ $instructor->id }})" class="btn btn-fichas">
                                 Fichas
                             </button>
                         @else
@@ -37,13 +36,12 @@
                     <td style="text-align: center;">
                         @if ($instructor->hasGeneralAnswers)
                             <button onclick="window.location.href='{{ route('reportsGeneral', $instructor->id) }}'"
-                                    class="btn btn-report-general"
-                                    style="background-color: #4CAF50; color: white;">
+                                class="btn btn-report-general" style="background-color: #4CAF50; color: white;">
                                 General
                             </button>
                         @else
                             <button disabled class="btn-disabled btn-report-general"
-                                    style="background-color: #cccccc; color: #666666;">
+                                style="background-color: #cccccc; color: #666666;">
                                 General
                             </button>
                         @endif
@@ -57,19 +55,18 @@
     <div class="pagination-wrapper">
         @php
             $currentPage = $instructors->currentPage();
-            $lastPage    = $instructors->lastPage();
-            $maxPages    = 5;
-            $startPage   = max(1, $currentPage - floor($maxPages / 2));
-            $endPage     = $startPage + $maxPages - 1;
+            $lastPage = $instructors->lastPage();
+            $maxPages = 5;
+            $startPage = max(1, $currentPage - floor($maxPages / 2));
+            $endPage = $startPage + $maxPages - 1;
 
             if ($endPage > $lastPage) {
-                $endPage   = $lastPage;
+                $endPage = $lastPage;
                 $startPage = max(1, $endPage - $maxPages + 1);
             }
         @endphp
 
         <ul class="pagination">
-            {{-- Botón "Anterior" --}}
             @if ($instructors->onFirstPage())
                 <li class="disabled"><span>Anterior</span></li>
             @else
@@ -78,7 +75,6 @@
                 </li>
             @endif
 
-            {{-- Páginas intermedias --}}
             @for ($page = $startPage; $page <= $endPage; $page++)
                 @if ($page == $currentPage)
                     <li class="active"><span>{{ $page }}</span></li>
@@ -91,7 +87,6 @@
                 @endif
             @endfor
 
-            {{-- Botón "Siguiente" --}}
             @if ($instructors->hasMorePages())
                 <li>
                     <a href="#" onclick="performSearch({{ $currentPage + 1 }})">
@@ -105,8 +100,7 @@
     </div>
 </div>
 
-  <!-- Modal para fichas asociadas -->
-  <div class="modal-container">
+<div class="modal-container">
     @foreach ($instructors as $instructor)
         <div id="modal-{{ $instructor->id }}" class="modal">
             <div class="modal-content">
@@ -123,4 +117,3 @@ min-height: 0;">
         </div>
     @endforeach
 </div>
-

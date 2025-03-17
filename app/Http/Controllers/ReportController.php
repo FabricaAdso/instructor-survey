@@ -27,17 +27,15 @@ class ReportController extends Controller
     {
         $isSurveyOpen = Course::where('is_survey_open', true)->exists();
 
-        // Inicia el query builder de Instructor incluyendo también 'answers'
         $query = Instructor::with([
             'user',
-            'answers', // Sin filtros aquí
+            'answers',
             'coursesSurveyOpen' => function ($query) {
                 $query->with('program');
             },
             'courses'
         ]);
 
-        // Si se envía el término de búsqueda (por documento o nombre)
         if ($request->filled('instructor_search')) {
             $search = $request->input('instructor_search');
             $query->whereHas('user', function ($q) use ($search) {
@@ -102,8 +100,6 @@ class ReportController extends Controller
 
     $instructors = $query->paginate(10);
 
-
-    // Retorna la vista parcial con todo: la tabla y la paginación
     return view('admin.menu.tableIndex', compact('instructors'));
 }
 

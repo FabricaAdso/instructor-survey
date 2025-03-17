@@ -24,15 +24,11 @@
 
         h3 {
             margin: 0;
-            /* Quita todos los márgenes */
             font-size: 1rem;
             margin-bottom: 10px;
-            /* O agrega el margen que desees */
             color: #1F2937;
         }
 
-
-        /* Botones base */
         .btn {
             padding: 5px 5px;
             background-color: #388E3C;
@@ -52,22 +48,18 @@
             opacity: 0.9;
         }
 
-        /* Toggle de encuesta: invertido según lo solicitado */
         .btn-toggle.survey-closed {
             background-color: #4CAF50;
-            /* Verde para abrir encuesta */
             color: #fff;
             opacity: 1;
         }
 
         .btn-toggle.survey-open {
             background-color: #FF9800;
-            /* Naranja suave para cerrar encuesta */
             color: #fff;
             opacity: 1;
         }
 
-        /* Botón de Cargue Masivo actualizado */
         .btn-mass {
             background-color: #00897B;
             color: #fff;
@@ -119,7 +111,6 @@
             outline: none;
         }
 
-        /* Estilos de tabla */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -191,7 +182,6 @@
             cursor: not-allowed;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             top: 1rem;
@@ -231,7 +221,6 @@
             }
         }
 
-        /* Estilos de modal */
         .modal {
             display: flex;
             position: fixed;
@@ -312,7 +301,6 @@
             align-self: flex-end;
         }
 
-        /* Secciones específicas para evitar conflictos */
         .index-container .btn {}
 
         .table-container .btn {}
@@ -335,7 +323,6 @@
             width: max-content
         }
 
-        /* Ajustar columnas de la tabla */
         th.document-number {
             width: 130px;
             text-align: center;
@@ -350,9 +337,6 @@
             box-sizing: border-box;
         }
 
-
-
-        /* Contenedor flex para la cabecera */
         .header-flex {
             display: flex;
             align-items: center;
@@ -361,11 +345,9 @@
             /* Por defecto en una sola línea */
         }
 
-        /* Estilos para cada sección */
         .left-group,
         .right-group {
             flex: 0 0 250px;
-            /* Ancho fijo para las columnas laterales; ajusta según necesites */
         }
 
         .center-group {
@@ -373,7 +355,6 @@
             text-align: center;
         }
 
-        /* Ajuste del input para que se adapte al ancho de su contenedor */
         .input-search {
             width: 100%;
             box-sizing: border-box;
@@ -386,18 +367,13 @@
         @media (max-width: 920px) and (min-width: 801px) {
             .right-group {
                 flex: 0 0 100px;
-                /* Ajusta este valor según necesites */
             }
         }
 
-        /* Media query para cuando el ancho sea menor a 800px */
         @media (max-width: 800px) {
             .header-flex {
                 flex-wrap: wrap !important;
             }
-
-
-
 
             .left-group,
             .center-group,
@@ -405,10 +381,8 @@
                 flex: 1 0 100%;
                 text-align: center;
                 margin-bottom: 10px;
-                /* Espacio entre filas */
             }
 
-            /* Si no necesitas la columna derecha, la ocultas */
             .right-group {
                 display: none;
             }
@@ -421,10 +395,8 @@
     <div class="container index-container">
         <h3>Reporte de Instructores</h3>
         <div class="header-flex">
-            <!-- Columna izquierda con botones -->
             <div class="left-group">
                 <div class="button-group">
-                    <!-- Toggle de Encuesta -->
                     <button id="toggle-survey-status"
                         class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
                         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
@@ -433,31 +405,21 @@
                 </div>
             </div>
 
-            <!-- Columna central con el formulario de búsqueda -->
             <div class="center-group">
                 <form onsubmit="event.preventDefault(); performSearch(1);">
                     <input type="text" id="instructor_search" name="instructor_search">
                     <button type="submit">Buscar</button>
-                  </form>
+                </form>
 
             </div>
 
-            <!-- Columna derecha vacía (para balancear) -->
             <div class="right-group"></div>
         </div>
-
-
-        <!-- Formulario de búsqueda -->
-
         <br>
-
         <div class="table-container"></div>
-
     </div>
 
-  
-    <!-- Modal de carga masiva -->
-    <!-- Modal de carga masiva -->
+
     <div id="modal"
         style="display: none;
         flex: 1;
@@ -465,7 +427,6 @@
    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
         <div class="max-modal"
             style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 480px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
-            <!-- Botón de cierre superior (X) -->
             <button id="close-modal-top"
                 style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 1.8rem; color: #aaa; cursor: pointer;">&times;</button>
 
@@ -482,14 +443,11 @@
                     <input type="file" name="file" id="file" required
                         style="display: block; width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
                 </div>
-                <!-- Fila inferior con dos botones en dirección row -->
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <!-- Botón inferior de cierre: X -->
                     <button type="button" id="close-modal-bottom"
                         style="padding: 6px 50px; background-color: #d00; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.2rem;">
                         &times;
                     </button>
-                    <!-- Botón de Importar Excel -->
                     <button type="submit"
                         style="padding: 10px 14px; background-color: #38a901; color: #fff; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);">
                         Importar Excel
@@ -502,29 +460,23 @@
 
 
     <script>
-        // Abrir modal
-        // Abrir modal (asegúrate de tener un elemento con id "open-modal" en la vista)
         document.getElementById('open-modal').addEventListener('click', function() {
             document.getElementById('modal').style.display = 'flex';
         });
 
-        // Cerrar modal con el botón superior
         document.getElementById('close-modal-top').addEventListener('click', function() {
             document.getElementById('modal').style.display = 'none';
         });
 
-        // Cerrar modal con el botón inferior
         document.getElementById('close-modal-bottom').addEventListener('click', function() {
             document.getElementById('modal').style.display = 'none';
         });
 
-        // Cerrar modal si se hace clic fuera de la caja del modal
         window.addEventListener('click', function(e) {
             if (e.target === document.getElementById('modal')) {
                 document.getElementById('modal').style.display = 'none';
             }
         });
-        // Modal de fichas asociadas
         function openInstructorModal(id) {
             document.getElementById('modal-' + id).classList.add('show');
         }
@@ -533,7 +485,6 @@
             document.getElementById('modal-' + id).classList.remove('show');
         }
 
-        // Toast
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
@@ -544,7 +495,6 @@
             }, 3000);
         }
 
-        // Toggle de encuesta
         document.addEventListener('DOMContentLoaded', () => {
             const toggleButton = document.getElementById('toggle-survey-status');
             if (!toggleButton) return;
@@ -574,7 +524,6 @@
                             toggleButton.classList.add('survey-closed');
                             showToast('Encuesta cerrada exitosamente', 'success');
                         }
-                        // Actualiza la tabla con AJAX (se elimina la notificación de tabla actualizada)
                         fetch('{{ route('admin.instructors') }}')
                             .then(res => res.text())
                             .then(html => {
@@ -588,28 +537,25 @@
             });
         });
 
-        // Búsqueda AJAX
         function performSearch(page = 1) {
-  const searchValue = document.getElementById('instructor_search').value;
-  const url = `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
+            const searchValue = document.getElementById('instructor_search').value;
+            const url =
+            `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
 
-  fetch(url)
-    .then(response => response.text())
-    .then(html => {
-      // Reemplaza todo el bloque donde va la tabla + paginación
-      document.querySelector('.table-container').innerHTML = html;
-    })
-    .catch(error => console.error('Error:', error));
-}
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('.table-container').innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-// Llamada inicial al cargar la página, para que muestre la tabla sin buscar
-document.addEventListener('DOMContentLoaded', () => {
-  performSearch(); // Carga página 1 sin filtro
-});
-
+        document.addEventListener('DOMContentLoaded', () => {
+            performSearch();
+        });
 
 
-        // Carga masiva
+
         document.getElementById('upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);

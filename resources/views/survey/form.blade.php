@@ -64,7 +64,7 @@
             font-weight: 800;
             color: #fff;
             text-align: center;
-            margin-bottom: 1rem;
+            margin: 0;
             padding: 1rem;
             border-radius: 0.5rem;
             background: linear-gradient(to right, #34d399, #3b82f6);
@@ -74,7 +74,6 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
         }
 
         table,
@@ -104,21 +103,25 @@
         }
 
         .invalid::before {
+            content: "";
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            content: "";
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
+            width: 28px;
+            /* un pelín más grande que 24px */
+            height: 28px;
             border: 2px solid #EF4444;
+            border-radius: 50%;
             pointer-events: none;
+            z-index: 2;
+            /* para que quede encima */
         }
+
 
         .button-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             margin-top: 1.5rem;
         }
 
@@ -169,8 +172,15 @@
         }
 
         label {
+            display: inline-block;
+            width: 24px;
+            /* mismo tamaño que tu input radio */
+            height: 24px;
+            /* */
             position: relative;
-            cursor: pointer;
+            text-align: center;
+            margin: 0 auto;
+            /* centra si hace falta */
         }
 
         .tooltip {
@@ -205,6 +215,9 @@
         label:focus-within .tooltip {
             opacity: 1;
             visibility: visible;
+        }
+        p{
+            margin: 0;
         }
     </style>
 </head>
@@ -289,7 +302,7 @@
             </div>
 
             <div class="button-container">
-                <button type="button" id="prevBtn" class="btn" aria-label="Botón Anterior" tabindex="0"
+                <button type="button" id="prevBtn" class="btn" style="margin-right: 2rem" aria-label="Botón Anterior" tabindex="0"
                     style="display: none;">Anterior</button>
                 <button type="button" id="nextBtn" class="btn" aria-label="Botón Siguiente"
                     tabindex="0">Siguiente</button>
@@ -485,8 +498,10 @@
                                 radio.setAttribute('aria-invalid', 'true');
                             });
                         } else {
+                            // Si uno está checked, quitamos la marca de error
                             radios.forEach(radio => {
                                 radio.parentElement.classList.remove('invalid');
+                                radio.setAttribute('aria-invalid', 'false');
                             });
                         }
                     }
@@ -494,22 +509,12 @@
             });
             if (!valid) {
                 warning.style.display = 'block';
-                const firstInvalid = pageDiv.querySelector('.invalid input[type="radio"]');
-                if (firstInvalid) {
-                    const card = firstInvalid.closest('.card');
-                    if (card) {
-                        card.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    }
-                }
-
-
-
+                // No avanza
+                return false;
+            } else {
+                warning.style.display = 'none';
+                return true;
             }
-            warning.style.display = 'none';
-            return true;
         }
 
         document.getElementById('survey-container').addEventListener('change', function(event) {

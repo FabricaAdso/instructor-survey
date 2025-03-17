@@ -295,8 +295,7 @@
         }
 
         .float-containerdos input:focus+label,
-        .float-containerdos input:not(:placeholder-shown)+label {
-        }
+        .float-containerdos input:not(:placeholder-shown)+label {}
 
         .float-containert {
             position: relative;
