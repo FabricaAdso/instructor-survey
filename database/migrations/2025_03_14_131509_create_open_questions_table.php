@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('survey_identifier'); // Identificador de la encuesta
-            $table->text('response'); // Respuesta abierta
+            $table->text('response')->nullable(); // Respuesta abierta
 
             $table->unsignedBigInteger('instructor_id');
             $table->foreign('instructor_id')->references('id')->on('instructors')->onDelete('cascade');

@@ -50,7 +50,6 @@ class ReportController extends Controller
     public function toggleSurveyStatus(Request $request)
     {
         try {
-            // Cambiar el estado de la encuesta para todos los cursos
             $newStatus = !Course::where('is_survey_open', true)->exists();
             Course::query()->update(['is_survey_open' => $newStatus]);
 
@@ -65,10 +64,6 @@ class ReportController extends Controller
                 'is_survey_open' => $newStatus
             ]);
         } catch (\Exception $e) {
-            // Registrar el error en el log
-            Log::error('Error al cambiar el estado de la encuesta: ' . $e->getMessage());
-
-            // Devolver una respuesta de error en formato JSON
             return response()->json([
                 'message' => 'Error interno del servidor',
                 'error' => $e->getMessage()
