@@ -147,6 +147,22 @@
             flex-direction: column
         }
     }
+
+    header nav ul li a {
+        display: inline-block;
+
+        text-decoration: none;
+        color: #333;
+        padding: 10px 15px;
+        font-weight: 500;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 4px;
+    }
+
+    header nav ul li a:hover,
+    header nav ul li a.active {
+        transform: translateY(-5px);
+    }
 </style>
 
 <div class="header-container">
@@ -161,14 +177,14 @@
             <div class="header-right" id="header-right">
                 <nav class="header-nav" aria-label="Menú principal">
                     <ul>
-                        <li><a href="{{ route('admin.dashboard') }}">Encuesta</a></li>
-                        <li><a href="{{ route('reportsClose') }}">Reporte</a></li>
+                        <li style="font-size: 1.2rem"><a href="{{ route('admin.dashboard') }}">Encuesta</a></li>
+                        <li style="font-size: 1.2rem"><a href="{{ route('reportsClose') }}">Reporte</a></li>
                     </ul>
                 </nav>
                 <div class="header-logout">
                     <form action="{{ route('logout.admin') }}" method="POST">
                         @csrf
-                        <button type="submit" id="btnLogout">Salir</button>
+                        <button style="font-size: 1.2rem" type="submit" id="btnLogout">Salir</button>
                     </form>
                 </div>
             </div>

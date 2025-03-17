@@ -396,19 +396,19 @@
         <h3>Reporte de Instructores</h3>
         <div class="header-flex">
             <div class="left-group">
-                <div class="button-group">
-                    <button id="toggle-survey-status"
+                <div class="button-group" style="width:300px">
+                    <button id="toggle-survey-status" style="font-size: 16px"
                         class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
                         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
                     </button>
-                    <button id="open-modal" class="btn btn-mass">Cargue Masivo</button>
+                    <button id="open-modal" style="font-size:16px" class="btn btn-mass">Cargue Masivo</button>
                 </div>
             </div>
 
             <div class="center-group">
                 <form onsubmit="event.preventDefault(); performSearch(1);">
                     <input type="text" id="instructor_search" name="instructor_search">
-                    <button type="submit">Buscar</button>
+                    <button style="font-size: 16px" type="submit">Buscar</button>
                 </form>
 
             </div>
@@ -426,30 +426,29 @@
   overflow-y: auto;
    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
         <div class="max-modal"
-            style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 480px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+            style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 500px;width:600px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
             <button id="close-modal-top"
-                style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 1.8rem; color: #aaa; cursor: pointer;">&times;</button>
+                style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 2.8rem; color: #aaa; cursor: pointer;">&times;</button>
 
             <h2 style="font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center;">
                 Subir Archivo Excel</h2>
 
-            <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST"
-                enctype="multipart/form-data">
+            <form style="display: flex; gap: 10px" id="upload-form" action="{{ route('import-apprentices') }}"
+                method="POST" enctype="multipart/form-data">
                 @csrf
                 <div style="margin-bottom: 20px;">
                     <label for="file"
-                        style="display: block; font-size: 1rem; font-weight: 500; color: #555; margin-bottom: 8px;">Selecciona
+                        style="display: block; font-size: 1.2rem; font-weight: 500; color: #555; margin-bottom: 8px;">Selecciona
                         el archivo (.xlsx, .xls):</label>
                     <input type="file" name="file" id="file" required
                         style="display: block; width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
                 </div>
+
+
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <button type="button" id="close-modal-bottom"
-                        style="padding: 6px 50px; background-color: #d00; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.2rem;">
-                        &times;
-                    </button>
+
                     <button type="submit"
-                        style="padding: 10px 14px; background-color: #38a901; color: #fff; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);">
+                        style="padding: 12px 14px; font-size: 1.1rem; background-color: #38a901; color: #fff; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);">
                         Importar Excel
                     </button>
                 </div>
@@ -468,15 +467,13 @@
             document.getElementById('modal').style.display = 'none';
         });
 
-        document.getElementById('close-modal-bottom').addEventListener('click', function() {
-            document.getElementById('modal').style.display = 'none';
-        });
 
         window.addEventListener('click', function(e) {
             if (e.target === document.getElementById('modal')) {
                 document.getElementById('modal').style.display = 'none';
             }
         });
+
         function openInstructorModal(id) {
             document.getElementById('modal-' + id).classList.add('show');
         }
@@ -527,7 +524,7 @@
                         fetch('{{ route('admin.instructors') }}')
                             .then(res => res.text())
                             .then(html => {
-                                document.querySelector('table tbody').innerHTML = html;
+                                document.querySelector('.table-container').innerHTML = html;
                             });
                     })
                     .catch(error => {
@@ -540,7 +537,7 @@
         function performSearch(page = 1) {
             const searchValue = document.getElementById('instructor_search').value;
             const url =
-            `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
+                `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
 
             fetch(url)
                 .then(response => response.text())
@@ -571,15 +568,24 @@
                 .then(data => {
                     if (data.success) {
                         showToast(data.message || 'Archivo subido exitosamente', 'success');
+                        // Cerrar el modal solo si el archivo se sube con éxito
+                        document.getElementById('modal').style.display = 'none';
+                        // Actualizar la tabla con la nueva información
+                        fetch('{{ route('admin.instructors') }}')
+                            .then(res => res.text())
+                            .then(html => {
+                                document.querySelector('.table-container').innerHTML = html;
+                            })
+                            .catch(error => console.error('Error al actualizar la tabla:', error));
                     } else {
                         showToast(data.error || 'Error al subir el archivo', 'error');
+                        // En caso de error, el modal se queda abierto para que se pueda reintentar
                     }
-                    document.getElementById('modal').classList.remove('show');
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     showToast('Error al subir el archivo', 'error');
-                    document.getElementById('modal').classList.remove('show');
+                    // En caso de error, el modal se queda abierto
                 });
         });
     </script>

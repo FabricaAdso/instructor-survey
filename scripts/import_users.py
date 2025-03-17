@@ -5,9 +5,7 @@ import os
 import sys
 import signal
 from openpyxl.styles import PatternFill
-from openpyxl.styles import PatternFill
 
-# Configurar un timeout de 10 minutos
 # Configurar un timeout de 10 minutos
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
 signal.alarm(600)  # 600 segundos (10 minutos)
@@ -16,11 +14,10 @@ signal.alarm(600)  # 600 segundos (10 minutos)
 db_config = {
     'host': 'localhost',
     'user': 'root',           # usuario de MySQL
-    'password': 'fabrica123',  # contraseña de MySQL
+    'password': 'fabrica124',  # contraseña de MySQL
     'database': 'instructor_survey'  # nombre de la base de datos
 }
 
-# Mapeo de estados para aprendices (con claves en mayúsculas)
 # Mapeo de estados para aprendices (con claves en mayúsculas)
 apprentice_state_mapping = {
     'EN FORMACION': 'En_formacion',
@@ -30,20 +27,10 @@ apprentice_state_mapping = {
     'RETIRO VOLUNTARIO': 'Retiro_voluntario',
     'POR CERTIFICAR': 'Por_certificar',
     'INDUCCION': 'Induccion'
-    'EN FORMACION': 'En_formacion',
-    'ETAPA PRODUCTIVA': 'Etapa_productiva',
-    'EN COMITE': 'En_comite',
-    'DESERTADO': 'Desertado',
-    'RETIRO VOLUNTARIO': 'Retiro_voluntario',
-    'POR CERTIFICAR': 'Por_certificar',
-    'INDUCCION': 'Induccion'
 }
 
 # Mapeo de estados para instructores (con claves en mayúsculas)
-# Mapeo de estados para instructores (con claves en mayúsculas)
 instructor_state_mapping = {
-    'ACTIVO': 'Activo',
-    'INACTIVO': 'Inactivo'
     'ACTIVO': 'Activo',
     'INACTIVO': 'Inactivo'
 }
@@ -51,8 +38,6 @@ instructor_state_mapping = {
 def import_users(file_path):
     conn = None
     cursor = None
-    failed_rows = []
-    failed_indices = []
     failed_rows = []
     failed_indices = []
 
@@ -118,21 +103,15 @@ def import_users(file_path):
                 estado_aprendiz = str(row['ESTADO']).strip().upper()
                 state_value = apprentice_state_mapping.get(estado_aprendiz, 'En_formacion')
 
-                # Procesar el estado del aprendiz convirtiendo a mayúsculas y quitando espacios
-                estado_aprendiz = str(row['ESTADO']).strip().upper()
-                state_value = apprentice_state_mapping.get(estado_aprendiz, 'En_formacion')
-
                 # Insertar o actualizar el aprendiz
                 cursor.execute("SELECT id FROM apprentices WHERE user_id = %s AND course_id = %s", (user_id, course_id))
                 if not cursor.fetchone():
                     cursor.execute(
                         "INSERT INTO apprentices (user_id, course_id, state) VALUES (%s, %s, %s)",
                         (user_id, course_id, state_value)
-                        (user_id, course_id, state_value)
                     )
 
             except Exception as e:
-                print(f"Error en la fila {index + 1} (Aprendices): {e}")
                 print(f"Error en la fila {index + 1} (Aprendices): {e}")
                 failed_rows.append(row)
                 failed_indices.append(index)
@@ -209,7 +188,6 @@ def import_users(file_path):
 
             except Exception as e:
                 print(f"Error en la fila {index + 1} (Instructores): {e}")
-                print(f"Error en la fila {index + 1} (Instructores): {e}")
                 failed_rows.append(row)
                 failed_indices.append(index)
 
@@ -227,11 +205,9 @@ def import_users(file_path):
                 workbook = writer.book
                 worksheet = writer.sheets['Errores']
                 red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
-                red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
 
                 for index in failed_indices:
                     for col in range(1, len(failed_df.columns) + 1):
-                        worksheet.cell(row=index + 2, column=col).fill = red_fill
                         worksheet.cell(row=index + 2, column=col).fill = red_fill
 
             print(f"Se generó un archivo con las filas fallidas: {failed_file_path}")
@@ -254,6 +230,5 @@ if __name__ == "__main__":
         print("Uso: python3 import_users.py <ruta_al_archivo>")
         sys.exit(1)
 
-    file_path = sys.argv[1]
     file_path = sys.argv[1]
     import_users(file_path)

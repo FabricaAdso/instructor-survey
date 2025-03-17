@@ -256,6 +256,47 @@
             font-size: 1rem;
             display: none;
         }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .scale {
+            margin: 1rem 0;
+        }
+
+        .evaluation-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .evaluation-number {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin: 0 0 0.25rem;
+        }
+
+        .evaluation-description {
+            font-size: 0.95rem;
+            color: #4a5568;
+            margin: 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        #nextBtn,
+        #submitBtn {
+            margin-left: auto;
+        }
     </style>
 </head>
 
@@ -276,6 +317,7 @@
                     <div class="card">
                         <h1 id="form-title" class="title">ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA –
                             EJECUCIÓN DE LA FORMACIÓN.</h1>
+                        <br>
                         <p style="font-size: 1rem; color: #374151; line-height: 1.5; margin-bottom: 1rem;">
                             Evaluar la satisfacción de los aprendices con respecto a la ejecución de la formación en la
                             etapa lectiva, con el fin de identificar áreas de oportunidad para mejorar la calidad del
@@ -284,19 +326,44 @@
                         <div class="card" style="background-color: #d1fae5; margin-bottom: 1rem; padding: 1rem;">
                             <h2 style="font-size: 1.25rem; font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">
                                 Agradecemos su participación</h2>
-                            <p style="font-size: 0.875rem; color: #374151;">
+                            <p style="font-size: 1rem; color: #374151;">
                                 EVALÚE de <strong>1 a 5</strong> a los instructores acompañantes del proceso formativo,
                                 teniendo en cuenta la siguiente escala:
                             </p>
                         </div>
                         <div style="font-size: 0.875rem; color: #4b5563;">
-                            <ul style="list-style-type: disc; padding-left: 1.25rem;">
-                                <li><strong>1: Muy insatisfecho / Muy en desacuerdo</strong></li>
-                                <li><strong>2: Insatisfecho / En desacuerdo</strong></li>
-                                <li><strong>3: Neutral / Ni de acuerdo ni desacuerdo</strong></li>
-                                <li><strong>4: Satisfecho / De acuerdo</strong></li>
-                                <li><strong>5: Muy satisfecho / Muy de acuerdo</strong></li>
-                            </ul>
+                            <div class="scale">
+                                <div class="evaluation-item">
+                                    <p class="evaluation-number"><strong>1. Insatisfecho / Muy en desacuerdo:</strong>
+                                    </p>
+                                    <p class="evaluation-description">La experiencia o aspecto evaluado no cumple en
+                                        absoluto con mis expectativas.</p>
+                                </div>
+                                <div class="evaluation-item">
+                                    <p class="evaluation-number"><strong>2. Insatisfecho / En desacuerdo:</strong></p>
+                                    <p class="evaluation-description">La experiencia o aspecto evaluado no cumple
+                                        completamente con mis expectativas, pero presenta algunos aspectos positivos.
+                                    </p>
+                                </div>
+                                <div class="evaluation-item">
+                                    <p class="evaluation-number"><strong>3. Neutral / Ni de acuerdo ni en
+                                            desacuerdo:</strong></p>
+                                    <p class="evaluation-description">No tengo una opinión clara o no me siento ni
+                                        satisfecho ni insatisfecho con este aspecto.</p>
+                                </div>
+                                <div class="evaluation-item">
+                                    <p class="evaluation-number"><strong>4. Satisfecho / De acuerdo:</strong></p>
+                                    <p class="evaluation-description">La experiencia o aspecto evaluado cumple con mis
+                                        expectativas y tiene algunos puntos destacados.</p>
+                                </div>
+                                <div class="evaluation-item">
+                                    <p class="evaluation-number"><strong>5. Muy satisfecho / Muy de acuerdo:</strong>
+                                    </p>
+                                    <p class="evaluation-description">La experiencia o aspecto evaluado supera
+                                        ampliamente mis expectativas como aprendiz y es altamente satisfactorio.</p>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -345,16 +412,13 @@
 
             </div>
 
-            <div class="button-container">
-                <button type="button" id="prevBtn" class="btn-lift" style="margin-right: 2rem"
-                    aria-label="Botón Anterior" tabindex="0" style="display: none;">Anterior</button>
-                <button type="button" id="nextBtn" class="btn-lift" aria-label="Botón Siguiente"
-                    tabindex="0">Siguiente</button>
+            <div class="button-container" id="navigationButtons">
+                <button type="button" id="prevBtn" class="btn-lift" style="display: none;">Anterior</button>
+                <button type="button" id="nextBtn" class="btn-lift">Siguiente</button>
+                <button type="submit" id="submitBtn" class="btn btn-lift"
+                    style="display: none; font-size:1.3rem">Enviar Encuesta</button>
             </div>
-            <div class="button-container-end" id="submitContainer" style="display: none;">
-                <button type="submit" class="btn btn-green" aria-label="Enviar Encuesta" tabindex="0">Enviar
-                    Encuesta</button>
-            </div>
+
         </div>
     </form>
 
@@ -429,8 +493,15 @@
             }
 
             document.getElementById('prevBtn').style.display = (page > 1) ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').style.display = (page < totalPages) ? 'inline-block' : 'none';
-            document.getElementById('submitContainer').style.display = (page === totalPages) ? 'flex' : 'none';
+
+            if (page < totalPages) {
+                document.getElementById('nextBtn').style.display = 'inline-block';
+                document.getElementById('submitBtn').style.display = 'none';
+            } else {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'inline-block';
+            }
+
         }
 
 
@@ -588,6 +659,20 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             showPage(currentPage);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!instructors || instructors.length === 0) {
+                const submitBtn = document.getElementById("submitBtn");
+                submitBtn.disabled = true;
+                submitBtn.style.backgroundColor = '#ccc';
+                submitBtn.title = "No hay instructores asignados";
+
+                const warningMessage = document.getElementById("warning-message");
+                warningMessage.style.display = 'block';
+                warningMessage.textContent =
+                    "No hay instructores asignados. Por favor, agregue al menos un instructor antes de enviar la encuesta.";
+            }
         });
     </script>
 </body>
