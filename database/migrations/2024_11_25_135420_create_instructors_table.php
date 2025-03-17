@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('instructors', function (Blueprint $table) {
 
             $table->id();
+            $table->enum('state',['Activo','Inactivo']);
+            $table->boolean('is_course_leader')->default(false);
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->enum('state',['Activo','Inactivo']);
-            $table->boolean('is_course_leader')->default(false);
+            $table->unsignedBigInteger('knowledge_network_id');
+            $table->foreign('knowledge_network_id')->references('id')->on('knowledge_networks');
 
             $table->timestamps();
         });

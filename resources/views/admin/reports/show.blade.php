@@ -13,7 +13,6 @@
     <div class="container">
         <h2>REPORTE DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN: FICHA {{ $course->code }}</h2>
         <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}}</h3>
-        <h3>programa:{{ $program->name }}</h3>
 
         {{-- <a target="download" href="{{route('reportsDownloadCourse', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $program->id]) }}" class="btn btn-primary">
             Descargar Reporte Ficha

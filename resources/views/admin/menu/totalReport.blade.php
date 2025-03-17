@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Encuestas Cerradas</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Tabla de reporte con filtros y boton de descarga de los datos filtrados">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .tittle-close {
-            color: #2E7D32
+            color: #2E7D32;
+            margin: 0;
         }
 
         body {
@@ -52,30 +55,7 @@
             max-width: 200;
         }
 
-        form button {
-            padding: 10px 16px;
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #388E3C;
-            color: #fff;
-            font-size: 1.1rem;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 4px;
-            border: 2px solid #2E7D32;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s ease;
-        }
 
-        form button:hover {
-            background-color: #45a049;
-        }
 
         table {
             width: 100%;
@@ -108,20 +88,7 @@
             background-color: #e0f7fa;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #388E3C;
-            color: #fff;
-            font-size: 1.1rem;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 4px;
-            margin-top: 16px;
-            border: 2px solid #2E7D32;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s ease;
-        }
+
 
         .btn:hover {
             background-color: #45a049;
@@ -169,7 +136,7 @@
 
         .Search {
             background-color: #fff;
-            padding: 16px;
+            padding: 8px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 24px;
@@ -226,7 +193,7 @@
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            min-width: 200px;
+            min-width: 150px;
             max-width: 400PX;
         }
 
@@ -252,30 +219,149 @@
         }
 
         .search-wrapper {
-            width: 100%;
             display: flex;
             flex-wrap: wrap;
             gap: 16px;
             align-items: flex-start;
         }
 
-        .search-wrapper>div {
-            flex: 1;
+        .search-item {
+            flex: 1 1 200px;
             min-width: 150px;
+            max-width: 300px;
         }
 
-        .averages-container {
+        .averages-container .minmax-row {
             display: flex;
-            flex-direction: row;
-            align-items: flex-end;
             gap: 16px;
         }
 
-        .averages-container>div {
-            flex: 0 0 100px;
+        .float-container {
+            position: relative;
+            min-width: 150px;
+            max-width: 300px;
         }
-        .small-input {
-            min-width: 120px;;
+
+        .float-container input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .float-container label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            background-color: #fff;
+            padding: 0 4px;
+            pointer-events: none;
+            transition: 0.2s ease all;
+            font-size: 12px;
+        }
+
+        .float-container input:focus+label,
+        .float-container input:not(:placeholder-shown)+label {
+            top: 0;
+            left: 8px;
+            transform: translateY(-50%) scale(0.9);
+            font-size: 12px;
+            color: #666;
+        }
+
+        .float-containerdos {
+            position: relative;
+            min-width: 100px;
+            max-width: 150px;
+        }
+
+        .float-containerdos input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .float-containerdos label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .float-containerdos input:focus+label,
+        .float-containerdos input:not(:placeholder-shown)+label {}
+
+        .float-containert {
+            position: relative;
+            margin-bottom: 16px;
+            min-width: 150px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .float-containert select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            background: transparent;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 0;
+        }
+
+        .float-containert label {
+            position: absolute;
+            left: 12px;
+            top: -8px;
+            background-color: #fff;
+            padding: 0 4px;
+            font-size: 12px;
+            color: #666;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .float-container.small {
+            min-width: 80px;
+            max-width: 110px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #388E3C;
+            color: #fff;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #2E7D32;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn.btn-blue {
+            background-color: #0275d8;
+            border-color: #025aa5;
+        }
+
+        .btn.btn-blue:hover {
+            background-color: #025aa5;
         }
     </style>
 
@@ -289,58 +375,101 @@
     @include('admin.menu.header')
 
     <div class="container">
-        <div style="display: flex; justify-content: space-between">
-            <h2 class="tittle-close">Reporte de Encuestas Cerradas</h2>
+        <div style="display: flex; justify-content: space-between; padding:4px">
+            <h4 class="tittle-close">Encuestas Cerradas</h4>
             <div>
-                <a href="{{ route('totalreportpdf.all', [
-                    'survey_identifier' => request('survey_identifier'),
-                    'instructor_search' => request('instructor_search'),
-                ]) }}"
-                    class="btn">Descargar PDFs Filtrados</a>
+                <div style="display: inline-block">
+                    <a href="{{ route('totalreportpdf.all', [
+                        'survey_identifier' => request('survey_identifier'),
+                        'instructor_search' => request('instructor_search'),
+                        'knowledge_network_id' => request('knowledge_network_id'),
+                    ]) }}"
+                        class="btn">
+                        <i class="fa fa-download" style="margin-right: 4px;"></i>
+                        PDFs</a>
+                </div>
+                <div style="display: inline-block">
+                    <a href="{{ route('downloadExcel', [
+                        'survey_identifier' => request('survey_identifier'),
+                        'instructor_search' => request('instructor_search'),
+                        'knowledge_network_id' => request('knowledge_network_id'),
+                        'min_average' => request('min_average'),
+                        'max_average' => request('max_average'),
+                    ]) }}"
+                        class="btn">
+                        <i class="fa fa-download" style="margin-right: 4px;"></i>
+                        Excel
+                    </a>
+                </div>
             </div>
+
         </div>
 
         <div class="Search">
             <form method="GET" action="{{ route('reportsClose') }}">
                 <div class="search-wrapper">
-                    <div style="display: contents">
-                        <label for="survey_identifier">Cuestionario:</label>
-                        <select name="survey_identifier" id="survey_identifier">
-                            <option value="">Todos</option>
-                            @foreach ($surveyIdentifiers as $identifier)
-                                <option value="{{ $identifier }}" @if ($surveyIdentifier == $identifier) selected @endif>
-                                    {{ $identifier }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div style="display: contents">
-                        <label for="instructor_search">Instructor:</label>
-                        <input placeholder="Nombre o documento" type="text" name="instructor_search"
-                            id="instructor_search" value="{{ request('instructor_search') }}">
-                    </div>
-                    <div class="averages-container" style="display:contents">
-                        <div style="display:contents">
-                            <label for="min_average"></label>
-                            <input placeholder="Promedio Mínimo" type="number" step="0.01" name="min_average"
-                                id="min_average" value="{{ request('min_average') }}" onblur="formatDecimal(this)"
-                                class="small-input">
-                        </div>
-                        <div style="display:contents">
-                            <label for="max_average" style="widht:100px"></label>
-                            <input placeholder="Promedio Máximo" type="number" step="0.01" name="max_average"
-                                id="max_average" value="{{ request('max_average') }}" onblur="formatDecimal(this)"
-                                class="small-input">
+                    <div class="search-item">
+                        <div class="float-containert">
+                            <select name="survey_identifier" id="survey_identifier">
+                                <option value="">Todos</option>
+                                @foreach ($surveyIdentifiers as $identifier)
+                                    <option value="{{ $identifier }}"
+                                        @if ($surveyIdentifier == $identifier) selected @endif>
+                                        {{ $identifier }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <label for="survey_identifier">Formulario</label>
                         </div>
                     </div>
+
+                    <div class="search-item">
+                        <div class="float-container" style="box">
+                            <input type="text" name="instructor_search" id="instructor_search" placeholder=" "
+                                value="{{ request('instructor_search') }}">
+                            <label for="instructor_search">Instructor</label>
+                        </div>
+                    </div>
+
+                    <div class="search-item">
+                        <div class="float-container">
+                            <input type="text" name="knowledge_network_id" id="knowledgeNetworkId" placeholder=" "
+                                value="{{ request('knowledge_network_id') }}">
+                            <label for="knowledgeNetworkId">Área de conocimiento</label>
+                        </div>
+                    </div>
+
+                    <div class="search-item">
+                        <div class="float-container small">
+                            <input type="number" step="0.01" id="min_average" name="min_average" placeholder=" "
+                                value="{{ request('min_average') }}" onblur="formatDecimal(this)">
+                            <label for="min_average">p. mínimo</label>
+                        </div>
+                    </div>
+
+                    <div class="search-item">
+                        <div class="float-container small">
+                            <input type="number" step="0.01" id="max_average" name="max_average" placeholder=" "
+                                value="{{ request('max_average') }}" onblur="formatDecimal(this)">
+                            <label for="max_average">p. máximo</label>
+                        </div>
+                    </div>
+
                 </div>
-                <div style="display: flex; justify-content:flex-end">
-                    <button type="submit">Filtrar</button>
-                    <button type="button" onclick="window.location='{{ route('reportsClose') }}'">Borrar
-                        filtros</button>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <button type="button" class="btn btn-blue"
+                        onclick="window.location='{{ route('reportsClose') }}'">
+                        <i class="fa fa-undo" style="margin-right: 4px;"></i>
+                        Borrar</button>
+                    <button type="submit" class="btn">
+                        <i class="fa fa-search" style="margin-right: 4px;"></i>
+                        Filtrar</button>
+
                 </div>
             </form>
         </div>
+
 
         <script>
             function formatDecimal(input) {
@@ -377,9 +506,11 @@
                                 'id' => $summary->instructor_id,
                                 'survey_identifier' => $summary->survey_identifier,
                                 'instructor_search' => request('instructor_search'),
+                                'knowledge_network_id' => request('knowledge_network_id'),
                             ]) }}"
                                 style="color: #2E7D32; font-weight: bold; text-decoration: none;">
-                                Descargar PDF
+                                <i class="fa fa-download" style="margin-right: 4px;"></i>
+                                PDF
                             </a>
                         </td>
                     </tr>
@@ -434,51 +565,27 @@
     </div>
     <script>
         document.getElementById('survey_identifier').addEventListener('change', function() {
-
             var surveyIdentifier = this.value;
-
             var instructorSelect = document.getElementById('instructor_id');
-
-            if (!instructorSelect) return; // Si no existe, no hace nada.
-
+            if (!instructorSelect) return;
             var url = "{{ route('api.instructors') }}" + "?survey_identifier=" + encodeURIComponent(
-
                 surveyIdentifier);
-
             fetch(url)
-
                 .then(response => response.json())
-
                 .then(data => {
-
                     instructorSelect.innerHTML = '<option value="">Todos</option>';
-
                     data.forEach(function(inst) {
-
                         var option = document.createElement('option');
-
                         option.value = inst.id;
-
                         option.text = inst.name;
-
                         instructorSelect.appendChild(option);
-
                     });
-
                 })
-
                 .catch(error => {
-
                     console.error("Error al obtener los instructores:", error);
-
                 });
-
         });
-
     </script>
-
 </body>
-
-
 
 </html>

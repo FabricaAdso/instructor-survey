@@ -7,6 +7,7 @@
     <title>Reporte de Instructores</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
+        /* Estilos globales */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -16,41 +17,35 @@
         }
 
         .container {
-            max-width: auto;
+            max-width: 100%;
             margin: 0 auto;
             padding: 16px;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 16px;
+        h3 {
+            margin: 0;
+            font-size: 1rem;
+            margin-bottom: 10px;
             color: #1F2937;
         }
 
         .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border: none;
+            padding: 5px 5px;
+            background-color: #388E3C;
+            color: #fff;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: bold;
             border-radius: 4px;
+            border: 2px solid #2E7D32;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
-            font-size: 1rem;
-            text-align: center;
-            width: auto;
-            max-width: 200px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             opacity: 0.9;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            margin-bottom: 24px;
-            justify-content: flex-start;
         }
 
         .btn-toggle.survey-closed {
@@ -60,14 +55,27 @@
         }
 
         .btn-toggle.survey-open {
-            background-color: #4CAF50;
+            background-color: #FF9800;
             color: #fff;
-            opacity: 0.8;
+            opacity: 1;
         }
 
         .btn-mass {
-            background-color: #555;
+            background-color: #00897B;
             color: #fff;
+            border: 2px solid #00796B;
+        }
+
+        .btn-disabled {
+            background-color: #D1D5DB;
+            color: #333;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #D1D5DB;
+            cursor: not-allowed;
+            opacity: 1;
         }
 
         .cancel-button {
@@ -88,18 +96,19 @@
             background-color: #b3b3b3;
         }
 
-        .cancel-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        #searchInput {
-            width: 100%;
-            max-width: 400px;
-            padding: 8px;
+        #instructor_search {
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-bottom: 16px;
+            width: 100%;
+            max-width: 300px;
+            min-width: 80px;
+            transition: border-color 0.3s;
+        }
+
+        #instructor_search:focus {
+            border-color: #388E3C;
+            outline: none;
         }
 
         table {
@@ -110,7 +119,7 @@
 
         th,
         td {
-            padding: 12px;
+            padding: 5px;
             border: 1px solid #ccc;
             text-align: left;
         }
@@ -173,7 +182,6 @@
             cursor: not-allowed;
         }
 
-        /* Notificación (Toast) */
         .toast {
             position: fixed;
             top: 1rem;
@@ -213,7 +221,6 @@
             }
         }
 
-        /* Modal */
         .modal {
             display: flex;
             position: fixed;
@@ -236,19 +243,24 @@
         }
 
         .modal-content {
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
             background-color: #fff;
             border-radius: 8px;
             padding: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 320px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             position: relative;
+            height: 200px;
         }
 
-        .modal-content h2 {
-            font-size: 1.5rem;
+        .modal-content h4 {
+            font-size: 0.9rem;
             margin-bottom: 16px;
             color: #333;
+            margin-top: 0px
         }
 
         .modal-close {
@@ -288,162 +300,183 @@
         .modal-form button {
             align-self: flex-end;
         }
+
+        .index-container .btn {}
+
+        .table-container .btn {}
+
+            {
+            font-size: 0.9rem;
+            padding: 8px 14px;
+        }
+
+        .modal-container .btn {
+            font-size: 0.9rem;
+            padding: 2px 4px;
+            width: max-content
+        }
+
+
+        .btn-report-general,
+        .btn-fichas {
+            font-size: 0.9rem;
+            width: max-content
+        }
+
+        th.document-number {
+            width: 130px;
+            text-align: center;
+        }
+
+        th.name {
+            width: 50%;
+        }
+
+        .input-search {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            /* Por defecto en una sola línea */
+        }
+
+        .left-group,
+        .right-group {
+            flex: 0 0 250px;
+        }
+
+        .center-group {
+            flex: 1;
+            text-align: center;
+        }
+
+        .input-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        @media (max-width: 920px) and (min-width: 801px) {
+            .right-group {
+                flex: 0 0 100px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .header-flex {
+                flex-wrap: wrap !important;
+            }
+
+            .left-group,
+            .center-group,
+            .right-group {
+                flex: 1 0 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .right-group {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body>
     @include('admin.menu.header')
-    <div class="container">
-        <h1>Reporte de Instructores</h1>
-        <div class="button-group">
-            <button id="toggle-survey-status"
-                class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
-                {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
-            </button>
-            <button id="open-modal" class="btn btn-mass">Cargue Masivo</button>
-        </div>
-        <input type="text" id="searchInput" placeholder="Buscar...">
-        <table>
-            <thead>
-                <tr>
-                    <th>N# Documento</th>
-                    <th>Nombre</th>
-                    <th>Reporte por Fichas</th>
-                    <th>Reporte General</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($instructors as $instructor)
-                    <tr>
-                        <td>{{ $instructor->user->identity_document }}</td>
-                        <td>{{ $instructor->user->name }} {{ $instructor->user->last_name }}</td>
-                        <td style="text-align: center;">
-                            <button onclick="openInstructorModal({{ $instructor->id }})" class="btn">
-                                Ver Fichas Asociadas
-                            </button>
-                        </td>
-                        <td style="text-align: center;">
-                            <button @if (!$instructor->hasGeneralAnswers) disabled @endif
-                                onclick="window.location.href='{{ $instructor->hasGeneralAnswers ? route('reportsGeneral', $instructor->id) : '#' }}'"
-                                class="btn"
-                                style="background-color: {{ $instructor->hasGeneralAnswers ? '#38a901' : '#D1D5DB' }};
-         color: #fff;
-         cursor: {{ $instructor->hasGeneralAnswers ? 'pointer' : 'not-allowed' }};">
-                                Reporte General
-                            </button>
-
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="pagination-wrapper">
-            <ul class="pagination">
-                @if ($instructors->onFirstPage())
-                    <li class="disabled"><span>Anterior</span></li>
-                @else
-                    <li><a href="{{ $instructors->previousPageUrl() }}">Anterior</a></li>
-                @endif
-                @php
-                    $currentPage = $instructors->currentPage();
-                    $lastPage = $instructors->lastPage();
-                    $maxPages = 5;
-                    $startPage = max(1, $currentPage - floor($maxPages / 2));
-                    $endPage = $startPage + $maxPages - 1;
-                    if ($endPage > $lastPage) {
-                        $endPage = $lastPage;
-                        $startPage = max(1, $endPage - $maxPages + 1);
-                    }
-                @endphp
-                @if ($startPage > 1)
-                    <li><a href="{{ $instructors->url(1) }}">1</a></li>
-                    @if ($startPage > 2)
-                        <li class="disabled"><span>...</span></li>
-                    @endif
-                @endif
-                @for ($page = $startPage; $page <= $endPage; $page++)
-                    @if ($page == $currentPage)
-                        <li class="active"><span>{{ $page }}</span></li>
-                    @else
-                        <li><a href="{{ $instructors->url($page) }}">{{ $page }}</a></li>
-                    @endif
-                @endfor
-                @if ($endPage < $lastPage)
-                    @if ($endPage < $lastPage - 1)
-                        <li class="disabled"><span>...</span></li>
-                    @endif
-                    <li><a href="{{ $instructors->url($lastPage) }}">{{ $lastPage }}</a></li>
-                @endif
-                @if ($instructors->hasMorePages())
-                    <li><a href="{{ $instructors->nextPageUrl() }}">Siguiente</a></li>
-                @else
-                    <li class="disabled"><span>Siguiente</span></li>
-                @endif
-            </ul>
-        </div>
-        <!-- Modal para fichas asociadas de cada instructor -->
-        @foreach ($instructors as $instructor)
-            <div id="modal-{{ $instructor->id }}" class="modal">
-                <div class="modal-content">
-                    <h2>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h2>
-                    <div style="margin-bottom: 16px;">
-                        @foreach ($instructor->courses as $course)
-    @if ($course->program)
-        <button style="margin-bottom: 8px; width: 100%; background-color: {{ $course->hasAnswers ? '#38a901' : '#D1D5DB' }};" class="btn">
-            <a href="{{ route('reports.show', ['courseId' => $course->id, 'instructorId' => $instructor->id, 'programId' => $course->program->id]) }}"
-               style="display: block; padding: 8px 16px; color: #fff; text-decoration: none;">
-                {{ $course->code }}
-            </a>
-        </button>
-    @else
-        <button disabled style="margin-bottom: 8px; width: 100%; background-color: #D1D5DB;" class="cancel-button">
-            <a style="display: block; padding: 8px 16px; color: #fff; text-decoration: none; cursor: not-allowed;">
-                {{ $course->code }}
-            </a>
-        </button>
-    @endif
-@endforeach
-
-                    </div>
-                    <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button"
-                        style="width: 100%;">Cerrar</button>
+    <div class="container index-container">
+        <h3>Reporte de Instructores</h3>
+        <div class="header-flex">
+            <div class="left-group">
+                <div class="button-group">
+                    <button id="toggle-survey-status"
+                        class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
+                        {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
+                    </button>
+                    <button id="open-modal" class="btn btn-mass">Cargue Masivo</button>
                 </div>
             </div>
-        @endforeach
 
-        <!-- Modal de carga masiva -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <button id="close-modal" class="modal-close">&times;</button>
-                <h2>Subir Archivo Excel</h2>
-                <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST"
-                    enctype="multipart/form-data" class="modal-form">
-                    @csrf
-                    <label for="file">Selecciona el archivo (.xlsx, .xls):</label>
-                    <input type="file" name="file" id="file" accept=".xlsx, .xls">
-
-                    <button type="submit" class="btn">Subir</button>
+            <div class="center-group">
+                <form onsubmit="event.preventDefault(); performSearch(1);">
+                    <input type="text" id="instructor_search" name="instructor_search">
+                    <button type="submit">Buscar</button>
                 </form>
+
             </div>
+
+            <div class="right-group"></div>
+        </div>
+        <br>
+        <div class="table-container"></div>
+    </div>
+
+
+    <div id="modal"
+        style="display: none;
+        flex: 1;
+  overflow-y: auto;
+   position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
+        <div class="max-modal"
+            style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 480px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+            <button id="close-modal-top"
+                style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 1.8rem; color: #aaa; cursor: pointer;">&times;</button>
+
+            <h2 style="font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center;">
+                Subir Archivo Excel</h2>
+
+            <form id="upload-form" action="{{ route('import-apprentices') }}" method="POST"
+                enctype="multipart/form-data">
+                @csrf
+                <div style="margin-bottom: 20px;">
+                    <label for="file"
+                        style="display: block; font-size: 1rem; font-weight: 500; color: #555; margin-bottom: 8px;">Selecciona
+                        el archivo (.xlsx, .xls):</label>
+                    <input type="file" name="file" id="file" required
+                        style="display: block; width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <button type="button" id="close-modal-bottom"
+                        style="padding: 6px 50px; background-color: #d00; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.2rem;">
+                        &times;
+                    </button>
+                    <button type="submit"
+                        style="padding: 10px 14px; background-color: #38a901; color: #fff; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);">
+                        Importar Excel
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+
+
+
     <script>
-        // Funciones para abrir y cerrar el modal de carga masiva
-        const openModalBtn = document.getElementById('open-modal');
-        const closeModalBtn = document.getElementById('close-modal');
-        const modal = document.getElementById('modal');
-        openModalBtn.addEventListener('click', function() {
-            modal.classList.add('show');
+        document.getElementById('open-modal').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'flex';
         });
-        closeModalBtn.addEventListener('click', function() {
-            modal.classList.remove('show');
+
+        document.getElementById('close-modal-top').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'none';
         });
+
+        document.getElementById('close-modal-bottom').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'none';
+        });
+
         window.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('show');
+            if (e.target === document.getElementById('modal')) {
+                document.getElementById('modal').style.display = 'none';
             }
         });
-        // Funciones para abrir y cerrar el modal de fichas asociadas
         function openInstructorModal(id) {
             document.getElementById('modal-' + id).classList.add('show');
         }
@@ -451,16 +484,7 @@
         function closeInstructorModal(id) {
             document.getElementById('modal-' + id).classList.remove('show');
         }
-        // Filtro de búsqueda
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll("tbody tr");
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.indexOf(filter) > -1 ? "" : "none";
-            });
-        });
-        // Notificación (Toast)
+
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
@@ -470,8 +494,8 @@
                 toast.remove();
             }, 3000);
         }
-        // Listener para el botón de toggle de encuesta
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', () => {
             const toggleButton = document.getElementById('toggle-survey-status');
             if (!toggleButton) return;
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
@@ -479,7 +503,7 @@
                 console.error('Error: No se encontró el token CSRF.');
                 return;
             }
-            toggleButton.addEventListener('click', function() {
+            toggleButton.addEventListener('click', () => {
                 fetch('/admin/toggle-survey-status', {
                         method: 'POST',
                         headers: {
@@ -493,19 +517,17 @@
                             toggleButton.textContent = 'Cerrar Encuesta';
                             toggleButton.classList.remove('survey-closed');
                             toggleButton.classList.add('survey-open');
-                            showToast('Encuesta abierta', 'success');
+                            showToast('Encuesta abierta exitosamente', 'success');
                         } else {
                             toggleButton.textContent = 'Abrir Encuesta';
                             toggleButton.classList.remove('survey-open');
                             toggleButton.classList.add('survey-closed');
-                            showToast('Encuesta cerrada', 'error');
+                            showToast('Encuesta cerrada exitosamente', 'success');
                         }
-                        // Actualiza la tabla con AJAX (si tienes la ruta definida)
                         fetch('{{ route('admin.instructors') }}')
                             .then(res => res.text())
                             .then(html => {
                                 document.querySelector('table tbody').innerHTML = html;
-                                showToast('Encuesta abierta', 'success');
                             });
                     })
                     .catch(error => {
@@ -515,11 +537,29 @@
             });
         });
 
+        function performSearch(page = 1) {
+            const searchValue = document.getElementById('instructor_search').value;
+            const url =
+            `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
+
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('.table-container').innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            performSearch();
+        });
+
+
+
         document.getElementById('upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
             fetch(this.action, {
                     method: 'POST',
                     headers: {

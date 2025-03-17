@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->enum('state',['En_formacion', 'Etapa_productiva', 'En_comite', 'Desertado', 'Retiro_voluntario', 'Por_certificar', 'Induccion']);
+            $table->enum('state',['En_formacion', 'Etapa_productiva', 'En_comite', 'Desertado', 'Retiro_voluntario', 'Induccion']);
 
             $table->unsignedBigInteger('course_id');
             $table->foreign('course_id')->references('id')->on('courses');

@@ -5,16 +5,17 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Answer;
 use App\Models\SurveySummary;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use App\Models\OpenQuestion;
 
 class ConsolidateSurveyData extends Command
 {
     protected $signature = 'survey:consolidate {closure_date}';
-    protected $description = 'Consolidate survey data into summary table';
+    protected $description = 'Consolidate survey data into summary table and handle open questions';
 
     public function handle()
     {
+        $closureDate = $this->argument('closure_date');
+
         $closureDate = $this->argument('closure_date');
 
         // Obtener todos los instructores únicos que tienen respuestas
@@ -28,23 +29,40 @@ class ConsolidateSurveyData extends Command
                 ->get();
 
             foreach ($questions as $question) {
-                // Calcular el promedio y el total de respuestas para esta pregunta e instructor
-                $answers = Answer::where('instructor_id', $instructor->instructor_id)
-                    ->where('question_id', $question->question_id)
-                    ->get();
+                // Verificar si la pregunta es de respuesta abierta (preguntas 21 y 22)
+                if ($question->question_id == 21 || $question->question_id == 22) {
+                    // Obtener las respuestas abiertas para esta pregunta e instructor
+                    $openAnswers = Answer::where('instructor_id', $instructor->instructor_id)
+                        ->where('question_id', $question->question_id)
+                        ->get();
 
-                $totalResponses = $answers->count();
-                $averageQualification = $answers->avg(function($answer) {
-                    return (float) $answer->qualification;
-                });
-                // Guardar los datos consolidados en la tabla survey_summaries
-                SurveySummary::create([
-                    'instructor_id' => $instructor->instructor_id,
-                    'question_id' => $question->question_id,
-                    'average_qualification' => $averageQualification,
-                    'total_responses' => $totalResponses,
-                    'survey_identifier' => $closureDate, // Fecha de cierre de la encuesta
-                ]);
+                    // Guardar cada respuesta abierta en la tabla open_questions
+                    foreach ($openAnswers as $answer) {
+                        OpenQuestion::create([
+                            'survey_identifier' => $closureDate,
+                            'instructor_id' => $instructor->instructor_id,
+                            'question_id' => $question->question_id,
+                            'response' => $answer->qualification, // Asumiendo que 'qualification' contiene la respuesta abierta
+                        ]);
+                    }
+                } else {
+                    // Calcular el promedio y el total de respuestas para preguntas numéricas (1 a 20)
+                    $answers = Answer::where('instructor_id', $instructor->instructor_id)
+                        ->where('question_id', $question->question_id)
+                        ->get();
+
+                    $totalResponses = $answers->count();
+                    $averageQualification = $answers->avg('qualification');
+
+                    // Guardar los datos consolidados en la tabla survey_summaries
+                    SurveySummary::create([
+                        'instructor_id' => $instructor->instructor_id,
+                        'question_id' => $question->question_id,
+                        'average_qualification' => $averageQualification,
+                        'total_responses' => $totalResponses,
+                        'survey_identifier' => $closureDate,
+                    ]);
+                }
             }
         }
 
