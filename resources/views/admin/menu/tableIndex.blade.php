@@ -101,7 +101,7 @@
         <div id="modal-{{ $instructor->id }}" class="instructor-modal">
             <div class="modal-content">
                 <h4>Fichas Asociadas a {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h4>
-                <div style="width: 100%; height: 120px; overflow-y: auto;">
+                <div style="width: 100%; height: 220px; overflow-y: auto;">
                     @include('admin.menu.modalCourses', ['instructor' => $instructor])
                 </div>
                 <button onclick="closeInstructorModal({{ $instructor->id }})" class="cancel-button"
