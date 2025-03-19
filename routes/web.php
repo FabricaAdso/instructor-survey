@@ -62,6 +62,9 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
      Route::get('/api/instructors', [TotalReportController::class, 'getInstructorsBySurveyIdentifier'])->name('api.instructors');
      Route::get('/descargar-excel', [TotalReportController::class, 'downloadExcel'])->name('downloadExcel');
 
+     Route::get('/open-questions', [TotalReportController::class, 'openQuestions'])->name('open.questions');
+
+
     });
 
 

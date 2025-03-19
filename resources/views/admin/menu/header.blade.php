@@ -184,7 +184,7 @@
                 <div class="header-logout">
                     <form action="{{ route('logout.admin') }}" method="POST">
                         @csrf
-                        <button style="font-size: 1.2rem" type="submit" id="btnLogout">Salir</button>
+                        <button style="font-size: 1.2rem" type="submit" id="btnLogout">Cerrar sesión</button>
                     </form>
                 </div>
             </div>

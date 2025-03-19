@@ -54,7 +54,7 @@
 
                 <div class="text-center">
                     <p class="text-sm text-gray-500">Ingresar como <a href="{{ route('login.admin') }}"
-                            class="text-green-500 hover:underline">Instructor</a></p>
+                            class="text-green-500 hover:underline">Administrador</a></p>
                 </div>
             </div>
         </div>

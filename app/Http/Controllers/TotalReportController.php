@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OpenQuestion;
 use App\Models\SurveySummary;
 use App\Models\TotalReport;
 use Illuminate\Http\Request;
@@ -91,6 +92,29 @@ class TotalReportController extends Controller
             'maxAverage'
         ));
     }
+
+
+    public function openQuestions(Request $request)
+    {
+
+    $surveyIdentifier = $request->input('survey_identifier');
+    $instructorId = $request->input('instructor_id');
+    $questionId     = $request->input('question_id'); // Parámetro opcional
+
+    $query = OpenQuestion::where('survey_identifier', $surveyIdentifier)
+        ->where('instructor_id', $instructorId)
+        ->whereNotNull('response');
+
+    // Si se especificó la pregunta, agregar el filtro
+    if ($questionId) {
+        $query->where('question_id', $questionId);
+    }
+
+    $openQuestions = $query->get();
+
+    return response()->json($openQuestions);
+    }
+
 
 
     public function totalpdf($id, Request $request)
@@ -387,4 +411,8 @@ public function downloadExcel(Request $request)
     $writer->save('php://output');
     exit;
 }
+
+
+
+
 }

@@ -24,13 +24,15 @@
         }
 
         .header {
-    text-align: center;
-    color: #28a745;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #28a745; /* Estilo de borde */
-    padding-bottom: 10px;
-    border-top: 3px solid #28a745;  /* Si deseas un borde superior también */
-}
+            text-align: center;
+            color: #28a745;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #28a745;
+            /* Estilo de borde */
+            padding-bottom: 10px;
+            border-top: 3px solid #28a745;
+            /* Si deseas un borde superior también */
+        }
 
 
         .header h2 {
@@ -38,7 +40,8 @@
             font-size: 24px;
         }
 
-        h2, h3 {
+        h2,
+        h3 {
             color: #28a745;
             font-size: 20px;
             margin-bottom: 15px;
@@ -53,22 +56,27 @@
         }
 
         .chart-section {
-    margin-bottom: 50px;
-    border: 2px solid #f4f4f4;  /* Borde en color verde */
-    border-radius: 8px;  /* Borde redondeado */
-    padding: 15px;  /* Espacio interno */
-}
+            margin-bottom: 50px;
+            border: 2px solid #f4f4f4;
+            /* Borde en color verde */
+            border-radius: 8px;
+            /* Borde redondeado */
+            padding: 15px;
+            /* Espacio interno */
+        }
 
         .chart-section h2 {
             margin-bottom: 20px;
         }
 
         .observations-section ul {
-    list-style-type: disc;
-    padding-left: 20px;
-    border-left: 4px solid #28a745;  /* Línea de borde a la izquierda */
-    padding-left: 25px; /* Aumentar el espacio después del borde */
-}
+            list-style-type: disc;
+            padding-left: 20px;
+            border-left: 4px solid #28a745;
+            /* Línea de borde a la izquierda */
+            padding-left: 25px;
+            /* Aumentar el espacio después del borde */
+        }
 
         .page-break {
             page-break-after: always;
@@ -85,7 +93,8 @@
         <br><br>
 
         <div class="instructor-info">
-            <h3>Instructor: {{ $instructor->name }} {{$instructor->last_name}} {{$instructor->second_last_name}}</h3>
+            <h3>Instructor: {{ $instructor->name }} {{ $instructor->last_name }} {{ $instructor->second_last_name }}
+            </h3>
         </div>
         <br><br>
 
@@ -210,7 +219,7 @@
                     yaxis: {
                         title: {
                             text: 'Calificación Promedio',
-                            style:{
+                            style: {
                                 fontSize: '16px'
                             }
                         },
