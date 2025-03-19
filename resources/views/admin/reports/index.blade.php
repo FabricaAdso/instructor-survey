@@ -429,7 +429,7 @@
     <div id="modal"
         style="display: none;
         flex: 1;
-  overflow-y: auto;
+    overflow-y: auto;
    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
         <div class="max-modal"
             style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 500px;width:600px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
