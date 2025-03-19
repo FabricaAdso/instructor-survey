@@ -88,7 +88,7 @@ class ReportController extends Controller
             });
         }
 
-        $instructors = $query->paginate(10);
+        $instructors = $query->paginate(15);
 
         return view('admin.menu.tableIndex', compact('instructors'));
     }
@@ -229,6 +229,7 @@ class ReportController extends Controller
                     'count' => $group->count(),
                 ];
             });
+
 
         $observations = $answers->whereIn('question_id', [21, 22])
             ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');;

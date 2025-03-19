@@ -398,11 +398,10 @@
         <h3>Reporte de Instructores</h3>
         <div class="header-flex">
             <div class="left-group">
-                <div class="button-group" style="width:300px">
+                <div class="button-group" style="width:320px">
                     <button id="toggle-survey-status" style="font-size: 16px"
                         class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
-                        <i class="fa fa-open" style="margin-right: 4px;"></i>
-
+                        <i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i>
                         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
                     </button>
                     <button id="open-modal" style="font-size:16px" class="btn btn-mass">
@@ -414,7 +413,18 @@
             <div class="center-group">
                 <form onsubmit="event.preventDefault(); performSearch(1);">
                     <input type="text" id="instructor_search" name="instructor_search">
-                    <button style="font-size: 16px" type="submit">Buscar</button>
+                    <button
+                        style="font-size: 16px;  padding: 10px 20px;
+    font-size: 1rem;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease;
+        background-color: white;
+    color: #4CAF50;
+    border-color:#4CAF50;
+    cursor: pointer; "
+                        type="submit">Buscar</button>
                 </form>
 
             </div>
@@ -429,7 +439,7 @@
     <div id="modal"
         style="display: none;
         flex: 1;
-    overflow-y: auto;
+  overflow-y: auto;
    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6);">
         <div class="max-modal"
             style="position: relative; background-color: #fff; border-radius: 12px; padding: 30px; max-width: 500px;width:600px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
@@ -462,6 +472,36 @@
         </div>
     </div>
 
+    <!-- Modal de Resultado (Éxito o Error) -->
+    <div id="result-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; z-index: 50;">
+        <div
+            style="background: #fff; padding: 20px; border-radius: 6px; text-align: center; max-width: 400px; width: 90%;">
+            <h2 id="result-title" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px;"></h2>
+            <p id="result-message" style="font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <button id="close-result-modal"
+                style="padding: 10px 20px; font-size: 1rem; background-color: #38a901;
+        color: #fff; border: none; border-radius: 6px; cursor: pointer;">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Carga -->
+    <div id="loading-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; z-index: 1000;">
+        <div
+            style="background: #fff; padding: 20px; border-radius: 6px; text-align: center; max-width: 400px; width: 90%;">
+            <div
+                style="border: 4px solid #f3f3f3; border-top: 4px solid #38a901; border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto;">
+            </div>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Cargando...</p>
+        </div>
+    </div>
+
+
+
 
 
     <script>
@@ -487,6 +527,7 @@
         function closeInstructorModal(id) {
             document.getElementById('modal-' + id).classList.remove('show');
         }
+
 
         function showToast(message, type) {
             const toast = document.createElement('div');
@@ -517,12 +558,16 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.is_survey_open) {
-                            toggleButton.textContent = 'Cerrar Encuesta';
+
+                            toggleButton.innerHTML =
+                                '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Cerrar Encuesta';
                             toggleButton.classList.remove('survey-closed');
                             toggleButton.classList.add('survey-open');
                             showToast('Encuesta abierta exitosamente', 'success');
                         } else {
-                            toggleButton.textContent = 'Abrir Encuesta';
+                            toggleButton.innerHTML =
+                                '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Abrir Encuesta';
+
                             toggleButton.classList.remove('survey-open');
                             toggleButton.classList.add('survey-closed');
                             showToast('Encuesta cerrada exitosamente', 'success');
@@ -558,11 +603,18 @@
         });
 
 
-
         document.getElementById('upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const loadingModal = document.getElementById('loading-modal');
+            const resultModal = document.getElementById('result-modal');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+
+            // Muestra el modal de loading
+            loadingModal.style.display = 'flex';
+
             fetch(this.action, {
                     method: 'POST',
                     headers: {
@@ -570,13 +622,38 @@
                     },
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.blob();
+                    }
+                })
                 .then(data => {
-                    if (data.success) {
-                        showToast(data.message || 'Archivo subido exitosamente', 'success');
-                        // Cerrar el modal solo si el archivo se sube con éxito
+                    loadingModal.style.display = 'none';
+
+                    if (data instanceof Blob) {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'errores.xlsx';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        resultTitle.textContent = 'Advertencia';
+                        resultMessage.textContent =
+                            'Algunas filas no se importaron correctamente. Se ha descargado un archivo con los errores.';
+                        resultModal.style.display = 'flex';
+                    } else if (data && data.success) {
+                        // Caso de éxito: muestra el modal de resultado
+                        resultTitle.textContent = 'Éxito';
+                        resultMessage.textContent = data.message || 'Archivo subido exitosamente';
+                        resultModal.style.display = 'flex';
+                        // Cierra el modal de carga masiva
                         document.getElementById('modal').style.display = 'none';
-                        // Actualizar la tabla con la nueva información
+                        // Actualiza la tabla
                         fetch('{{ route('admin.instructors') }}')
                             .then(res => res.text())
                             .then(html => {
@@ -584,17 +661,77 @@
                             })
                             .catch(error => console.error('Error al actualizar la tabla:', error));
                     } else {
-                        showToast(data.error || 'Error al subir el archivo', 'error');
-                        // En caso de error, el modal se queda abierto para que se pueda reintentar
+                        // Caso de error en la respuesta JSON
+                        resultTitle.textContent = 'Error';
+                        resultMessage.textContent = data.error || 'Error al subir el archivo';
+                        resultModal.style.display = 'flex';
                     }
                 })
                 .catch(error => {
+                    loadingModal.style.display = 'none';
+                    resultTitle.textContent = 'Error';
+                    resultMessage.textContent = 'Error al subir el archivo. Inténtalo de nuevo.';
+                    resultModal.style.display = 'flex';
                     console.error('Error:', error);
-                    showToast('Error al subir el archivo', 'error');
-                    // En caso de error, el modal se queda abierto
                 });
         });
+
+        // Listener para cerrar el modal de resultado y recargar la página
+        document.getElementById('close-result-modal').addEventListener('click', function() {
+            document.getElementById('result-modal').style.display = 'none';
+            window.location.reload();
+        });
+
+        function downloadErrorFile(blob) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'errores.xlsx'; // Nombre del archivo a descargar
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
     </script>
+
+    <style>
+        /* Estilos para el modal de fichas (instructores) */
+        .instructor-modal {
+            display: none;
+            /* Oculto por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .instructor-modal.show {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
 </body>
 
 </html>
