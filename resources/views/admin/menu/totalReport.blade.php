@@ -441,8 +441,10 @@
 
                     <div class="search-item">
                         <div class="float-container">
-                            <input type="number" step="0.01" min="0" max="5"  id="min_average" name="min_average" placeholder=" "
-                                value="{{ request('min_average') }}" onblur="formatDecimal(this)"  oninput="if(parseFloat(this.value) > 5){ this.value = 5; }
+                            <input type="number" step="0.01" min="0" max="5" id="min_average"
+                                name="min_average" placeholder=" " value="{{ request('min_average') }}"
+                                onblur="formatDecimal(this)"
+                                oninput="if(parseFloat(this.value) > 5){ this.value = 5; }
                     if(this.value.indexOf('.') !== -1) {
                         let parts = this.value.split('.');
                         if(parts[1].length > 2){
@@ -455,9 +457,10 @@
 
                     <div class="search-item">
                         <div class="float-container">
-                            <input type="number" step="0.01" min="0" max="5" id="max_average" name="max_average" placeholder=" "
-                                value="{{ request('max_average') }}" onblur="formatDecimal(this)"
-                                onblur="formatDecimal(this)"  oninput="if(parseFloat(this.value) > 5){ this.value = 5; }
+                            <input type="number" step="0.01" min="0" max="5" id="max_average"
+                                name="max_average" placeholder=" " value="{{ request('max_average') }}"
+                                onblur="formatDecimal(this)" onblur="formatDecimal(this)"
+                                oninput="if(parseFloat(this.value) > 5){ this.value = 5; }
                     if(this.value.indexOf('.') !== -1) {
                         let parts = this.value.split('.');
                         if(parts[1].length > 2){
@@ -517,10 +520,12 @@
                         <td>{{ $summary->total_responses }}</td>
                         <td style="text-align: center;">
 
-                            <a href="javascript:void(0)" class="view-open-questions" style="color: #388E3C; font-weight: bold; "
+                            <a href="javascript:void(0)" class="view-open-questions"
+                                style="color: #388E3C; font-weight: bold; "
                                 data-survey="{{ $summary->survey_identifier }}"
                                 data-instructor="{{ $summary->instructor_id }}">
-                                <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i> Ver
+                                <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i>
+                                Ver
                             </a>
                         </td>
                         <td style="text-align: center;">
@@ -544,8 +549,12 @@
         <div class="pagination-wrapper">
             <ul class="pagination">
                 @if ($summaries->onFirstPage())
+                    <li class="disabled"><span>Primera</span></li>
+
                     <li class="disabled"><span>Anterior</span></li>
                 @else
+                    <li><a href="{{ $summaries->url(1) }}">Primera</a></li>
+
                     <li><a href="{{ $summaries->previousPageUrl() }}">Anterior</a></li>
                 @endif
                 @php
@@ -580,8 +589,12 @@
                 @endif
                 @if ($summaries->hasMorePages())
                     <li><a href="{{ $summaries->nextPageUrl() }}">Siguiente</a></li>
+                    <li><a href="{{ $summaries->url($lastPage) }}">Última ({{ $lastPage }})</a></li>
+
                 @else
                     <li class="disabled"><span>Siguiente</span></li>
+                    <li class="disabled"><span>Última ({{ $lastPage }})</span></li>
+
                 @endif
             </ul>
         </div>
@@ -590,186 +603,186 @@
 
 
 
-        <div id="openQuestionsModal" class="modal">
-            <div class="modal-content">
-                <h2>Respuestas Abiertas</h2>
-                <div class="modal-select-container">
-                    <label for="questionSelect">Seleccione el tipo de respuesta:</label>
-                    <select id="questionSelect" class="modal-select">
-                        <option value="21">Recomendaciones</option>
-                        <option value="22">Observaciones</option>
-                    </select>
-                </div>
-                <div id="openQuestionsContent" class="modal-body">
+    <div id="openQuestionsModal" class="modal">
+        <div class="modal-content">
+            <h2>Respuestas Abiertas</h2>
+            <div class="modal-select-container">
+                <label for="questionSelect">Seleccione el tipo de respuesta:</label>
+                <select id="questionSelect" class="modal-select">
+                    <option value="21">Recomendaciones</option>
+                    <option value="22">Observaciones</option>
+                </select>
+            </div>
+            <div id="openQuestionsContent" class="modal-body">
 
-                </div>
-                <br>
-                <div class="modal-footer">
-                </div>
+            </div>
+            <br>
+            <div class="modal-footer">
             </div>
         </div>
+    </div>
 
 
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        <script>
-            document.getElementById('survey_identifier').addEventListener('change', function() {
-                var surveyIdentifier = this.value;
-                var instructorSelect = document.getElementById('instructor_id');
-                if (!instructorSelect) return;
-                var url = "{{ route('api.instructors') }}" + "?survey_identifier=" + encodeURIComponent(
-                    surveyIdentifier);
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        instructorSelect.innerHTML = '<option value="">Todos</option>';
-                        data.forEach(function(inst) {
-                            var option = document.createElement('option');
-                            option.value = inst.id;
-                            option.text = inst.name;
-                            instructorSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error al obtener los instructores:", error);
+    <script>
+        document.getElementById('survey_identifier').addEventListener('change', function() {
+            var surveyIdentifier = this.value;
+            var instructorSelect = document.getElementById('instructor_id');
+            if (!instructorSelect) return;
+            var url = "{{ route('api.instructors') }}" + "?survey_identifier=" + encodeURIComponent(
+                surveyIdentifier);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    instructorSelect.innerHTML = '<option value="">Todos</option>';
+                    data.forEach(function(inst) {
+                        var option = document.createElement('option');
+                        option.value = inst.id;
+                        option.text = inst.name;
+                        instructorSelect.appendChild(option);
                     });
+                })
+                .catch(error => {
+                    console.error("Error al obtener los instructores:", error);
+                });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let currentSurveyIdentifier = null;
+        let currentInstructorId = null;
+
+        function loadOpenQuestions(questionId) {
+            $.ajax({
+                url: '{{ route('open.questions') }}',
+                type: 'GET',
+                data: {
+                    survey_identifier: currentSurveyIdentifier,
+                    instructor_id: currentInstructorId,
+                    question_id: questionId
+                },
+                success: function(response) {
+                    let html = '';
+                    if (response.length > 0) {
+                        html += '<ul>';
+                        $.each(response, function(index, question) {
+                            html += '<li>' + question.response + '</li>';
+                        });
+                        html += '</ul>';
+                    } else {
+                        html = '<p>No hay respuestas disponibles para esta pregunta.</p>';
+                    }
+                    $('#openQuestionsContent').html(html);
+                },
+                error: function() {
+                    alert('Ocurrió un error al cargar las respuestas abiertas.');
+                }
             });
-        </script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            let currentSurveyIdentifier = null;
-            let currentInstructorId = null;
+        }
 
-            function loadOpenQuestions(questionId) {
-                $.ajax({
-                    url: '{{ route('open.questions') }}',
-                    type: 'GET',
-                    data: {
-                        survey_identifier: currentSurveyIdentifier,
-                        instructor_id: currentInstructorId,
-                        question_id: questionId
-                    },
-                    success: function(response) {
-                        let html = '';
-                        if (response.length > 0) {
-                            html += '<ul>';
-                            $.each(response, function(index, question) {
-                                html += '<li>' + question.response + '</li>';
-                            });
-                            html += '</ul>';
-                        } else {
-                            html = '<p>No hay respuestas disponibles para esta pregunta.</p>';
-                        }
-                        $('#openQuestionsContent').html(html);
-                    },
-                    error: function() {
-                        alert('Ocurrió un error al cargar las respuestas abiertas.');
-                    }
-                });
-            }
+        $(document).ready(function() {
+            $(document).on('click', '.view-open-questions', function() {
+                currentSurveyIdentifier = $(this).data('survey');
+                currentInstructorId = $(this).data('instructor');
 
-            $(document).ready(function() {
-                $(document).on('click', '.view-open-questions', function() {
-                    currentSurveyIdentifier = $(this).data('survey');
-                    currentInstructorId = $(this).data('instructor');
+                if ($('#questionSelect').length) {
+                    $('#questionSelect').val('21');
+                }
 
-                    if ($('#questionSelect').length) {
-                        $('#questionSelect').val('21');
-                    }
+                loadOpenQuestions('21');
 
-                    loadOpenQuestions('21');
-
-                    $('#openQuestionsModal').css('display', 'flex');
-                });
-
-                $(document).on('change', '#questionSelect', function() {
-                    const questionId = $(this).val();
-                    loadOpenQuestions(questionId);
-                });
-
-                $(window).on('click', function(e) {
-                    if ($(e.target).is('#openQuestionsModal')) {
-                        $('#openQuestionsModal').css('display', 'none');
-                    }
-                });
+                $('#openQuestionsModal').css('display', 'flex');
             });
-        </script>
 
-        <script></script>
+            $(document).on('change', '#questionSelect', function() {
+                const questionId = $(this).val();
+                loadOpenQuestions(questionId);
+            });
+
+            $(window).on('click', function(e) {
+                if ($(e.target).is('#openQuestionsModal')) {
+                    $('#openQuestionsModal').css('display', 'none');
+                }
+            });
+        });
+    </script>
+
+    <script></script>
 
 
-        <style>
-            #openQuestionsContent ul li {
-                margin-bottom: 10px;
-                padding: 5px;
-                border-bottom: 1px solid #ddd;
-            }
+    <style>
+        #openQuestionsContent ul li {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
 
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 9999;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.6);
-                align-items: center;
-                justify-content: center;
-            }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+        }
 
-            .modal-content {
-                background-color: #fff;
-                width: 70%;
-                max-width: 70%;
-                height: 80vh;
-                border-radius: 8px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-                display: flex;
-                flex-direction: column;
-                padding: 20px;
-                position: relative;
-            }
+        .modal-content {
+            background-color: #fff;
+            width: 70%;
+            max-width: 70%;
+            height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
 
-            .modal-select-container {
-                margin-bottom: 15px;
-            }
+        .modal-select-container {
+            margin-bottom: 15px;
+        }
 
-            .modal-select {
-                width: 100%;
-                padding: 8px;
-                font-size: 16px;
-            }
+        .modal-select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+        }
 
-            .modal-body {
-                flex: 1;
-                overflow-y: auto;
-                border-top: 1px solid #eee;
-                padding-top: 10px;
-            }
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
 
-            .modal-footer {
-                margin-top: 15px;
-                text-align: right;
-            }
+        .modal-footer {
+            margin-top: 15px;
+            text-align: right;
+        }
 
-            .btn-res {
-                display: inline-block;
-                width: 80%;
-                padding: 5px 10px;
-                background-color: #388E3C;
-                color: #fff;
-                font-size: 0.9rem;
-                text-decoration: none;
-                font-weight: bold;
-                border-radius: 4px;
-                border: 2px solid #2E7D32;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-                transition: background-color 0.3s ease;
-                cursor: pointer;
-            }
-        </style>
+        .btn-res {
+            display: inline-block;
+            width: 80%;
+            padding: 5px 10px;
+            background-color: #388E3C;
+            color: #fff;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #2E7D32;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+    </style>
 
 </body>
 
