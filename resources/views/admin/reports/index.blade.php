@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Instructores</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         /* Estilos globales */
         body {
@@ -61,9 +63,9 @@
         }
 
         .btn-mass {
-            background-color: #00897B;
+            background-color: #008934;
             color: #fff;
-            border: 2px solid #00796B;
+            border: 2px solid #007924;
         }
 
         .btn-disabled {
@@ -399,9 +401,13 @@
                 <div class="button-group" style="width:300px">
                     <button id="toggle-survey-status" style="font-size: 16px"
                         class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
+                        <i class="fa fa-open" style="margin-right: 4px;"></i>
+
                         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
                     </button>
-                    <button id="open-modal" style="font-size:16px" class="btn btn-mass">Cargue Masivo</button>
+                    <button id="open-modal" style="font-size:16px" class="btn btn-mass">
+                        <i class="fa fa-upload" style="margin-right: 4px;"></i>
+                        Cargue Masivo</button>
                 </div>
             </div>
 
