@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Answer;
 use App\Models\SurveySummary;
 use App\Models\OpenQuestion;
+use Illuminate\Support\Facades\DB;
 
 class ConsolidateSurveyData extends Command
 {
@@ -66,8 +67,10 @@ class ConsolidateSurveyData extends Command
             }
         }
 
-        // Opcional: Eliminar los datos de la tabla answers después de la consolidación
+        // Opcional: Eliminar los datos de la tabla answers y course_instructor después de la consolidación
         Answer::truncate();
+        DB::table('course_instructor')->truncate();
+
 
         $this->info('Survey data consolidated successfully.');
     }
