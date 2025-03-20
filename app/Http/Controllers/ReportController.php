@@ -40,26 +40,20 @@ class ReportController extends Controller
             $search = $request->input('instructor_search');
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('identity_document', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%");
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
             });
         }
 
         $instructors = $query->paginate(10);
-       // dd($instructors)
+        // dd($instructors)
         return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
     }
-
-
-
-
-
 
 
     public function toggleSurveyStatus(Request $request)
     {
         try {
-            // Cambiar el estado de la encuesta para todos los cursos
             $newStatus = !Course::where('is_survey_open', true)->exists();
             Course::query()->update(['is_survey_open' => $newStatus]);
 
@@ -74,10 +68,6 @@ class ReportController extends Controller
                 'is_survey_open' => $newStatus
             ]);
         } catch (\Exception $e) {
-            // Registrar el error en el log
-            Log::error('Error al cambiar el estado de la encuesta: ' . $e->getMessage());
-
-            // Devolver una respuesta de error en formato JSON
             return response()->json([
                 'message' => 'Error interno del servidor',
                 'error' => $e->getMessage()
@@ -86,22 +76,22 @@ class ReportController extends Controller
     }
 
     public function instructorsTable(Request $request)
-{
-    $query = Instructor::with('user', 'answers', 'courses');
+    {
+        $query = Instructor::with('user', 'answers', 'courses');
 
-    if ($request->filled('instructor_search')) {
-        $search = $request->input('instructor_search');
-        $query->whereHas('user', function ($q) use ($search) {
-            $q->where('identity_document', 'like', "%{$search}%")
-              ->orWhere('name', 'like', "%{$search}%")
-              ->orWhere('last_name', 'like', "%{$search}%");
-        });
+        if ($request->filled('instructor_search')) {
+            $search = $request->input('instructor_search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('identity_document', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
+            });
+        }
+
+        $instructors = $query->paginate(2);
+
+        return view('admin.menu.tableIndex', compact('instructors'));
     }
-
-    $instructors = $query->paginate(10);
-
-    return view('admin.menu.tableIndex', compact('instructors'));
-}
 
 
 
@@ -240,6 +230,7 @@ class ReportController extends Controller
                 ];
             });
 
+
         $observations = $answers->whereIn('question_id', [21, 22])
             ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');;
 
@@ -310,6 +301,4 @@ class ReportController extends Controller
             return back()->withErrors('No se pudo generar el PDF: ' . $e->getMessage());
         }
     }
-
-
 }

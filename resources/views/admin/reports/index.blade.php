@@ -252,10 +252,10 @@
             border-radius: 8px;
             padding: 20px;
             width: 90%;
-            max-width: 320px;
+            max-width: 500px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             position: relative;
-            height: 200px;
+            height: 300px;
         }
 
         .modal-content h4 {
@@ -398,11 +398,10 @@
         <h3>Reporte de Instructores</h3>
         <div class="header-flex">
             <div class="left-group">
-                <div class="button-group" style="width:300px">
+                <div class="button-group" style="width:320px">
                     <button id="toggle-survey-status" style="font-size: 16px"
                         class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
-                        <i class="fa fa-open" style="margin-right: 4px;"></i>
-
+                        <i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i>
                         {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
                     </button>
                     <button id="open-modal" style="font-size:16px" class="btn btn-mass">
@@ -414,7 +413,18 @@
             <div class="center-group">
                 <form onsubmit="event.preventDefault(); performSearch(1);">
                     <input type="text" id="instructor_search" name="instructor_search">
-                    <button style="font-size: 16px" type="submit">Buscar</button>
+                    <button
+                        style="font-size: 16px;  padding: 10px 20px;
+    font-size: 1rem;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease;
+        background-color: white;
+    color: #4CAF50;
+    border-color:#4CAF50;
+    cursor: pointer; "
+                        type="submit">Buscar</button>
                 </form>
 
             </div>
@@ -462,6 +472,48 @@
         </div>
     </div>
 
+    <!-- Modal de Resultado (Éxito o Error) -->
+    <div id="result-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; z-index: 50;">
+        <div
+            style="background: #fff; padding: 20px; border-radius: 6px; text-align: center; max-width: 400px; width: 90%;">
+            <h2 id="result-title" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px;"></h2>
+            <p id="result-message" style="font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <button id="close-result-modal"
+                style="padding: 10px 20px; font-size: 1rem; background-color: #38a901;
+        color: #fff; border: none; border-radius: 6px; cursor: pointer;">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Carga -->
+    <div id="loading-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; z-index: 1000;">
+        <div
+            style="background: #fff; padding: 20px; border-radius: 6px; text-align: center; max-width: 400px; width: 90%;">
+            <div
+                style="border: 4px solid #f3f3f3; border-top: 4px solid #38a901; border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto;">
+            </div>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Cargando...</p>
+        </div>
+    </div>
+
+    <div id="survey-close-modal" class="survey-close-modal">
+        <div class="survey-modal-content">
+            <h2>Confirmar Cierre de Encuesta</h2>
+            <p>¿Está seguro de que desea cerrar la encuesta? Esto consolidará los datos y no podrá reabrirla sin afectar
+                la información.</p>
+            <div class="survey-modal-buttons">
+                <button id="confirm-close-survey" class="btn btn-confirm">Sí, cerrar</button>
+                <button id="cancel-close-survey" class="btn btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     <script>
@@ -488,6 +540,7 @@
             document.getElementById('modal-' + id).classList.remove('show');
         }
 
+
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
@@ -506,39 +559,62 @@
                 console.error('Error: No se encontró el token CSRF.');
                 return;
             }
+
             toggleButton.addEventListener('click', () => {
-                fetch('/admin/toggle-survey-status', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken.content,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.is_survey_open) {
-                            toggleButton.textContent = 'Cerrar Encuesta';
-                            toggleButton.classList.remove('survey-closed');
-                            toggleButton.classList.add('survey-open');
-                            showToast('Encuesta abierta exitosamente', 'success');
-                        } else {
-                            toggleButton.textContent = 'Abrir Encuesta';
-                            toggleButton.classList.remove('survey-open');
-                            toggleButton.classList.add('survey-closed');
-                            showToast('Encuesta cerrada exitosamente', 'success');
-                        }
-                        fetch('{{ route('admin.instructors') }}')
-                            .then(res => res.text())
-                            .then(html => {
-                                document.querySelector('.table-container').innerHTML = html;
-                            });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('Error al actualizar la encuesta', 'error');
-                    });
+                if (toggleButton.classList.contains('survey-open')) {
+                    const surveyModal = document.getElementById('survey-close-modal');
+                    surveyModal.classList.add('show');
+                } else {
+                    toggleSurveyStatus(csrfToken.content);
+                }
+            });
+
+            document.getElementById('confirm-close-survey').addEventListener('click', () => {
+                toggleSurveyStatus(csrfToken.content);
+                document.getElementById('survey-close-modal').classList.remove('show');
+            });
+
+            document.getElementById('cancel-close-survey').addEventListener('click', () => {
+                document.getElementById('survey-close-modal').classList.remove('show');
             });
         });
+
+        function toggleSurveyStatus(csrf) {
+            const toggleButton = document.getElementById('toggle-survey-status');
+            fetch('/admin/toggle-survey-status', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrf,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_survey_open) {
+                        toggleButton.innerHTML =
+                            '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Cerrar Encuesta';
+                        toggleButton.classList.remove('survey-closed');
+                        toggleButton.classList.add('survey-open');
+                        showToast('Encuesta abierta exitosamente', 'success');
+                    } else {
+                        toggleButton.innerHTML =
+                            '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Abrir Encuesta';
+                        toggleButton.classList.remove('survey-open');
+                        toggleButton.classList.add('survey-closed');
+                        showToast('Encuesta cerrada exitosamente', 'success');
+                    }
+                    fetch('{{ route('admin.instructors') }}')
+                        .then(res => res.text())
+                        .then(html => {
+                            document.querySelector('.table-container').innerHTML = html;
+                        });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error al actualizar la encuesta', 'error');
+                });
+        }
+
 
         function performSearch(page = 1) {
             const searchValue = document.getElementById('instructor_search').value;
@@ -558,11 +634,17 @@
         });
 
 
-
         document.getElementById('upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const loadingModal = document.getElementById('loading-modal');
+            const resultModal = document.getElementById('result-modal');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+
+            loadingModal.style.display = 'flex';
+
             fetch(this.action, {
                     method: 'POST',
                     headers: {
@@ -570,13 +652,35 @@
                     },
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.blob();
+                    }
+                })
                 .then(data => {
-                    if (data.success) {
-                        showToast(data.message || 'Archivo subido exitosamente', 'success');
-                        // Cerrar el modal solo si el archivo se sube con éxito
+                    loadingModal.style.display = 'none';
+
+                    if (data instanceof Blob) {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'errores.xlsx';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        resultTitle.textContent = 'Advertencia';
+                        resultMessage.textContent =
+                            'Algunas filas no se importaron correctamente. Se ha descargado un archivo con los errores.';
+                        resultModal.style.display = 'flex';
+                    } else if (data && data.success) {
+                        resultTitle.textContent = 'Éxito';
+                        resultMessage.textContent = data.message || 'Archivo subido exitosamente';
+                        resultModal.style.display = 'flex';
                         document.getElementById('modal').style.display = 'none';
-                        // Actualizar la tabla con la nueva información
                         fetch('{{ route('admin.instructors') }}')
                             .then(res => res.text())
                             .then(html => {
@@ -584,17 +688,153 @@
                             })
                             .catch(error => console.error('Error al actualizar la tabla:', error));
                     } else {
-                        showToast(data.error || 'Error al subir el archivo', 'error');
-                        // En caso de error, el modal se queda abierto para que se pueda reintentar
+                        resultTitle.textContent = 'Error';
+                        resultMessage.textContent = data.error || 'Error al subir el archivo';
+                        resultModal.style.display = 'flex';
                     }
                 })
                 .catch(error => {
+                    loadingModal.style.display = 'none';
+                    resultTitle.textContent = 'Error';
+                    resultMessage.textContent = 'Error al subir el archivo. Inténtalo de nuevo.';
+                    resultModal.style.display = 'flex';
                     console.error('Error:', error);
-                    showToast('Error al subir el archivo', 'error');
-                    // En caso de error, el modal se queda abierto
                 });
         });
+
+        document.getElementById('close-result-modal').addEventListener('click', function() {
+            document.getElementById('result-modal').style.display = 'none';
+            window.location.reload();
+        });
+
+        function downloadErrorFile(blob) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'errores.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
     </script>
+
+    <style>
+        .instructor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .instructor-modal.show {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+
+        .survey-close-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .survey-close-modal.show {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .survey-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .survey-modal-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .survey-modal-content p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .survey-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-confirm {
+            padding: 10px 20px;
+            background-color: #e53935;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-confirm:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #43a047;
+        }
+    </style>
+
 </body>
 
 </html>

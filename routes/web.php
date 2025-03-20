@@ -42,11 +42,13 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
 
 
 
-    // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/{courseId}/{instructorId}', [ReportController::class, 'show'])->name('reports.show');
-    Route::get('/reports/downloadcourse/{courseId}/{instructorId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
-    Route::get('reports/general/{instructorId}', [ReportController::class, 'showGeneral'])->name('reportsGeneral');
-    Route::get('reports/download/{instructorId}', [ReportController::class, 'showGeneralDownload'])->name('reportsGeneralDownload');
+        // Rutas para reportes generales: colócalas primero para evitar conflictos
+        Route::get('reports/general/{instructorId}', [ReportController::class, 'showGeneral'])->name('reportsGeneral');
+        Route::get('reports/download/{instructorId}', [ReportController::class, 'showGeneralDownload'])->name('reportsGeneralDownload');
+
+        // Rutas para reportes de cursos (ficha)
+        Route::get('/reports/{courseId}/{instructorId}', [ReportController::class, 'show'])->name('reports.show');
+        Route::get('/reports/downloadcourse/{courseId}/{instructorId}', [ReportController::class, 'reportsDownloadCourse'])->name('reportsDownloadCourse');
 
     Route::post('/admin/toggle-survey-status', [ReportController::class, 'toggleSurveyStatus'])->name('admin.toggle-survey-status');
 
