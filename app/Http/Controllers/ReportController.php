@@ -88,7 +88,7 @@ class ReportController extends Controller
             });
         }
 
-        $instructors = $query->paginate(2);
+        $instructors = $query->paginate(10);
 
         return view('admin.menu.tableIndex', compact('instructors'));
     }

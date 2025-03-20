@@ -42,33 +42,46 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user2 = User::create([
-            'identity_document' => '1002958846',
-            'name' => 'Camilo',
-            'last_name' => 'Maca',
-            'email' => 'camilo@gmail.com',
+            'identity_document' => '1000001654',
+            'name' => 'Diego',
+            'last_name' => 'Armando',
+            'email' => 'DiegoArmando@gmail.com',
             'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);
 
         $user3 = User::create([
-            'identity_document' => '1002958847',
-            'name' => 'Alexander',
-            'last_name' => 'Pardo',
-            'email' => 'jhon@gmail.com',
+            'identity_document' => '1000023584654',
+            'name' => 'Adriano',
+            'last_name' => 'Ribeiro',
+            'email' => 'AdrianoRibeiro@gmail.com',
+            'is_superuser' => false,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $user4 = User::create([
+            'identity_document' => '100054',
+            'name' => 'Edson',
+            'last_name' => 'Arantes',
+            'email' => 'EdsonArantes@gmail.com',
             'is_superuser' => false,
             'password' => Hash::make('password123'),
         ]);
 
         // Crear aprendices
         $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'En_formacion', 'course_id' => $course1->id]);
-        $apprentice2 = Apprentice::create(['user_id' => $user2->id, 'state' => 'En_comite', 'course_id' => $course1->id]);
 
         // Crear instructores
-        $instructor1 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => true, 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor1 = Instructor::create(['user_id' => $user2->id, 'state' => 'Activo', 'is_course_leader' => true, 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor2 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => false, 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor3 = Instructor::create(['user_id' => $user4->id, 'state' => 'Activo', 'is_course_leader' => false, 'knowledge_network_id' => $knowledgeNetwork1->id]);
+
 
         // Asignar instructores a cursos
         DB::table('course_instructor')->insert([
             ['instructor_id' => $instructor1->id, 'course_id' => $course1->id],
+            ['instructor_id' => $instructor2->id, 'course_id' => $course1->id],
+            ['instructor_id' => $instructor3->id, 'course_id' => $course1->id],
         ]);
 
     }

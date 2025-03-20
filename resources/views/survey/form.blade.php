@@ -396,7 +396,7 @@
                                 Estas preguntas son <strong>opcionales</strong>. No es obligatorio responderlas.
                             </p>
                             @foreach ($instructors as $instructor)
-                                <div class="mb-4">
+                                <div class="mb-4" style="margin-bottom: 1rem;">
                                     <p class="text-sm font-semibold text-gray-800">
                                         <strong>Instructor: {{ $instructor->user->name }}
                                             {{ $instructor->user->last_name }}</strong>

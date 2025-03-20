@@ -87,13 +87,6 @@
             @endif
         </ul>
 
-
-
-        <div class="jump-page-container">
-            <label for="jumpPageInput">Ir a la página:</label>
-            <input type="number" id="jumpPageInput" min="1" max="{{ $lastPage }}" class="jump-page-input">
-            <button onclick="jumpToPage({{ $lastPage }})" class="jump-page-btn">Ir</button>
-        </div>
     </div>
 
 

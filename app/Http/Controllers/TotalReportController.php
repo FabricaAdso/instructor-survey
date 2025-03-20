@@ -73,7 +73,7 @@ class TotalReportController extends Controller
                 return $q->having('average_qualification', '<=', $maxAverage);
             });
 
-        $summaries = $query->paginate(2);
+        $summaries = $query->paginate(10);
 
         $surveyIdentifiers = SurveySummary::select('survey_identifier')
             ->distinct()
