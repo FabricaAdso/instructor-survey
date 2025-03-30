@@ -414,5 +414,29 @@ public function downloadExcel(Request $request)
 
 
 
+public function generateOpenQuestionsPdf(Request $request)
+{
+    $surveyIdentifier = $request->input('survey_identifier');
+    $instructorId   = $request->input('instructor_id');
+    $questionId     = $request->input('question_id');
+
+    $query = OpenQuestion::where('survey_identifier', $surveyIdentifier)
+        ->where('instructor_id', $instructorId)
+        ->whereNotNull('response');
+
+    if ($questionId) {
+        $query->where('question_id', $questionId);
+    }
+
+    $openQuestions = $query->get();
+
+    $pdf = PDF::loadView('reports.test', compact('openQuestions'));
+
+    return $pdf->download('respuestas-abiertas.pdf');
+}
+
+
+
+
 
 }

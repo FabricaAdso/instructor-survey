@@ -337,7 +337,7 @@
 
         .btn {
             display: inline-block;
-            padding: 10px 16px ;
+            padding: 10px 16px;
             background-color: #388E3C;
             color: #fff;
             font-size: 0.9rem;
@@ -527,6 +527,14 @@
                                 <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i>
                                 Ver
                             </a>
+
+                            <a href="{{ route('openQuestionsPdf', [
+                'survey_identifier' => $summary->survey_identifier,
+                'instructor_id' => $summary->instructor_id,
+            ]) }}"
+                target="_blank" class="pdf-download-btn">
+                <i class="fa fa-download"></i> PDF
+            </a>
                         </td>
                         <td style="text-align: center;">
                             <a href="{{ route('totalreport', [
@@ -590,11 +598,9 @@
                 @if ($summaries->hasMorePages())
                     <li><a href="{{ $summaries->nextPageUrl() }}">Siguiente</a></li>
                     <li><a href="{{ $summaries->url($lastPage) }}">Última ({{ $lastPage }})</a></li>
-
                 @else
                     <li class="disabled"><span>Siguiente</span></li>
                     <li class="disabled"><span>Última ({{ $lastPage }})</span></li>
-
                 @endif
             </ul>
         </div>
@@ -606,6 +612,14 @@
     <div id="openQuestionsModal" class="modal">
         <div class="modal-content">
             <h2>Respuestas Abiertas</h2>
+            <a href="{{ route('openQuestionsPdf', [
+                'survey_identifier' => $summary->survey_identifier,
+                'instructor_id' => $summary->instructor_id,
+            ]) }}"
+                target="_blank" class="pdf-download-btn">
+                <i class="fa fa-download"></i> PDF
+            </a>
+
             <div class="modal-select-container">
                 <label for="questionSelect">Seleccione el tipo de respuesta:</label>
                 <select id="questionSelect" class="modal-select">
