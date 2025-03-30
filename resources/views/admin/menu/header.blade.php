@@ -170,7 +170,7 @@
         <div class="container">
             <div class="header-left">
                 <img src="../img/logo-sena-verde-complementario-svg-2022.svg" alt="Logo SENA" class="logo">
-                <h1 class="header-title">Encuesta de Satisfaccion</h1>
+                <h1 class="header-title">Encuesta de Satisfacción</h1>
                 <title></title>
             </div>
             <button class="menu-toggle" id="menu-toggle" aria-expanded="false">☰</button>

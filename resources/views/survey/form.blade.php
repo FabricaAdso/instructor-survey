@@ -67,8 +67,7 @@
             margin: 0;
             padding: 1rem;
             border-radius: 0.5rem;
-            background: linear-gradient(to right, #34d399, #3b82f6);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #52c41a;            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -217,8 +216,7 @@
         }
 
         .btn-lift {
-            background: linear-gradient(to right, #34d399, #3b82f6);
-            color: #fff;
+            background-color: #52c41a;            color: #fff;
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;

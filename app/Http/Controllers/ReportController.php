@@ -129,8 +129,6 @@ class ReportController extends Controller
                 ];
             });
 
-        $observations = $answers->whereIn('question_id', [21, 22])
-            ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');
 
         $questions = Question::whereIn('id', $reportData->keys())
             ->pluck('question', 'id')
@@ -140,7 +138,6 @@ class ReportController extends Controller
         return view('admin/reports.show', [
             'reportData' => $reportData,
             'questions' => json_encode($questions),
-            'observations' => $observations,
             'instructor' => $instructor,
             'course' => $course,
         ]);
@@ -199,6 +196,7 @@ class ReportController extends Controller
                         ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node')
                         ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')
                         ->margins(1, 1, 1, 1, "px")
+                        ->setViewport(1024, 768)
                         ->waitUntilNetworkIdle();
                 });
             return $pdf->download("reporte-instructor-{$instructorId}-" . now()->format('Y-m-d') . ".pdf");
