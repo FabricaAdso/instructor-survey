@@ -30,6 +30,10 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
+    public function openquestions(){
+        return $this->hasMany(OpenQuestion::class);
+    }
+
     public function scopeIncluded(Builder $query)
     {
         if(empty($this->allowIncluded)||empty(request('included'))){

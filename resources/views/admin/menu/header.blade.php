@@ -155,13 +155,13 @@
         color: #333;
         padding: 10px 15px;
         font-weight: 500;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
         border-radius: 4px;
     }
 
     header nav ul li a:hover,
-    header nav ul li a.active {
-        transform: translateY(-5px);
+    header nav ul li a:focus,
+    header nav ul li a:active {
+        color: #388E3C;
     }
 </style>
 
