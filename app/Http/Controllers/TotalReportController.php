@@ -74,7 +74,7 @@ class TotalReportController extends Controller
                 return $q->having('average_qualification', '<=', $maxAverage);
             });
 
-        $summaries = $query->paginate(2);
+        $summaries = $query->paginate(2)->appends(request()->query());
 
         $surveyIdentifiers = SurveySummary::select('survey_identifier')
             ->distinct()
@@ -328,8 +328,6 @@ class TotalReportController extends Controller
 
         $data = [];
 
-
-
         $header = [
             'Encuesta',
             'Area de conocimiento',
@@ -383,14 +381,87 @@ class TotalReportController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
+        $boldBorderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ];
+
+        // $columns = range('A', 'F'); // o el rango que necesites
+        // foreach ($columns as $column) {
+        //     $sheet->getColumnDimension($column)->setWidth(120);
+        // }
+
+
+        $columnWidths = [
+            'A' => 20,
+            'B' => 70,
+            'C' => 15,
+            'D' => 40,
+            'E' => 40,
+            'F' => 20,
+        ];
+
+        foreach ($columnWidths as $column => $width) {
+            $sheet->getColumnDimension($column)->setWidth($width);
+        }
+
+        // Fusionar las celdas A3:E3 y colocar el título en la celda fusionada
+        $sheet->mergeCells('A1:F1');
+        $sheet->setCellValue('A1', 'Reporte de encuesta de satisfacción del aprendiz en etapa lectiva - ejecución de la formación');
+
+        // Aplicar un estilo opcional al título
+        $titleStyle = [
+            'font' => [
+                'bold' => true,
+                'size' => 14,
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+        ];
+        $sheet->getStyle('A1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:F1')->applyFromArray($boldBorderStyle);
+
+        // Fila 2: Versión
+        $sheet->setCellValue('A2', 'Versión:');
+        $sheet->mergeCells('B2:F2');
+        $sheet->setCellValue('B2', 'v1');
+
+        // Fila 3: Regional
+        $sheet->setCellValue('A3', 'Regional:');
+        $sheet->mergeCells('B3:F3');
+        $sheet->setCellValue('B3', '19 - REGIONAL CAUCA');
+
+        // Fila 4: Centro de Formación
+        $sheet->setCellValue('A4', 'Centro de Formación:');
+        $sheet->mergeCells('B4:F4');
+        $sheet->setCellValue('B4', '9307 - CENTRO DE COMERCIO Y SERVICIOS');
+
+        // Definir que los datos se escriban a partir de la fila 5
+        $startRow = 6; // Comienza en la fila 6
         foreach ($data as $rowIndex => $rowData) {
             $colIndex = 1;
             foreach ($rowData as $cellData) {
-                $cell = Coordinate::stringFromColumnIndex($colIndex) . ($rowIndex + 1);
+                $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex) . ($rowIndex + $startRow);
                 $sheet->setCellValue($cell, $cellData);
                 $colIndex++;
             }
         }
+
+        // Obtener la última columna usada en la tabla (según el número de columnas del encabezado)
+        $lastColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($data[0]));
+
+        // Obtener la última fila de la tabla
+        $lastRow = count($data) + $startRow - 1;
+
+        $tableRange = "A{$startRow}:{$lastColumn}{$lastRow}";
+        $sheet->getStyle($tableRange)->applyFromArray($boldBorderStyle);
 
         $writer = new Xlsx($spreadsheet);
         if (
@@ -406,14 +477,13 @@ class TotalReportController extends Controller
             $fileName = 'reporte_encuesta_de_satisfaccion.xlsx';
         }
 
-
-
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $fileName . '"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit;
     }
+
 
 
     public function generateOpenQuestionsPdf(Request $request)
@@ -423,8 +493,8 @@ class TotalReportController extends Controller
         $questionId      = $request->input('question_id'); // Si es necesario
 
         $query = OpenQuestion::where('survey_identifier', $surveyIdentifier)
-                    ->where('instructor_id', $instructorId)
-                    ->whereNotNull('response');
+            ->where('instructor_id', $instructorId)
+            ->whereNotNull('response');
 
         if ($questionId) {
             $query->where('question_id', $questionId);
@@ -439,14 +509,10 @@ class TotalReportController extends Controller
         // Ahora enviamos todos los datos necesarios a la vista
         $pdf = Pdf::loadView('admin.reports.test', [
             'openQuestions'   => $openQuestions,
-            'surveyIdentifier'=> $surveyIdentifier,
+            'surveyIdentifier' => $surveyIdentifier,
             'instructor'      => $instructor
         ]);
 
         return $pdf->download('openQuestions.pdf');
     }
-
-
-
-
 }
