@@ -129,6 +129,8 @@ class ReportController extends Controller
                 ];
             });
 
+        $observations = $answers->whereIn('question_id', [21, 22])
+            ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');
 
         $questions = Question::whereIn('id', $reportData->keys())
             ->pluck('question', 'id')
@@ -138,6 +140,7 @@ class ReportController extends Controller
         return view('admin/reports.show', [
             'reportData' => $reportData,
             'questions' => json_encode($questions),
+            'observations' => $observations,
             'instructor' => $instructor,
             'course' => $course,
         ]);

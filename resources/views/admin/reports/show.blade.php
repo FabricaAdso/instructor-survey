@@ -7,15 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Reporte-instructor</title>
     <link rel="stylesheet" href="{{ asset('css/show.css') }}">
-  <!--  <script src="{{ mix('js/app.js') }}"></script>-->
+    <!--  <script src="{{ mix('js/app.js') }}"></script>-->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
 
 <body>
     <div class="container">
-        <h2>REPORTE DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN: FICHA {{ $course->code }}</h2>
-        <h3>Instructor: {{ $instructor->user->name }} {{$instructor->user->last_name}}</h3>
+        <h2>ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA – EJECUCIÓN DE LA FORMACIÓN: FICHA {{ $course->code }}
+        </h2>
+        <h3>Instructor: {{ $instructor->user->name }} {{ $instructor->user->last_name }}</h3>
 
         <div class="container-grafic">
             <div class="chart-section" id="chart1">
@@ -31,18 +32,53 @@
                 <h2>4.Evaluacion</h2>
             </div>
 
+            <div class="chart-section"
+                style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+                <div style="display: flex; justify-content: space-between;  gap: 20px; flex-wrap: wrap;">
+                    <!-- Observaciones -->
+                    <div
+                        style="width: 48%; max-width: 100%; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden; box-sizing: border-box;">
+                        <h3
+                            style="color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 8px; word-wrap: break-word;">
+                            Observaciones
+                        </h3>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            @foreach ($observations->filter(fn($answer) => $answer->question_id == 21) as $observation)
+                                <li
+                                    style="background-color: #e9fbe8; padding: 10px; margin-bottom: 8px; border-radius: 5px; word-wrap: break-word;">
+                                    {{ $observation->qualification }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- Recomendaciones -->
+                    <div
+                        style="width: 48%; max-width: 100%; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden; box-sizing: border-box;">
+                        <h3
+                            style="color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 8px; word-wrap: break-word;">
+                            Recomendación o sugerencias</h3>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            @foreach ($observations->filter(fn($answer) => $answer->question_id == 22) as $recommendation)
+                                <li
+                                    style="background-color: #e9fbe8; padding: 10px; margin-bottom: 8px; border-radius: 5px; word-wrap: break-word;">
+                                    {{ $recommendation->qualification }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
     </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@4.5.0/dist/apexcharts.min.js"
-        onerror="this.onerror=null; this.src='/js/apexcharts.min.js';">
-</script>
+        onerror="this.onerror=null; this.src='/js/apexcharts.min.js';"></script>
 
     <script>
-
-function splitText(text, maxLength) {
+        function splitText(text, maxLength) {
             const words = text.split(' '); // Dividimos el texto en palabras
             let lines = [];
             let currentLine = '';
@@ -66,7 +102,7 @@ function splitText(text, maxLength) {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const reportData = @json($reportData -> pluck('average') -> values());
+            const reportData = @json($reportData->pluck('average')->values());
             const questions = JSON.parse(@json($questions)); // Convertimos JSON en un array
 
             // Comprobación para asegurarnos que questions es un array
@@ -109,7 +145,7 @@ function splitText(text, maxLength) {
                     yaxis: {
                         title: {
                             text: 'Calificación Promedio',
-                            style:{
+                            style: {
                                 fontSize: '16px'
                             }
                         },
