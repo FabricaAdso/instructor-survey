@@ -10,4 +10,9 @@ class KnowledgeNetwork extends Model
     {
         return $this->hasMany(Instructor::class);
     }
+
+    public function areaLeader ()
+    {
+        return $this->hasMany(AreaLeader::class);
+    }
 }

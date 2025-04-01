@@ -33,6 +33,11 @@ class User extends Authenticatable
         return $this->hasOne(Instructor::class, 'user_id');
     }
 
+    public function areaLeader ()
+    {
+        return $this->hasOne(AreaLeader::class, 'user_id');
+    }
+
     protected function casts(): array
     {
         return [

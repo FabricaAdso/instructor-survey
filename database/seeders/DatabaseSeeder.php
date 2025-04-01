@@ -72,9 +72,9 @@ class DatabaseSeeder extends Seeder
         $apprentice1 = Apprentice::create(['user_id' => $user1->id, 'state' => 'En_formacion', 'course_id' => $course1->id]);
 
         // Crear instructores
-        $instructor1 = Instructor::create(['user_id' => $user2->id, 'state' => 'Activo', 'is_course_leader' => true, 'knowledge_network_id' => $knowledgeNetwork1->id]);
-        $instructor2 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'is_course_leader' => false, 'knowledge_network_id' => $knowledgeNetwork1->id]);
-        $instructor3 = Instructor::create(['user_id' => $user4->id, 'state' => 'Activo', 'is_course_leader' => false, 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor1 = Instructor::create(['user_id' => $user2->id, 'state' => 'Activo', 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor2 = Instructor::create(['user_id' => $user3->id, 'state' => 'Activo', 'knowledge_network_id' => $knowledgeNetwork1->id]);
+        $instructor3 = Instructor::create(['user_id' => $user4->id, 'state' => 'Activo', 'knowledge_network_id' => $knowledgeNetwork1->id]);
 
 
         // Asignar instructores a cursos

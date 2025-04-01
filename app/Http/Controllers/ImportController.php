@@ -67,4 +67,64 @@ class ImportController extends Controller
         }
     }
 
+    public function importLeaders(Request $request)
+    {
+        ini_set('max_execution_time', 300);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls'
+        ]);
+
+        try {
+            // Guardar el archivo temporalmente en private/temp
+            $filePath = $request->file('file')->store('', 'private_temp');
+            $fullPath = storage_path("app/private/temp/{$filePath}");
+
+            // Ruta al intérprete de Python del entorno virtual
+            $pythonPath = base_path('.venv/bin/python3');
+
+            // Ruta al script de Python
+            $scriptPath = base_path('scripts/import_area_leaders.py');
+
+            // Ejecutar el script de Python
+            $output = [];
+            $returnVar = 0;
+            exec("{$pythonPath} {$scriptPath} {$fullPath} 2>&1", $output, $returnVar);
+
+            // Eliminar el archivo temporal (si existe)
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
+
+            if ($returnVar === 0) {
+                // Verificar si se generó un archivo de errores
+                $failedFilePath = str_replace(".xlsx", "_errores.xlsx", $fullPath);
+                if (file_exists($failedFilePath)) {
+                    // Devolver el archivo de errores como respuesta
+                    return response()->download($failedFilePath)->deleteFileAfterSend(true);
+                } else {
+                    // Éxito: El archivo se cargó correctamente
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Líderes de área importados correctamente',
+                        'output' => implode("\n", $output)
+                    ], 200);
+                }
+            } else {
+                // Error: El script de Python falló
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Error al importar el archivo',
+                    'output' => implode("\n", $output)
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            // Error en el servidor
+            return response()->json([
+                'success' => false,
+                'error' => 'Error en el servidor: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

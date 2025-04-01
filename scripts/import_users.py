@@ -70,17 +70,18 @@ def import_users(file_path):
                 else:
                     program_id = program[0]
 
-                # Insertar o actualizar el usuario
+                # Insertar o actualizar el usuario (is_area_leader por defecto es False)
                 cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
                 user = cursor.fetchone()
                 if not user:
                     cursor.execute(
-                        "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
+                        "INSERT INTO users (name, last_name, identity_document, email, is_area_leader) VALUES (%s, %s, %s, %s, %s)",
                         (
                             row['NOMBRE'],
                             f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
                             row['NUMERO_DOCUMENTO'],
-                            row['CORREO_ELECTRONICO']
+                            row['CORREO_ELECTRONICO'],
+                            False  # Valor por defecto para is_area_leader
                         )
                     )
                     user_id = cursor.lastrowid
@@ -120,17 +121,18 @@ def import_users(file_path):
         print("Procesando instructores...")
         for index, row in instructors_df.iterrows():
             try:
-                # Insertar o actualizar el usuario
+                # Insertar o actualizar el usuario (is_area_leader por defecto es False)
                 cursor.execute("SELECT id FROM users WHERE identity_document = %s", (row['NUMERO_DOCUMENTO'],))
                 user = cursor.fetchone()
                 if not user:
                     cursor.execute(
-                        "INSERT INTO users (name, last_name, identity_document, email) VALUES (%s, %s, %s, %s)",
+                        "INSERT INTO users (name, last_name, identity_document, email, is_area_leader) VALUES (%s, %s, %s, %s, %s)",
                         (
                             row['NOMBRE'],
                             f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
                             row['NUMERO_DOCUMENTO'],
-                            row['CORREO_ELECTRONICO']
+                            row['CORREO_ELECTRONICO'],
+                            False  # Valor por defecto para is_area_leader
                         )
                     )
                     user_id = cursor.lastrowid
@@ -154,16 +156,15 @@ def import_users(file_path):
                 estado_instructor = str(row['ESTADO']).strip().upper()
                 instructor_state = instructor_state_mapping.get(estado_instructor, 'Activo')
 
-                # Insertar o actualizar el instructor
+                # Insertar o actualizar el instructor (sin el campo is_course_leader)
                 cursor.execute("SELECT id FROM instructors WHERE user_id = %s", (user_id,))
                 instructor = cursor.fetchone()
                 if not instructor:
                     cursor.execute(
-                        "INSERT INTO instructors (user_id, state, is_course_leader, knowledge_network_id) VALUES (%s, %s, %s, %s)",
+                        "INSERT INTO instructors (user_id, state, knowledge_network_id) VALUES (%s, %s, %s)",
                         (
                             user_id,
                             instructor_state,
-                            str(row['ES_LIDER']).strip().upper() == 'SI',
                             knowledge_network_id
                         )
                     )
