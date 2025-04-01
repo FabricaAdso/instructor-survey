@@ -8,6 +8,7 @@ openpyxl
 # # para asegurarnos que tenga permisos de ejecucion:
 # chmod +x /ruta/al/proyecto/scripts/import_courses.py
 
+# pip install bcrypt
 
 # python - extension pack
 # # Verificar la instalación de Python
