@@ -337,7 +337,7 @@
 
         .btn {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 10px 16px;
             background-color: #388E3C;
             color: #fff;
             font-size: 0.9rem;
@@ -362,6 +362,103 @@
 
         .btn.btn-blue:hover {
             background-color: #025aa5;
+        }
+
+        /* modales */
+
+        #openQuestionsContent ul li {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+            white-space: normal;
+            white-space: pre-wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            width: 70%;
+            max-width: 70%;
+            height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Encabezado del modal */
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.8em;
+  color: #333333;
+}
+
+
+
+
+.modal-select-container label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #444444;
+}
+        .modal-select-container {
+            margin-bottom: 15px;
+        }
+
+        .modal-select {
+            width: 100%;
+  padding: 8px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 1em;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            background-color: #f9f9f9;
+            color: #555555;
+            border-radius: 4px;
+            font-size: 1em;
+
+
+        }
+
+        .modal-footer {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .btn-res {
+            display: inline-block;
+            width: 80%;
+            padding: 5px 10px;
+            background-color: #388E3C;
+            color: #fff;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #2E7D32;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
         }
     </style>
 
@@ -451,7 +548,7 @@
                            this.value = parts[0] + '.' + parts[1].substring(0,2);
                         }
                     }">
-                            <label for="min_average">p. mínimo</label>
+                            <label for="min_average">prom. mín</label>
                         </div>
                     </div>
 
@@ -467,7 +564,7 @@
                            this.value = parts[0] + '.' + parts[1].substring(0,2);
                         }
                     }">
-                            <label for="max_average">p. máximo</label>
+                            <label for="max_average">prom. máx</label>
                         </div>
                     </div>
 
@@ -527,6 +624,8 @@
                                 <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i>
                                 Ver
                             </a>
+
+
                         </td>
                         <td style="text-align: center;">
                             <a href="{{ route('totalreport', [
@@ -590,11 +689,9 @@
                 @if ($summaries->hasMorePages())
                     <li><a href="{{ $summaries->nextPageUrl() }}">Siguiente</a></li>
                     <li><a href="{{ $summaries->url($lastPage) }}">Última ({{ $lastPage }})</a></li>
-
                 @else
                     <li class="disabled"><span>Siguiente</span></li>
                     <li class="disabled"><span>Última ({{ $lastPage }})</span></li>
-
                 @endif
             </ul>
         </div>
@@ -606,11 +703,18 @@
     <div id="openQuestionsModal" class="modal">
         <div class="modal-content">
             <h2>Respuestas Abiertas</h2>
+            <div style="width: 100%; display:flex; justify-content:flex-end">
+                <a id="downloadPdf" href="#" target="_blank" class="btn" style="width: max-content">
+                    <i class="fa fa-download"></i> PDF
+                </a>
+
+            </div>
+
             <div class="modal-select-container">
                 <label for="questionSelect">Seleccione el tipo de respuesta:</label>
                 <select id="questionSelect" class="modal-select">
-                    <option value="21">Recomendaciones</option>
-                    <option value="22">Observaciones</option>
+                    <option value="21">OBSERVACIONES</option>
+                    <option value="22">RECOMENDACIÓN O SUGERENCIAS</option>
                 </select>
             </div>
             <div id="openQuestionsContent" class="modal-body">
@@ -656,7 +760,7 @@
 
         function loadOpenQuestions(questionId) {
             $.ajax({
-                url: '{{ route('open.questions') }}',
+                url: '{{ route("open.questions") }}',
                 type: 'GET',
                 data: {
                     survey_identifier: currentSurveyIdentifier,
@@ -682,25 +786,40 @@
             });
         }
 
+        function updateDownloadPdfLinkAll() {
+            var url = '{{ route("openQuestionsPdf") }}' +
+                      '?survey_identifier=' + currentSurveyIdentifier +
+                      '&instructor_id=' + currentInstructorId;
+            $('#downloadPdf').attr('href', url);
+        }
+
         $(document).ready(function() {
             $(document).on('click', '.view-open-questions', function() {
                 currentSurveyIdentifier = $(this).data('survey');
                 currentInstructorId = $(this).data('instructor');
 
+                // Actualiza el enlace del PDF para descargar todas las respuestas
+                updateDownloadPdfLinkAll();
+
+                // Se establece un valor por defecto en el select (ejemplo: "21")
                 if ($('#questionSelect').length) {
                     $('#questionSelect').val('21');
                 }
 
+                // Carga las respuestas según el valor por defecto del select
                 loadOpenQuestions('21');
 
+                // Muestra el modal
                 $('#openQuestionsModal').css('display', 'flex');
             });
 
+            // Cuando se cambia el select, solo se recargan las respuestas en el modal
             $(document).on('change', '#questionSelect', function() {
-                const questionId = $(this).val();
+                var questionId = $(this).val();
                 loadOpenQuestions(questionId);
             });
 
+            // Cierra el modal al hacer clic fuera del contenido
             $(window).on('click', function(e) {
                 if ($(e.target).is('#openQuestionsModal')) {
                     $('#openQuestionsModal').css('display', 'none');
@@ -708,81 +827,6 @@
             });
         });
     </script>
-
-    <script></script>
-
-
-    <style>
-        #openQuestionsContent ul li {
-            margin-bottom: 10px;
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            width: 70%;
-            max-width: 70%;
-            height: 80vh;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            position: relative;
-        }
-
-        .modal-select-container {
-            margin-bottom: 15px;
-        }
-
-        .modal-select {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-        }
-
-        .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-
-        .modal-footer {
-            margin-top: 15px;
-            text-align: right;
-        }
-
-        .btn-res {
-            display: inline-block;
-            width: 80%;
-            padding: 5px 10px;
-            background-color: #388E3C;
-            color: #fff;
-            font-size: 0.9rem;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 4px;
-            border: 2px solid #2E7D32;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-        }
-    </style>
 
 </body>
 

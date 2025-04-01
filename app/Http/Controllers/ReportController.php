@@ -199,6 +199,7 @@ class ReportController extends Controller
                         ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node')
                         ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')
                         ->margins(1, 1, 1, 1, "px")
+                        ->setViewport(1024, 768)
                         ->waitUntilNetworkIdle();
                 });
             return $pdf->download("reporte-instructor-{$instructorId}-" . now()->format('Y-m-d') . ".pdf");

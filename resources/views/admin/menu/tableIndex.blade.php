@@ -29,10 +29,10 @@
                     </td>
                     <td style="text-align: center;">
                         @if ($instructor->answers->isNotEmpty())
-                            <button onclick="window.location.href='{{ route('reportsGeneral', $instructor->id) }}'"
-                                class="general-btn general-btn-data">
-                                General
-                            </button>
+                        <button type="button" onclick="window.open('{{ route('reportsGeneral', $instructor->id) }}', '_blank')" class="general-btn general-btn-data">
+                            General
+                        </button>
+
                         @else
                             <button onclick="showToast('No hay datos para el reporte general', 'error')" disabled
                                 class="general-btn general-btn-nodata">
@@ -87,6 +87,13 @@
             @endif
         </ul>
 
+
+
+        <div class="jump-page-container">
+            <label for="jumpPageInput">Ir a la página:</label>
+            <input type="number" id="jumpPageInput" min="1" max="{{ $lastPage }}" class="jump-page-input">
+            <button onclick="jumpToPage({{ $lastPage }})" class="jump-page-btn">Ir</button>
+        </div>
     </div>
 
 

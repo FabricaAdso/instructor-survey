@@ -60,7 +60,9 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
 
     Route::get('/open-questions', [TotalReportController::class, 'openQuestions'])->name('open.questions');
 
-});
+     Route::get('/open-questions-pdf', [TotalReportController::class, 'generateOpenQuestionsPdf'])->name('openQuestionsPdf');
+
+    });
 
 
 

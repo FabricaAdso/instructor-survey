@@ -155,13 +155,13 @@
         color: #333;
         padding: 10px 15px;
         font-weight: 500;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
         border-radius: 4px;
     }
 
     header nav ul li a:hover,
-    header nav ul li a.active {
-        transform: translateY(-5px);
+    header nav ul li a:focus,
+    header nav ul li a:active {
+        color: #388E3C;
     }
 </style>
 
@@ -170,7 +170,7 @@
         <div class="container">
             <div class="header-left">
                 <img src="../img/logo-sena-verde-complementario-svg-2022.svg" alt="Logo SENA" class="logo">
-                <h1 class="header-title">Encuesta de Satisfaccion</h1>
+                <h1 class="header-title">Encuesta de Satisfacción</h1>
                 <title></title>
             </div>
             <button class="menu-toggle" id="menu-toggle" aria-expanded="false">☰</button>
