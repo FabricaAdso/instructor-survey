@@ -20,16 +20,10 @@ use Illuminate\Support\Facades\Log;
 use function Spatie\LaravelPdf\Support\pdf;
 
 
-class ReportController extends Controller
+class LeaderReportController extends Controller
 {
 
-
-    public function areaLeader(Request $request)
-    {
-        return view('leader.reports.index');
-    }
-
-    public function index(Request $request)
+    public function leaderindex(Request $request)
     {
         $isSurveyOpen = Course::where('is_survey_open', true)->exists();
 
@@ -51,37 +45,30 @@ class ReportController extends Controller
             });
         }
 
+        $user = $request->user();
+
+        // Si el usuario es líder, filtrar los instructores por el mismo knowledge_network
+        if ($user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if ($leader) {
+                $query->where('knowledge_network_id', $leader->knowledge_network_id);
+            } else {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
+            }
+        }
+
         $instructors = $query->paginate(10);
         // dd($instructors)
-        return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
+        return view('leader.reports.index', compact('instructors', 'isSurveyOpen'));
     }
 
 
     public function toggleSurveyStatus(Request $request)
     {
-        try {
-            $newStatus = !Course::where('is_survey_open', true)->exists();
-            Course::query()->update(['is_survey_open' => $newStatus]);
 
-            // Si se está cerrando la encuesta, consolidar los datos
-            if (!$newStatus) {
-                $closureDate = Carbon::now()->format('Y-m-d');
-                Artisan::call('survey:consolidate', ['closure_date' => $closureDate]);
-            }
-
-            return response()->json([
-                'message' => 'Estado de la encuesta actualizado',
-                'is_survey_open' => $newStatus
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error interno del servidor',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
 
-    public function instructorsTable(Request $request)
+    public function leaderinstructorsTable(Request $request)
     {
         $query = Instructor::with('user', 'answers', 'courses');
 
@@ -94,9 +81,21 @@ class ReportController extends Controller
             });
         }
 
+        $user = $request->user();
+
+        // Si el usuario es líder, filtrar los instructores por el mismo knowledge_network
+        if ($user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if ($leader) {
+                $query->where('knowledge_network_id', $leader->knowledge_network_id);
+            } else {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
+            }
+        }
+
         $instructors = $query->paginate(10);
 
-        return view('admin.menu.tableIndex', compact('instructors'));
+        return view('leader.menu.tableIndex', compact('instructors'));
     }
 
 
@@ -106,7 +105,7 @@ class ReportController extends Controller
 
 
 
-    public function show($courseId, $instructorId)
+    public function leadershow($courseId, $instructorId)
     {
         $course = Course::with('instructors')->find($courseId);
 
@@ -143,7 +142,7 @@ class ReportController extends Controller
             ->values()
             ->toArray();
 
-        return view('admin/reports.show', [
+        return view('leader/reports.show', [
             'reportData' => $reportData,
             'questions' => json_encode($questions),
             'observations' => $observations,
@@ -152,7 +151,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function reportsDownloadCourse($courseId, $instructorId)
+    public function leaderreportsDownloadCourse($courseId, $instructorId)
     {
         try {
             $course = Course::with('instructors')->find($courseId);
@@ -190,7 +189,7 @@ class ReportController extends Controller
                 ->values()
                 ->toArray();
 
-            $htmlContent = view('admin/reports/courseGrafica', [
+            $htmlContent = view('leader/reports/courseGrafica', [
                 'reportData' => $reportData,
                 'questions' => json_encode($questions),
                 'observations' => $observations,
@@ -214,7 +213,7 @@ class ReportController extends Controller
         }
     }
 
-    public function showGeneral($instructorId)
+    public function leadershowGeneral($instructorId)
     {
         $instructor = Instructor::find($instructorId);
         if (!$instructor) {
@@ -246,7 +245,7 @@ class ReportController extends Controller
             ->values()
             ->toArray();
 
-        return view('admin/reports/general', [
+        return view('leader/reports/general', [
             'reportData' => $reportData,
             'questions' => json_encode($questions),
             'observations' => $observations,
@@ -254,7 +253,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function showGeneralDownload($instructorId)
+    public function leadershowGeneralDownload($instructorId)
     {
         try {
             $instructor = Instructor::find($instructorId);
@@ -286,7 +285,7 @@ class ReportController extends Controller
                 ->values()
                 ->toArray();
 
-            $htmlContent = view('admin/reports.generalGrafica', [
+            $htmlContent = view('leader/reports.generalGrafica', [
                 'reportData' => $reportData,
                 'questions' => json_encode($questions),
                 'observations' => $observations,

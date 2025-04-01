@@ -77,7 +77,7 @@ class AuthController extends Controller {
         }
 
         Auth::guard('areaLeader')->login($user);
-        return redirect()->route('areaLeader');
+        return redirect()->route('leader.dashboard');
     }
 
     public function login(Request $request)
