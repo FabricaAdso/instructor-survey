@@ -25,11 +25,11 @@ Route::middleware(['auth:apprentice', 'code.verified'])->group(function () {
     Route::post('/logout/apprentice', [AuthController::class, 'logoutApprentice'])->name('logout.apprentice');
 });
 
+// RUTAS PARA ADMINISTRADORES
 Route::get('login/admin', function() {
     return view('auth.loginAdmin');
 })->name('login.admin');
 
-// RUTAS PARA ADMINISTRADORES Y LIDERES
 Route::post('login/admin', [AuthController::class, 'loginAdmin'])->name('login.admin.submit');
 
 Route::middleware(['auth:admin', 'superuser'])->group(function () {
@@ -49,7 +49,6 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
     Route::post('/import-users', [ImportController::class, 'importUsers'])->name('import-users');
     Route::post('/import-leaders', [ImportController::class, 'importLeaders'])->name('import-leaders');
 
-    Route::post('/logout/admin', [AuthController::class, 'logoutAdmin'])->name('logout.admin');
     Route::get('/totalReport', [TotalReportController::class, 'totalReport'])->name('reportsClose');
     Route::get('/descargar-pdf/{id}', [TotalReportController::class, 'totalpdf'])->name('totalreport');;
     Route::get('/descargar-todos-pdfs', [TotalReportController::class, 'downloadAllIndividualPDFs'])->name('totalreportpdf.all');
@@ -59,12 +58,23 @@ Route::middleware(['auth:admin', 'superuser'])->group(function () {
     Route::get('/descargar-excel', [TotalReportController::class, 'downloadExcel'])->name('downloadExcel');
 
     Route::get('/open-questions', [TotalReportController::class, 'openQuestions'])->name('open.questions');
+    Route::get('/open-questions-pdf', [TotalReportController::class, 'generateOpenQuestionsPdf'])->name('openQuestionsPdf');
 
-     Route::get('/open-questions-pdf', [TotalReportController::class, 'generateOpenQuestionsPdf'])->name('openQuestionsPdf');
+    Route::post('/logout/admin', [AuthController::class, 'logoutAdmin'])->name('logout.admin');
+});
 
-    });
+// RUTAS PARA LIDERES DE AREA
+Route::get('login/areaLeader', function() {
+    return view('auth.loginAreaLeader');
+})->name('login.areaLeader');
 
+Route::post('login/area/leader', [AuthController::class, 'loginAreaLeader'])->name('login.areaLeader.submit');
 
+Route::middleware(['auth:areaLeader'])->group(function () {
+
+    Route::get('/areaLeader', [ReportController::class, 'areaLeader'])->name('areaLeader');
+
+});
 
 Route::fallback(function () {
     return redirect()->route('login');

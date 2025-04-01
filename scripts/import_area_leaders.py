@@ -1,8 +1,10 @@
+
 import pandas as pd
 import mysql.connector
 import os
 import sys
 import signal
+import bcrypt
 from openpyxl.styles import PatternFill
 
 # Configurar un timeout de 10 minutos
@@ -16,6 +18,19 @@ db_config = {
     'password': 'fabrica123',  # contraseña de MySQL
     'database': 'instructor_survey'  # nombre de la base de datos
 }
+
+# Función para generar hash compatible con Laravel
+def generate_laravel_bcrypt(password):
+    """Genera un hash bcrypt que Laravel puede verificar"""
+    # Generar hash normal con bcrypt
+    hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=12))
+    # Convertir a formato compatible con Laravel ($2y$ en lugar de $2b$)
+    laravel_hash = hash.decode('utf-8').replace('$2b$', '$2y$')
+    return laravel_hash
+
+# Contraseña por defecto hasheada de forma compatible con Laravel
+DEFAULT_PASSWORD = "liderareasena2025"
+DEFAULT_HASHED_PASSWORD = generate_laravel_bcrypt(DEFAULT_PASSWORD)
 
 def import_area_leaders(file_path):
     conn = None
@@ -36,6 +51,8 @@ def import_area_leaders(file_path):
         cursor = conn.cursor()
 
         print("Procesando líderes de área...")
+        print(f"Usando hash bcrypt compatible con Laravel: {DEFAULT_HASHED_PASSWORD[:20]}...")
+
         for index, row in leaders_df.iterrows():
             try:
                 # Insertar o actualizar el usuario (con is_area_leader = True)
@@ -46,14 +63,15 @@ def import_area_leaders(file_path):
                     # Insertar nuevo usuario como líder de área
                     cursor.execute(
                         """INSERT INTO users
-                        (identity_document, name, last_name, email, is_area_leader)
-                        VALUES (%s, %s, %s, %s, %s)""",
+                        (identity_document, name, last_name, email, is_area_leader, password)
+                        VALUES (%s, %s, %s, %s, %s, %s)""",
                         (
                             row['NUMERO_DOCUMENTO'],
                             row['NOMBRE'],
                             f"{row['PRIMER_APELLIDO']} {row['SEGUNDO_APELLIDO']}",
                             row['CORREO_ELECTRONICO'],
-                            True  # Marcamos como líder de área
+                            True,  # Marcamos como líder de área
+                            DEFAULT_HASHED_PASSWORD  # Contraseña por defecto hasheada
                         )
                     )
                     user_id = cursor.lastrowid
@@ -62,9 +80,10 @@ def import_area_leaders(file_path):
                     # Actualizar usuario existente como líder de área
                     cursor.execute(
                         """UPDATE users
-                        SET is_area_leader = TRUE
+                        SET is_area_leader = TRUE,
+                            password = %s
                         WHERE id = %s""",
-                        (user_id,)
+                        (DEFAULT_HASHED_PASSWORD, user_id)
                     )
 
                 # Insertar o actualizar la red de conocimiento

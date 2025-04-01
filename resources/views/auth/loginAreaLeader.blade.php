@@ -19,15 +19,15 @@
                 <div class="flex justify-center">
                     @include('auth.logo') </div>
 
-                <h1 class="text-2xl font-bold text-center text-gray-700">Administrador</h1>
+                <h1 class="text-2xl font-bold text-center text-gray-700">Lider De Area</h1>
 
-                <form method="POST" action="{{ route('login.admin.submit') }}" class="space-y-4">
+                <form method="POST" action="{{ route('login.areaLeader.submit') }}" class="space-y-4">
                     @csrf
 
                     <div>
-                        <label for="username" class="block text-sm font-medium text-gray-600">Usuario</label>
-                        <input type="text" id="username" name="username"
-                            placeholder="Ingresa tu nombre de usuario o documento"
+                        <label for="username" class="block text-sm font-medium text-gray-600">Documento De Identidad</label>
+                        <input type="text" id="identity_document" name="identity_document"
+                            placeholder="Ingresa tu numero de documento"
                             class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:ring focus:ring-green-300 focus:outline-none"
                             required>
                     </div>
@@ -64,9 +64,11 @@
                         Ingresar como
                         <a href="{{ route('login') }}" class="text-green-500 hover:underline">Aprendiz</a>
                         <span class="separator">o</span>
-                        <a href="{{ route('login.areaLeader') }}" class="text-green-500 hover:underline">Lider de Area</a>
+                        <a href="{{ route('login.admin') }}" class="text-green-500 hover:underline">Administrador</a>
                     </p>
                 </div>
+
+
             </div>
         </div>
     </div>

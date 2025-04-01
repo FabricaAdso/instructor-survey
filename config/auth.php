@@ -41,12 +41,17 @@ return [
             'provider' => 'users',
         ],
 
-        'admin' => [
+        'apprentice' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
 
-        'apprentice' => [
+        'areaLeader' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'admin' => [
             'driver' => 'session',
             'provider' => 'users',
         ],

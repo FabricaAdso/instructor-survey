@@ -33,14 +33,50 @@ class AuthController extends Controller {
                     ->first();
 
         if (!$user || !$user->is_superuser || !Hash::check($request->password, $user->password)) {
-            //dd($user, Hash::check($request->password, $user->password));
 
             return back()->withErrors(['error' => 'Credenciales incorrectas o no tienes permisos de administrador.']);
         }
 
-        // Usar el guard 'admin' para autenticar
         Auth::guard('admin')->login($user);
 
+        return redirect()->route('admin.dashboard');
+    }
+
+    // public function loginAreaLeader(Request $request)
+    // {
+    //     $request->validate([
+    //         'identity_document' => 'required|string',
+    //         'password' => 'required|string',
+    //     ]);
+
+    //     $user = User::where('identity_document', $request->identity_document)->first();
+
+    //     if (!$user || !$user->is_area_leader || !Hash::check($request->password, $user->password)) {
+    //         return back()->withErrors([
+    //             'error' => 'Credenciales incorrectas o no tienes permisos de líder de área.'
+    //         ]);
+    //     }
+
+    //     Auth::guard('areaLeader')->login($user);
+    //     return redirect()->route('leader.dashboard');
+    // }
+
+    public function loginAreaLeader(Request $request)
+    {
+        $request->validate([
+            'identity_document' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('identity_document', $request->identity_document)
+                ->where('is_area_leader', true)
+                ->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['error' => 'Credenciales incorrectas']);
+        }
+
+        Auth::guard('areaLeader')->login($user);
         return redirect()->route('admin.dashboard');
     }
 

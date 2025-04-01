@@ -23,6 +23,12 @@ use function Spatie\LaravelPdf\Support\pdf;
 class ReportController extends Controller
 {
 
+
+    public function areaLeader(Request $request)
+    {
+        return view('areaLeader.index');
+    }
+
     public function index(Request $request)
     {
         $isSurveyOpen = Course::where('is_survey_open', true)->exists();

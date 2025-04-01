@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'code.verified' => \App\Http\Middleware\EnsureCodeIsVerified::class,
             'superuser' => \App\Http\Middleware\EnsureUserIsSuperuser::class,
+            'areaLeader' => \App\Http\Middleware\AreaLeader::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

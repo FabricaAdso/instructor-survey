@@ -53,8 +53,12 @@
                 @endif
 
                 <div class="text-center">
-                    <p class="text-sm text-gray-500">Ingresar como <a href="{{ route('login.admin') }}"
-                            class="text-green-500 hover:underline">Administrador</a></p>
+                    <p class="text-sm text-gray-500">
+                        Ingresar como
+                        <a href="{{ route('login.admin') }}" class="text-green-500 hover:underline">Administrador</a>
+                        <span class="separator">o</span>
+                        <a href="{{ route('login.areaLeader') }}" class="text-green-500 hover:underline">Lider de Area</a>
+                    </p>
                 </div>
             </div>
         </div>
