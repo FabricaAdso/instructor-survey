@@ -33,7 +33,8 @@ class LeaderReportController extends Controller
             'coursesSurveyOpen' => function ($query) {
                 $query->with('program');
             },
-            'courses'
+            'courses',
+            'knowledgeNetwork'
         ]);
 
         if ($request->filled('instructor_search')) {
@@ -55,11 +56,14 @@ class LeaderReportController extends Controller
             } else {
                 abort(403, 'No se encontró área de liderazgo para este usuario.');
             }
+            $knowledgeNetwork = $user->areaLeader->knowledgeNetwork;
+            $networkName = $knowledgeNetwork->name;
+
         }
 
         $instructors = $query->paginate(10);
         // dd($instructors)
-        return view('leader.reports.index', compact('instructors', 'isSurveyOpen'));
+        return view('leader.reports.index', compact('instructors', 'isSurveyOpen', 'user'));
     }
 
 

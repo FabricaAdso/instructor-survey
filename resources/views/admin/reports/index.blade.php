@@ -28,7 +28,7 @@
             margin: 0;
             font-size: 1rem;
             margin-bottom: 10px;
-            color: #1F2937;
+            color: #388E3C;
         }
 
         .btn {

@@ -145,6 +145,8 @@
         <p><strong>Encuesta:</strong> {{ $surveyIdentifier }}</p>
         <p><strong>Instructor:</strong> {{ $instructorName }} {{ $instructorLastName }}</p>
         <p><strong>N.° de documento:</strong> {{ $instructorIdentity }}</p>
+        <p><strong>Red de conocimiento:</strong> {{ $knowledgeNetworkName }}</p>
+
     </div>
 
     @php

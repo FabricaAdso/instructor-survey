@@ -473,7 +473,7 @@
 
     <div class="container">
         <div style="display: flex; justify-content: space-between; padding:4px">
-            <h4 class="tittle-close">Encuestas Cerradas</h4>
+            <h4 class="tittle-close">Encuestas Cerradas - Area de {{  $user->areaLeader->knowledgeNetwork->name }}</h4>
             <div>
                 <div style="display: inline-block">
                     <a href="{{ route('leadertotalreportpdf.all', [
@@ -503,7 +503,7 @@
         </div>
 
         <div class="Search">
-            <form method="GET" action="{{ route('reportsClose') }}">
+            <form method="GET" action="{{ route('leaderreportsClose') }}">
                 <div class="search-wrapper">
                     <div class="search-item">
                         <div class="float-containert">
@@ -603,7 +603,6 @@
                     <th>Nombres y Apellidos</th>
                     <th>Calificación Promedio</th>
                     <th style="max-width: 80px">Total Respuestas</th>
-                    <th style="width: 30px; ">respuestas abiertas</th>
                     <th style="width: 30px; ">Acciones</th>
                 </tr>
             </thead>
@@ -615,18 +614,7 @@
                         <td>{{ $summary->instructor_name }} {{ $summary->instructor_last_name }}</td>
                         <td>{{ number_format($summary->average_qualification, 2) }}</td>
                         <td>{{ $summary->total_responses }}</td>
-                        <td style="text-align: center;">
 
-                            <a href="javascript:void(0)" class="view-open-questions"
-                                style="color: #388E3C; font-weight: bold; "
-                                data-survey="{{ $summary->survey_identifier }}"
-                                data-instructor="{{ $summary->instructor_id }}">
-                                <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i>
-                                Ver
-                            </a>
-
-
-                        </td>
                         <td style="text-align: center;">
                             <a href="{{ route('leadertotalreport', [
                                 'id' => $summary->instructor_id,
@@ -697,37 +685,6 @@
         </div>
     </div>
 
-
-
-
-    <div id="openQuestionsModal" class="modal">
-        <div class="modal-content">
-            <h2>Respuestas Abiertas</h2>
-            <div style="width: 100%; display:flex; justify-content:flex-end">
-                <a id="downloadPdf" href="#" target="_blank" class="btn" style="width: max-content">
-                    <i class="fa fa-download"></i> PDF
-                </a>
-
-            </div>
-
-            <div class="modal-select-container">
-                <label for="questionSelect">Seleccione el tipo de respuesta:</label>
-                <select id="questionSelect" class="modal-select">
-                    <option value="21">OBSERVACIONES</option>
-                    <option value="22">RECOMENDACIÓN O SUGERENCIAS</option>
-                </select>
-            </div>
-            <div id="openQuestionsContent" class="modal-body">
-
-            </div>
-            <br>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-
-
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
@@ -754,79 +711,7 @@
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        let currentSurveyIdentifier = null;
-        let currentInstructorId = null;
 
-        function loadOpenQuestions(questionId) {
-            $.ajax({
-                url: '{{ route("open.questions") }}',
-                type: 'GET',
-                data: {
-                    survey_identifier: currentSurveyIdentifier,
-                    instructor_id: currentInstructorId,
-                    question_id: questionId
-                },
-                success: function(response) {
-                    let html = '';
-                    if (response.length > 0) {
-                        html += '<ul>';
-                        $.each(response, function(index, question) {
-                            html += '<li>' + question.response + '</li>';
-                        });
-                        html += '</ul>';
-                    } else {
-                        html = '<p>No hay respuestas disponibles para esta pregunta.</p>';
-                    }
-                    $('#openQuestionsContent').html(html);
-                },
-                error: function() {
-                    alert('Ocurrió un error al cargar las respuestas abiertas.');
-                }
-            });
-        }
-
-        function updateDownloadPdfLinkAll() {
-            var url = '{{ route("openQuestionsPdf") }}' +
-                      '?survey_identifier=' + currentSurveyIdentifier +
-                      '&instructor_id=' + currentInstructorId;
-            $('#downloadPdf').attr('href', url);
-        }
-
-        $(document).ready(function() {
-            $(document).on('click', '.view-open-questions', function() {
-                currentSurveyIdentifier = $(this).data('survey');
-                currentInstructorId = $(this).data('instructor');
-
-                // Actualiza el enlace del PDF para descargar todas las respuestas
-                updateDownloadPdfLinkAll();
-
-                // Se establece un valor por defecto en el select (ejemplo: "21")
-                if ($('#questionSelect').length) {
-                    $('#questionSelect').val('21');
-                }
-
-                // Carga las respuestas según el valor por defecto del select
-                loadOpenQuestions('21');
-
-                // Muestra el modal
-                $('#openQuestionsModal').css('display', 'flex');
-            });
-
-            // Cuando se cambia el select, solo se recargan las respuestas en el modal
-            $(document).on('change', '#questionSelect', function() {
-                var questionId = $(this).val();
-                loadOpenQuestions(questionId);
-            });
-
-            // Cierra el modal al hacer clic fuera del contenido
-            $(window).on('click', function(e) {
-                if ($(e.target).is('#openQuestionsModal')) {
-                    $('#openQuestionsModal').css('display', 'none');
-                }
-            });
-        });
-    </script>
 
 </body>
 

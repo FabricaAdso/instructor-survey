@@ -74,15 +74,18 @@ class LeaderTotalReportController extends Controller
                 return $q->having('average_qualification', '<=', $maxAverage);
             });
 
-            $user = $request->user();
-            if (!$user->is_superuser && $user->is_area_leader) {
-                $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
-                if ($leader) {
-                    $query->where('instructors.knowledge_network_id', $leader->knowledge_network_id);
-                } else {
-                    abort(403, 'No se encontró área de liderazgo para este usuario.');
-                }
+        $user = $request->user();
+        if (!$user->is_superuser && $user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if ($leader) {
+                $query->where('instructors.knowledge_network_id', $leader->knowledge_network_id);
+            } else {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
             }
+
+            $knowledgeNetwork = $user->areaLeader->knowledgeNetwork;
+            $networkName = $knowledgeNetwork->name;
+        }
 
 
         $summaries = $query->paginate(10)->appends(request()->query());
@@ -101,42 +104,39 @@ class LeaderTotalReportController extends Controller
             'instructorsForSelect',
             'instructorSearch',
             'minAverage',
-            'maxAverage'
+            'maxAverage',
+            'user'
         ));
     }
 
-
-    public function openQuestions(Request $request)
+    public function leadertotalpdf($id, Request $request)
     {
 
-        $surveyIdentifier = $request->input('survey_identifier');
-        $instructorId = $request->input('instructor_id');
-        $questionId     = $request->input('question_id'); // Parámetro opcional
+        $user = $request->user();
+        $leaderNetworkId = null;
 
-        $query = OpenQuestion::where('survey_identifier', $surveyIdentifier)
-            ->where('instructor_id', $instructorId)
-            ->whereNotNull('response');
-
-        // Si se especificó la pregunta, agregar el filtro
-        if ($questionId) {
-            $query->where('question_id', $questionId);
-        }
-
-        $openQuestions = $query->get();
-
-        return response()->json($openQuestions);
-    }
-
-
-
-    public function totalpdf($id, Request $request)
-    {
         $surveyIdentifier   = $request->input('survey_identifier');
         $instructorSearch   = $request->input('instructor_search');
         $knowledgeNetworkId = trim($request->input('knowledge_network_id'));
 
-        $query = SurveySummary::with(['instructor.user', 'question'])
+
+        if (!$user->is_superuser && $user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if (!$leader) {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
+            }
+            $leaderNetworkId = $leader->knowledge_network_id;
+        }
+
+        $query = SurveySummary::with(['instructor.user', 'question', 'instructor.knowledgeNetwork'])
             ->where('instructor_id', $id);
+
+        if ($leaderNetworkId) {
+            $query->whereHas('instructor', function ($q) use ($leaderNetworkId) {
+                $q->where('knowledge_network_id', $leaderNetworkId);
+            });
+        }
+
 
         if ($surveyIdentifier) {
             $query->where('survey_identifier', $surveyIdentifier);
@@ -165,6 +165,7 @@ class LeaderTotalReportController extends Controller
         $fecha = $summaries->first()->created_at
             ? $summaries->first()->created_at->format('d/m/Y')
             : 'Fecha no disponible';
+        $instructor = $summaries->first()->instructor; // Obtenemos el instructor
 
         $instructorUser = $summaries->first()->instructor->user;
         $identityDocument = optional($instructorUser)->identity_document ?? 'SinIdentidad';
@@ -176,6 +177,8 @@ class LeaderTotalReportController extends Controller
             'instructorName'        => $instructorUser->name,
             'instructorLastName' => $instructorUser->last_name,
             'instructorIdentity' => $instructorUser->identity_document,
+            'knowledgeNetworkName' => $instructor->knowledgeNetwork->name ?? 'Área no disponible'
+
         ];
 
         $pdf = Pdf::loadView('leader.reports.allPDF', $data);
@@ -191,14 +194,24 @@ class LeaderTotalReportController extends Controller
 
 
 
-    public function downloadAllIndividualPDFs(Request $request)
+    public function leaderdownloadAllIndividualPDFs(Request $request)
     {
         $surveyIdentifier   = $request->input('survey_identifier');
         $instructorSearch   = $request->input('instructor_search');
         $instructorId       = $request->input('instructor_id');
         $knowledgeNetworkId = trim($request->input('knowledge_network_id'));
 
-        $query = SurveySummary::with(['instructor.user', 'question']);
+        $user = $request->user();
+        $leaderNetworkId = null;
+        if (!$user->is_superuser && $user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if (!$leader) {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
+            }
+            $leaderNetworkId = $leader->knowledge_network_id;
+        }
+
+        $query = SurveySummary::with(['instructor.user', 'question', 'instructor.knowledgeNetwork' ]);
 
         if ($surveyIdentifier) {
             $query->where('survey_identifier', $surveyIdentifier);
@@ -218,11 +231,19 @@ class LeaderTotalReportController extends Controller
             $query->where('instructor_id', $instructorId);
         }
 
+        if ($leaderNetworkId !== null) {
+        // Si es líder: filtrar SOLO por su red
+        $query->whereHas('instructor', function ($q) use ($leaderNetworkId) {
+            $q->where('knowledge_network_id', $leaderNetworkId);
+        });
+    } else {
+        // Si es superusuario: aplicar filtro del request
         if ($knowledgeNetworkId) {
             $query->whereHas('instructor.knowledgeNetwork', function ($q) use ($knowledgeNetworkId) {
                 $q->where('name', 'LIKE', "%{$knowledgeNetworkId}%");
             });
         }
+    }
 
 
         $summaries = $query->get();
@@ -232,6 +253,8 @@ class LeaderTotalReportController extends Controller
         });
 
         $today = Carbon::now()->format('d-m-Y');
+        $instructor = $summaries->first()->instructor; // Obtenemos el instructor
+
 
         $surveySafe = $surveyIdentifier ? str_replace(['/', '\\'], '', $surveyIdentifier) : '';
 
@@ -276,6 +299,8 @@ class LeaderTotalReportController extends Controller
                 'fecha'            => $fecha,
                 'summaries'        => $group,
                 'instructorIdentity'     => $instructorIdentity,
+                'knowledgeNetworkName' => $instructor->knowledgeNetwork->name ?? 'Área no disponible'
+
             ];
 
             $pdf = Pdf::loadView('leader.reports.totalReportPDF', $data);
@@ -291,7 +316,7 @@ class LeaderTotalReportController extends Controller
     }
 
 
-    public function downloadExcel(Request $request)
+    public function leaderdownloadExcel(Request $request)
     {
         $surveyIdentifier   = $request->input('survey_identifier');
         $instructorSearch   = $request->input('instructor_search');

@@ -28,7 +28,7 @@
             margin: 0;
             font-size: 1rem;
             margin-bottom: 10px;
-            color: #1F2937;
+            color: #388E3C;
         }
 
         .btn {
@@ -395,7 +395,7 @@
 <body>
     @include('leader.menu.header')
     <div class="container index-container">
-        <h3>Reporte de Instructores</h3>
+        <h3 >Reporte de Instructores - Area de {{  $user->areaLeader->knowledgeNetwork->name }}</h3>
         <div class="header-flex">
 
 

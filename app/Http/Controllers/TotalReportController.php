@@ -124,7 +124,7 @@ class TotalReportController extends Controller
         $instructorSearch   = $request->input('instructor_search');
         $knowledgeNetworkId = trim($request->input('knowledge_network_id'));
 
-        $query = SurveySummary::with(['instructor.user', 'question'])
+        $query = SurveySummary::with(['instructor.user', 'question', 'instructor.knowledgeNetwork'])
             ->where('instructor_id', $id);
 
         if ($surveyIdentifier) {
@@ -154,6 +154,7 @@ class TotalReportController extends Controller
         $fecha = $summaries->first()->created_at
             ? $summaries->first()->created_at->format('d/m/Y')
             : 'Fecha no disponible';
+        $instructor = $summaries->first()->instructor; // Obtenemos el instructor
 
         $instructorUser = $summaries->first()->instructor->user;
         $identityDocument = optional($instructorUser)->identity_document ?? 'SinIdentidad';
@@ -165,6 +166,7 @@ class TotalReportController extends Controller
             'instructorName'        => $instructorUser->name,
             'instructorLastName' => $instructorUser->last_name,
             'instructorIdentity' => $instructorUser->identity_document,
+            'knowledgeNetworkName' => $instructor->knowledgeNetwork->name ?? 'Área no disponible'
         ];
 
         $pdf = Pdf::loadView('admin.reports.allPDF', $data);
@@ -187,7 +189,7 @@ class TotalReportController extends Controller
         $instructorId       = $request->input('instructor_id');
         $knowledgeNetworkId = trim($request->input('knowledge_network_id'));
 
-        $query = SurveySummary::with(['instructor.user', 'question']);
+        $query = SurveySummary::with(['instructor.user', 'question', 'instructor.knowledgeNetwork']);
 
         if ($surveyIdentifier) {
             $query->where('survey_identifier', $surveyIdentifier);
@@ -258,6 +260,9 @@ class TotalReportController extends Controller
             $instructorFullSafe = str_replace(['/', '\\'], '', $instructorFull);
             $fecha = $firstSummary->created_at ? $firstSummary->created_at->format('d/m/Y') : 'fecha_no_disponible';
 
+            $currentInstructor = $firstSummary->instructor;
+
+
             $instructorIdentity = optional($firstSummary->instructor->user)->identity_document ?? 'SinIdentidad';
             $data = [
                 'surveyIdentifier' => $surveyId,
@@ -265,6 +270,7 @@ class TotalReportController extends Controller
                 'fecha'            => $fecha,
                 'summaries'        => $group,
                 'instructorIdentity'     => $instructorIdentity,
+                'knowledgeNetworkName' => $currentInstructor->knowledgeNetwork->name ?? 'Área no disponible'
             ];
 
             $pdf = Pdf::loadView('admin.reports.totalReportPDF', $data);
