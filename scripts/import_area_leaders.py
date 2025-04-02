@@ -15,7 +15,7 @@ signal.alarm(600)  # 600 segundos (10 minutos)
 db_config = {
     'host': 'localhost',
     'user': 'root',           # usuario de MySQL
-    'password': 'fabrica124',  # contraseña de MySQL
+    'password': 'fabrica123',  # contraseña de MySQL
     'database': 'instructor_survey'  # nombre de la base de datos
 }
 
