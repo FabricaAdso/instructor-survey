@@ -397,6 +397,15 @@ class TotalReportController extends Controller
             ],
         ];
 
+        $boldBorderContent = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ];
+
         // $columns = range('A', 'F'); // o el rango que necesites
         // foreach ($columns as $column) {
         //     $sheet->getColumnDimension($column)->setWidth(120);
@@ -466,8 +475,17 @@ class TotalReportController extends Controller
         // Obtener la última fila de la tabla
         $lastRow = count($data) + $startRow - 1;
 
-        $tableRange = "A{$startRow}:{$lastColumn}{$lastRow}";
-        $sheet->getStyle($tableRange)->applyFromArray($boldBorderStyle);
+         // Definir rangos
+         $headerRange = "A{$startRow}:{$lastColumn}{$startRow}"; // Solo la fila 6, encabezado
+         $contentRange = "A" . ($startRow + 1) . ":{$lastColumn}{$lastRow}"; // Resto de la tabla
+
+         // Aplicar estilos de borde
+         $sheet->getStyle($headerRange)->applyFromArray($boldBorderStyle);
+         $sheet->getStyle($contentRange)->applyFromArray($boldBorderContent);
+
+         // Aplicar la negrita solo al encabezado
+         $sheet->getStyle($headerRange)->getFont()->setBold(true);
+
 
         $writer = new Xlsx($spreadsheet);
         if (
