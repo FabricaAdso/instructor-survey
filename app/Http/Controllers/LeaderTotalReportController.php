@@ -325,9 +325,23 @@ class LeaderTotalReportController extends Controller
         $minAverage         = $request->input('min_average');
         $maxAverage         = $request->input('max_average');
 
-        $query = SurveySummary::with(['instructor.user', 'question'])
-            ->when($surveyIdentifier, function ($q) use ($surveyIdentifier) {
-                $q->where('survey_identifier', $surveyIdentifier);
+        $user = $request->user();
+        $leaderNetworkId = null;
+
+        // Verificar si el usuario es líder
+        if (!$user->is_superuser && $user->is_area_leader) {
+            $leader = \App\Models\AreaLeader::where('user_id', $user->id)->first();
+            if (!$leader) {
+                abort(403, 'No se encontró área de liderazgo para este usuario.');
+            }
+            $leaderNetworkId = $leader->knowledge_network_id;
+        }
+
+
+        $query = SurveySummary::with(['instructor.user', 'question', 'instructor.knowledgeNetwork']);
+
+        $query->when($surveyIdentifier, function ($q) use ($surveyIdentifier) {
+            $q->where('survey_identifier', $surveyIdentifier);
             })
             ->when($instructorSearch, function ($q) use ($instructorSearch) {
                 $q->whereHas('instructor.user', function ($q2) use ($instructorSearch) {
@@ -338,11 +352,6 @@ class LeaderTotalReportController extends Controller
             })
             ->when($instructorId, function ($q) use ($instructorId) {
                 $q->where('instructor_id', $instructorId);
-            })
-            ->when($knowledgeNetworkId, function ($q) use ($knowledgeNetworkId) {
-                $q->whereHas('instructor.knowledgeNetwork', function ($q2) use ($knowledgeNetworkId) {
-                    $q2->where('name', 'LIKE', "%{$knowledgeNetworkId}%");
-                });
             })
             ->when($minAverage, function ($q, $minAverage) {
                 return $q->having('average_qualification', '>=', $minAverage);
@@ -448,8 +457,7 @@ class LeaderTotalReportController extends Controller
 
         // Fusionar las celdas A3:E3 y colocar el título en la celda fusionada
         $sheet->mergeCells('A1:F1');
-        $sheet->setCellValue('A1', 'Reporte de encuesta de satisfacción del aprendiz en etapa lectiva - ejecución de la formación');
-
+        $sheet->setCellValue('A1', 'REPORTE DE ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA - EJECUCIÓN DE LA FORMACIÓN');
         // Aplicar un estilo opcional al título
         $titleStyle = [
             'font' => [

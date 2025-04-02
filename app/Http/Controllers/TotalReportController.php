@@ -418,7 +418,7 @@ class TotalReportController extends Controller
 
         // Fusionar las celdas A3:E3 y colocar el título en la celda fusionada
         $sheet->mergeCells('A1:F1');
-        $sheet->setCellValue('A1', 'Reporte de encuesta de satisfacción del aprendiz en etapa lectiva - ejecución de la formación');
+        $sheet->setCellValue('A1', 'REPORTE DE ENCUESTA DE SATISFACCIÓN DEL APRENDIZ EN ETAPA LECTIVA - EJECUCIÓN DE LA FORMACIÓN');
 
         // Aplicar un estilo opcional al título
         $titleStyle = [
