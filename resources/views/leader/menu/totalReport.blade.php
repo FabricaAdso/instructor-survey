@@ -530,14 +530,6 @@
 
                     <div class="search-item">
                         <div class="float-container">
-                            <input type="text" name="knowledge_network_id" id="knowledgeNetworkId" placeholder=" "
-                                value="{{ request('knowledge_network_id') }}">
-                            <label for="knowledgeNetworkId">Área de conocimiento</label>
-                        </div>
-                    </div>
-
-                    <div class="search-item">
-                        <div class="float-container">
                             <input type="number" step="0.01" min="0" max="5" id="min_average"
                                 name="min_average" placeholder=" " value="{{ request('min_average') }}"
                                 onblur="formatDecimal(this)"
