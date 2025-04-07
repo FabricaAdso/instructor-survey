@@ -182,7 +182,7 @@
                     </ul>
                 </nav>
                 <div class="header-logout">
-                    <form action="{{ route('logout.leader') }}" method="POST">
+                    <form action="{{ route('logout.areaLeader') }}" method="POST">
                         @csrf
                         <button style="font-size: 1.2rem" type="submit" id="btnLogout">Cerrar sesión</button>
                     </form>

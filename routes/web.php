@@ -76,21 +76,14 @@ Route::middleware(['auth:areaLeader'])->group(function () {
 
     Route::get('/leader/dashboard', [LeaderReportController::class, 'leaderindex'])->name('leader.dashboard');
 
-
-
-
-
-
     // Rutas para reportes generales: colócalas primero para evitar conflictos
     Route::get('leader/reports/general/{instructorId}', [LeaderReportController::class, 'leadershowGeneral'])->name('leaderreportsGeneral');
 
     // Rutas para reportes de cursos (ficha)
     Route::get('leader/reports/{courseId}/{instructorId}', [LeaderReportController::class, 'leadershow'])->name('leaderreports.show');
 
-
-
     Route::get('leader/totalReport', [LeaderTotalReportController::class, 'leadertotalReport'])->name('leaderreportsClose');
-    Route::get('leader/descargar-pdf/{id}', [LeaderTotalReportController::class, 'leadertotalpdf'])->name('leadertotalreport');;
+    Route::get('leader/descargar-pdf/{id}', [LeaderTotalReportController::class, 'leadertotalpdf'])->name('leadertotalreport');
     Route::get('leader/descargar-todos-pdfs', [LeaderTotalReportController::class, 'leaderdownloadAllIndividualPDFs'])->name('leadertotalreportpdf.all');
     Route::get('leader/instructors', [LeaderReportController::class, 'leaderinstructorsTable'])->name('leader.instructors');
 
@@ -98,7 +91,7 @@ Route::middleware(['auth:areaLeader'])->group(function () {
     Route::get('leader/descargar-excel', [LeaderTotalReportController::class, 'leaderdownloadExcel'])->name('leaderdownloadExcel');
 
 
-    Route::post('/logout/admin', [AuthController::class, 'logoutAdmin'])->name('logout.admin');
+    Route::post('/logout/leader', [AuthController::class, 'logoutAreaLeader'])->name('logout.areaLeader');
 
 });
 

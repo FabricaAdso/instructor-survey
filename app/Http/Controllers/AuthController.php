@@ -42,25 +42,6 @@ class AuthController extends Controller {
         return redirect()->route('admin.dashboard');
     }
 
-    // public function loginAreaLeader(Request $request)
-    // {
-    //     $request->validate([
-    //         'identity_document' => 'required|string',
-    //         'password' => 'required|string',
-    //     ]);
-
-    //     $user = User::where('identity_document', $request->identity_document)->first();
-
-    //     if (!$user || !$user->is_area_leader || !Hash::check($request->password, $user->password)) {
-    //         return back()->withErrors([
-    //             'error' => 'Credenciales incorrectas o no tienes permisos de líder de área.'
-    //         ]);
-    //     }
-
-    //     Auth::guard('areaLeader')->login($user);
-    //     return redirect()->route('leader.dashboard');
-    // }
-
     public function loginAreaLeader(Request $request)
     {
         $request->validate([
@@ -202,22 +183,27 @@ class AuthController extends Controller {
 
     public function logoutAdmin(Request $request)
     {
-        // Cerrar sesión solo para el guard 'admin'
         Auth::guard('admin')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/login');
-    }
-
-    public function logoutApprentice(Request $request)
-    {
-        // Cerrar sesión solo para el guard 'apprentice'
-        Auth::guard('apprentice')->logout();
-        session()->forget('code_verified');
+        $request->session()->regenerateToken(); // Solo regenera CSRF
 
         return redirect()->route('login');
     }
 
+    public function logoutAreaLeader(Request $request)
+    {
+        Auth::guard('areaLeader')->logout();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
+
+    public function logoutApprentice(Request $request)
+    {
+        Auth::guard('apprentice')->logout();
+        session()->forget('code_verified');
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 
 }

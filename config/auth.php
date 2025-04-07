@@ -44,16 +44,19 @@ return [
         'apprentice' => [
             'driver' => 'session',
             'provider' => 'users',
+            'key' => 'apprentice_session',
         ],
 
         'areaLeader' => [
             'driver' => 'session',
             'provider' => 'users',
+            'key' => 'area_leader_session',
         ],
 
         'admin' => [
             'driver' => 'session',
             'provider' => 'users',
+            'key' => 'admin_session',
         ],
     ],
 
