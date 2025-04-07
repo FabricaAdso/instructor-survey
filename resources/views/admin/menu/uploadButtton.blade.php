@@ -1,3 +1,236 @@
+<style>
+       /* Modal */
+       .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            height: 300px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Max Modal */
+        .max-modal {
+            position: relative;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 600px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .max-modal h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #close-modal-top {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            font-size: 2.8rem;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        /* Pestañas */
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tab-button.active {
+            border-bottom: 3px solid #38a901;
+            font-weight: bold;
+        }
+
+        /* Formulario de carga */
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .upload-form .upload-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .upload-form .upload-input {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .upload-form .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-import {
+            padding: 12px 14px;
+            font-size: 1.1rem;
+            background-color: #38a901;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal de resultado */
+        #result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+
+        .result-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        #result-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #result-message {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        #close-result-modal {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #38a901;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Modal de carga */
+        #loading-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .loading-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38a901;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        #loading-modal p {
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+</style>
+
 <!-- Modal de carga masiva -->
 <div id="modal" class="modal">
     <div class="modal-content max-modal">
