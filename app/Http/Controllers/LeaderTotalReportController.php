@@ -545,35 +545,4 @@ class LeaderTotalReportController extends Controller
         exit;
     }
 
-
-
-    public function generateOpenQuestionsPdf(Request $request)
-    {
-        $surveyIdentifier = $request->input('survey_identifier');
-        $instructorId    = $request->input('instructor_id');
-        $questionId      = $request->input('question_id'); // Si es necesario
-
-        $query = OpenQuestion::where('survey_identifier', $surveyIdentifier)
-            ->where('instructor_id', $instructorId)
-            ->whereNotNull('response');
-
-        if ($questionId) {
-            $query->where('question_id', $questionId);
-        }
-
-        // Cargamos la relación para obtener el texto de la pregunta
-        $openQuestions = $query->with('question')->get()->groupBy('question_id')->sortKeys();
-
-        // Si cuentas con un modelo Instructor, lo puedes cargar para los detalles
-        $instructor = Instructor::find($instructorId);
-
-        // Ahora enviamos todos los datos necesarios a la vista
-        $pdf = Pdf::loadView('leader.reports.test', [
-            'openQuestions'   => $openQuestions,
-            'surveyIdentifier' => $surveyIdentifier,
-            'instructor'      => $instructor
-        ]);
-
-        return $pdf->download('openQuestions.pdf');
-    }
 }

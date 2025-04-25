@@ -87,13 +87,6 @@
             @endif
         </ul>
 
-
-
-        {{-- <div class="jump-page-container">
-            <label for="jumpPageInput">Ir a la página:</label>
-            <input type="number" id="jumpPageInput" min="1" max="{{ $lastPage }}" class="jump-page-input">
-            <button onclick="jumpToPage({{ $lastPage }})" class="jump-page-btn">Ir</button>
-        </div> --}}
     </div>
 
 
@@ -207,15 +200,4 @@
 </style>
 
 
-<script>
-    function jumpToPage(lastPage) {
-    var input = document.getElementById('jumpPageInput');
-    var page = parseInt(input.value);
-    if (isNaN(page) || page < 1 || page > lastPage) {
-        showToast("Por favor ingrese un número válido entre 1 y " + lastPage, "error");
-    } else {
-        performSearch(page);
-    }
-}
 
-</script>

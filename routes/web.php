@@ -76,10 +76,10 @@ Route::middleware(['auth:areaLeader'])->group(function () {
 
     Route::get('/leader/dashboard', [LeaderReportController::class, 'leaderindex'])->name('leader.dashboard');
 
-    // Rutas para reportes generales: colócalas primero para evitar conflictos
+    // Rutas para reportes generales
     Route::get('leader/reports/general/{instructorId}', [LeaderReportController::class, 'leadershowGeneral'])->name('leaderreportsGeneral');
 
-    // Rutas para reportes de cursos (ficha)
+    // Rutas para reportes de cursos
     Route::get('leader/reports/{courseId}/{instructorId}', [LeaderReportController::class, 'leadershow'])->name('leaderreports.show');
 
     Route::get('leader/totalReport', [LeaderTotalReportController::class, 'leadertotalReport'])->name('leaderreportsClose');

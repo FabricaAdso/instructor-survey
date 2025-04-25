@@ -102,13 +102,6 @@ class LeaderReportController extends Controller
         return view('leader.menu.tableIndex', compact('instructors'));
     }
 
-
-
-
-
-
-
-
     public function leadershow($courseId, $instructorId)
     {
         $course = Course::with('instructors')->find($courseId);
@@ -155,68 +148,6 @@ class LeaderReportController extends Controller
         ]);
     }
 
-    public function leaderreportsDownloadCourse($courseId, $instructorId)
-    {
-        try {
-            $course = Course::with('instructors')->find($courseId);
-
-            if (!$course) {
-                return back()->withErrors("El curso no existe.");
-            }
-
-            $instructor = $course->instructors->where('id', $instructorId)->first();
-            if (!$instructor) {
-                return back()->withErrors("El instructor no está asignado al curso seleccionado.");
-            }
-
-            $answers = Answer::where('instructor_id', $instructorId)
-                ->whereHas('course', function ($query) use ($courseId) {
-                    $query->where('id', $courseId);
-                })
-                ->get();
-
-            $reportData = $answers->where('question_id', '<', 21)
-                ->groupBy('question_id')
-                ->map(function ($group) {
-                    $calificaciones = $group->pluck('qualification')->map(fn($value) => (int)$value);
-                    return [
-                        'average' => $calificaciones->avg(),
-                        'count' => $group->count(),
-                    ];
-                });
-
-            $observations = $answers->whereIn('question_id', [21, 22])
-                ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');
-
-            $questions = Question::whereIn('id', $reportData->keys())
-                ->pluck('question', 'id')
-                ->values()
-                ->toArray();
-
-            $htmlContent = view('leader/reports/courseGrafica', [
-                'reportData' => $reportData,
-                'questions' => json_encode($questions),
-                'observations' => $observations,
-                'instructor' => $instructor,
-                'course' => $course,
-            ])->render();
-
-            $pdf = Pdf::html($htmlContent)
-                ->withBrowserShot(function (Browsershot $browsershot) {
-                    $browsershot
-
-                        ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node')
-                        ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')
-                        ->margins(1, 1, 1, 1, "px")
-                        ->setViewport(1024, 768)
-                        ->waitUntilNetworkIdle();
-                });
-            return $pdf->download("reporte-instructor-{$instructorId}-" . now()->format('Y-m-d') . ".pdf");
-        } catch (\Exception $e) {
-            return back()->withErrors('No se pudo generar el PDF: ' . $e->getMessage());
-        }
-    }
-
     public function leadershowGeneral($instructorId)
     {
         $instructor = Instructor::find($instructorId);
@@ -240,7 +171,6 @@ class LeaderReportController extends Controller
                 ];
             });
 
-
         $observations = $answers->whereIn('question_id', [21, 22])
             ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');;
 
@@ -257,58 +187,4 @@ class LeaderReportController extends Controller
         ]);
     }
 
-    public function leadershowGeneralDownload($instructorId)
-    {
-        try {
-            $instructor = Instructor::find($instructorId);
-            if (!$instructor) {
-                return back()->withErrors("El instructor no existe.");
-            }
-
-            $answers = Answer::where('instructor_id', $instructorId)
-                ->whereHas('course', function ($query) {
-                    $query->whereNotNull('id');
-                })
-                ->get();
-
-            $reportData = $answers->where('question_id', '<', 21)
-                ->groupBy('question_id')
-                ->map(function ($group) {
-                    $calificaciones = $group->pluck('qualification')->map(fn($value) => (int)$value);
-                    return [
-                        'average' => $calificaciones->avg(),
-                        'count' => $group->count(),
-                    ];
-                });
-
-            $observations = $answers->whereIn('question_id', [21, 22])
-                ->filter(fn($answer) => !is_null($answer->qualification) && $answer->qualification !== '');
-
-            $questions = Question::whereIn('id', $reportData->keys())
-                ->pluck('question', 'id')
-                ->values()
-                ->toArray();
-
-            $htmlContent = view('leader/reports.generalGrafica', [
-                'reportData' => $reportData,
-                'questions' => json_encode($questions),
-                'observations' => $observations,
-                'instructor' => $instructor
-            ])->render();
-
-            $pdf = Pdf::html($htmlContent)
-                ->withBrowserShot(function (Browsershot $browsershot) {
-                    $browsershot
-
-                        ->setNodeBinary('/home/linuxbrew/.linuxbrew/bin/node')
-                        ->setNpmBinary('/home/linuxbrew/.linuxbrew/bin/npm')
-                        ->margins(1, 1, 1, 1, "px")
-                        ->waitUntilNetworkIdle();
-                });
-
-            return $pdf->download("reporte-instructor-{$instructorId}-" . now()->format('Y-m-d') . ".pdf");
-        } catch (\Exception $e) {
-            return back()->withErrors('No se pudo generar el PDF: ' . $e->getMessage());
-        }
-    }
 }
