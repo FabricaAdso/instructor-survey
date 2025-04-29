@@ -275,7 +275,7 @@
 </head>
 
 <body>
-    @include('admin.menu.header')
+@include('admin.menu.header')
     @include('admin.menu.uploadButtton')
 
     <div class="container index-container">
@@ -312,20 +312,8 @@
         <div class="table-container"></div>
     </div>
 
-    <!-- Modal de confirmación de cierre de encuesta -->
-    <div id="survey-close-modal" class="survey-close-modal">
-        <div class="survey-modal-content">
-            <h2>Confirmar Cierre de Encuesta</h2>
-            <p>
-                ¿Está seguro de que desea cerrar la encuesta? Esto consolidará los datos y no podrá
-                reabrirla sin afectar la información.
-            </p>
-            <div class="survey-modal-buttons">
-                <button id="confirm-close-survey" class="btn-confirm">Sí, cerrar</button>
-                <button id="cancel-close-survey" class="btn-cancel">Cancelar</button>
-            </div>
-        </div>
-    </div>
+    <!-- Incluir el modal de abrir/cerrar encuesta -->
+    @include('admin.reports.survey-toggle')
 </body>
 
 
@@ -350,69 +338,9 @@
         }, 3000);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggleButton = document.getElementById('toggle-survey-status');
-        if (!toggleButton) return;
-        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
-            console.error('Error: No se encontró el token CSRF.');
-            return;
-        }
+  
 
-        toggleButton.addEventListener('click', () => {
-            if (toggleButton.classList.contains('survey-open')) {
-                const surveyModal = document.getElementById('survey-close-modal');
-                surveyModal.classList.add('show');
-            } else {
-                toggleSurveyStatus(csrfToken.content);
-            }
-        });
-
-        document.getElementById('confirm-close-survey').addEventListener('click', () => {
-            toggleSurveyStatus(csrfToken.content);
-            document.getElementById('survey-close-modal').classList.remove('show');
-        });
-
-        document.getElementById('cancel-close-survey').addEventListener('click', () => {
-            document.getElementById('survey-close-modal').classList.remove('show');
-        });
-    });
-
-    function toggleSurveyStatus(csrf) {
-        const toggleButton = document.getElementById('toggle-survey-status');
-        fetch('/admin/toggle-survey-status', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrf,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.is_survey_open) {
-                    toggleButton.innerHTML =
-                        '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Cerrar Encuesta';
-                    toggleButton.classList.remove('survey-closed');
-                    toggleButton.classList.add('survey-open');
-                    showToast('Encuesta abierta exitosamente', 'success');
-                } else {
-                    toggleButton.innerHTML =
-                        '<i class="fas fa-sync-alt" style="font-size: 16px; transition: all 0.3s ease;"></i> Abrir Encuesta';
-                    toggleButton.classList.remove('survey-open');
-                    toggleButton.classList.add('survey-closed');
-                    showToast('Encuesta cerrada exitosamente', 'success');
-                }
-                fetch('{{ route('admin.instructors') }}')
-                    .then(res => res.text())
-                    .then(html => {
-                        document.querySelector('.table-container').innerHTML = html;
-                    });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error al actualizar la encuesta', 'error');
-            });
-    }
+   
 
     function performSearch(page = 1) {
         const searchValue = document.getElementById('instructor_search').value;
