@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!-- NO BORRAR AUN, PRUEBA -->
+
+<!-- <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -90,4 +92,4 @@
     </script>
 </body>
 
-</html>
+</html> -->
