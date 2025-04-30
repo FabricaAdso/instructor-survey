@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Instructores</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
 
     <style>
         /* Global Styles */
@@ -51,40 +51,6 @@
             opacity: 0.9;
         }
 
-        .btn-toggle.survey-closed {
-            background-color: #4CAF50;
-            color: #fff;
-            opacity: 1;
-        }
-
-        .btn-toggle.survey-open {
-            background-color: #FF9800;
-            color: #fff;
-            opacity: 1;
-        }
-
-        .btn-mass {
-            background-color: #008934;
-            color: #fff;
-            border: 2px solid #007924;
-        }
-
-        /* Input de búsqueda */
-        #instructor_search {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 300px;
-            min-width: 80px;
-            transition: border-color 0.3s;
-        }
-
-        #instructor_search:focus {
-            border-color: #388E3C;
-            outline: none;
-        }
-
         /* Toasts */
         .toast {
             position: fixed;
@@ -124,8 +90,6 @@
                 opacity: 0;
             }
         }
-
-
 
         /* Header Flex */
         .header-flex {
@@ -167,116 +131,19 @@
             .right-group {
                 display: none;
             }
-        }
-
-        /* Survey Modal */
-        .survey-close-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-            z-index: 2000; /* Mantenemos el más alto para confirmaciones críticas */
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .survey-close-modal.show {
-            display: flex;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .survey-modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .survey-modal-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .survey-modal-content p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .survey-modal-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-confirm {
-            padding: 10px 20px;
-            background-color: #e53935;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-confirm:hover {
-            background-color: #d32f2f;
-        }
-
-        .btn-cancel {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-cancel:hover {
-            background-color: #43a047;
-        }
+        }    
 
         /* Grupos y botones de la cabecera */
         .button-group {
             width: 320px;
         }
 
-        #toggle-survey-status,
-        #open-modal {
-            font-size: 16px;
-        }
-
-        .btn-search {
-            font-size: 1rem;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid transparent;
-            transition: background-color 0.3s ease;
-            background-color: white;
-            color: #4CAF50;
-            border-color: #4CAF50;
-            cursor: pointer;
-        }
 
     </style>
 </head>
 
 <body>
 @include('admin.menu.header')
-    @include('admin.menu.uploadButtton')
 
     <div class="container index-container">
         <h3>Reporte de Instructores</h3>
@@ -284,24 +151,19 @@
         <div class="header-flex">
             <div class="left-group">
                 <div class="button-group">
-                    <button id="toggle-survey-status"
-                        class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
-                        <i class="fas fa-sync-alt"></i>
-                        {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
-                    </button>
+                @include('admin.reports.survey-toggle')
+                @include('admin.menu.uploadButtton')
 
-                    <button id="open-modal" class="btn btn-mass">
-                        <i class="fa fa-upload" style="margin-right: 4px;"></i>
-                        Cargue Masivo
-                    </button>
+
+
+                    
                 </div>
             </div>
 
             <div class="center-group">
-                <form onsubmit="event.preventDefault(); performSearch(1);">
-                    <input type="text" id="instructor_search" name="instructor_search">
-                    <button type="submit" class="btn-search">Buscar</button>
-                </form>
+            @include('admin.reports.searchInstructor')
+              
+
             </div>
 
             <div class="right-group"></div>
@@ -312,20 +174,19 @@
         <div class="table-container"></div>
     </div>
 
-    <!-- Incluir el modal de abrir/cerrar encuesta -->
-    @include('admin.reports.survey-toggle')
-</body>
+    <script>
 
+function openInstructorModal(id) {
+    const modal = document.getElementById('modal-' + id);
+    if (modal) modal.classList.add('show');
+    else console.error('Modal no encontrado para el ID:', id);
+  }
 
-<script>
-
-    // function openInstructorModal(id) {
-    //     document.getElementById('modal-' + id).classList.add('show');
-    // }
-
-    // function closeInstructorModal(id) {
-    //     document.getElementById('modal-' + id).classList.remove('show');
-    // }
+  function closeInstructorModal(id) {
+    const modal = document.getElementById('modal-' + id);
+    if (modal) modal.classList.remove('show');
+    else console.error('Modal no encontrado para el ID:', id);
+  }
 
     // notificaciones emergentes temporales
     function showToast(message, type) {
@@ -338,27 +199,7 @@
         }, 3000);
     }
 
-  
-
-   
-
-    function performSearch(page = 1) {
-        const searchValue = document.getElementById('instructor_search').value;
-        const url =
-            `{{ route('admin.instructors') }}?page=${page}&instructor_search=${encodeURIComponent(searchValue)}`;
-
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                document.querySelector('.table-container').innerHTML = html;
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        performSearch();
-    });
-
 </script>
 </body>
+
 </html>

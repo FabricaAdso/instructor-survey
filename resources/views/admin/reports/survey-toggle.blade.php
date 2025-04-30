@@ -77,7 +77,30 @@
     .btn-cancel:hover {
         background-color: #43a047;
     }
+    #toggle-survey-status,
+        #open-modal {
+            font-size: 16px;
+        }
+        .btn-toggle.survey-closed {
+            background-color: #4CAF50;
+            color: #fff;
+            opacity: 1;
+        }
+
+        .btn-toggle.survey-open {
+            background-color: #FF9800;
+            color: #fff;
+            opacity: 1;
+        }
+
 </style>
+
+<button id="toggle-survey-status"
+                        class="btn btn-toggle {{ $isSurveyOpen ? 'survey-open' : 'survey-closed' }}">
+                        <i class="fas fa-sync-alt"></i>
+                        {{ $isSurveyOpen ? 'Cerrar Encuesta' : 'Abrir Encuesta' }}
+                    </button>
+
 
 <div id="survey-close-modal" class="survey-close-modal">
     <div class="survey-modal-content">

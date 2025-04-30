@@ -1,0 +1,12 @@
+copiar el env example y dejarlo como env, colocar la contraseña del usuario de MySQL, 
+composer update
+php artisan key:generate
+php artisan migrate --seed o php artisan migrate:fresh --seed
+php artisan optimize:clear
+npm install
+
+instalar paquete de extensiones de Python en vscode la que tiene mas descargas, la terminal debe salir  .venv asi como los paquetes 
+ejecutar el comando de requirements.txt
+
+npm install
+npm run build en otra terminal para compilar con vite la vista de las graficas

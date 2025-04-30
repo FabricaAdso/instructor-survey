@@ -52,6 +52,10 @@ class ReportController extends Controller
 
         $instructors = $query->paginate(10);
         // dd($instructors)
+        // Verificar si el usuario es líder de área
+    //  if (auth()->user()->is_area_leader) {
+    //     return view('lider.index', compact('instructors', 'isSurveyOpen'));
+    //  }
         return view('admin.reports.index', compact('instructors', 'isSurveyOpen'));
     }
 
@@ -92,6 +96,7 @@ class ReportController extends Controller
                     ->orWhere('last_name', 'like', "%{$search}%");
             });
         }
+
 
         $instructors = $query->paginate(10);
 

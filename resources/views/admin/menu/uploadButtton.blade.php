@@ -229,7 +229,19 @@
         .hidden {
             display: none !important;
         }
+        .btn-mass {
+            background-color: #008934;
+            color: #fff;
+            border: 2px solid #007924;
+        }
+        
+
 </style>
+
+<button id="open-modal" class="btn btn-mass">
+                        <i class="fa fa-upload" style="margin-right: 4px;"></i>
+                        Cargue Masivo
+                    </button>
 
 <!-- Modal de carga masiva -->
 <div id="modal" class="modal">
