@@ -382,7 +382,7 @@
                     <h2 class="title" style="margin-bottom: 1rem;">4. EVALUACIÓN</h2>
                     <div id="page5-questions"></div>
                 </div>
-                <div class="page" data-page="6">
+                {{-- <div class="page" data-page="6">
                     <h2 class="title" style="margin-bottom: 1rem;">Preguntas Abiertas</h2>
                     @foreach ($openQuestions as $question)
                         <div class="card">
@@ -406,15 +406,14 @@
                             @endforeach
                         </div>
                     @endforeach
-                </div>
+                </div> --}}
 
             </div>
 
             <div class="button-container" id="navigationButtons">
                 <button type="button" id="prevBtn" class="btn-lift" style="display: none;">Anterior</button>
                 <button type="button" id="nextBtn" class="btn-lift">Siguiente</button>
-                <button type="submit" id="submitBtn" class="btn btn-lift"
-                    style="display: none; font-size:1.3rem">Enviar Encuesta</button>
+                <button type="submit" id="submitBtn" class="btn btn-lift" style="display: none; font-size:1.3rem">Enviar Encuesta</button>
             </div>
 
         </div>
@@ -466,7 +465,7 @@
             "Retroalimenta con el aprendiz las valoraciones realizadas"
         ];
 
-        const totalPages = 6;
+        const totalPages = 5;
         let currentPage = 1;
 
         function showPage(page) {

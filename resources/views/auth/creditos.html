@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta de Satisfaccion - Créditos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 20px;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    .logo {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #666;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      width: 80px;
+      height: 4px;
+      background: #4CAF50;
+      margin: 15px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Layout principal con dos columnas */
+    .content {
+      display: flex;
+      gap: 30px;
+      flex: 1;
+    }
+
+    /* Columna izquierda - Institución */
+    .left-column {
+      flex: 0 0 35%;
+      display: flex;
+      animation: fadeIn 0.8s ease-out 0.2s backwards;
+    }
+
+    .institution-section {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.08);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4CAF50;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #4CAF50;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .institution-info {
+      background: #f8fff7;
+      padding: 25px;
+      border-left: 5px solid #4CAF50;
+      border-radius: 8px;
+    }
+
+    .institution-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #2d5f2d;
+      margin-bottom: 15px;
+    }
+
+    .institution-description {
+      color: #555;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* Columna derecha - Desarrolladores */
+    .right-column {
+      flex: 0 0 65%;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.8s ease-out 0.3s backwards;
+    }
+
+    .developers-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .developers-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #4CAF50;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Grid de desarrolladores en una sola fila */
+    .developers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .developer-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border-top: 4px solid transparent;
+      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .developer-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15);
+      border-top-color: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .dev-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .dev-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2d5f2d;
+      margin-bottom: 6px;
+    }
+
+    .dev-role {
+      font-size: 12px;
+      color: #4CAF50;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dev-description {
+      font-size: 12px;
+      color: #777;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+
+    .tech-stack {
+      background: #f8fff7;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .tech-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4CAF50;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .tech-tag {
+      background: #4CAF50;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e0e0e0;
+      color: #999;
+      font-size: 12px;
+      animation: fadeIn 1s ease-out 0.4s backwards;
+    }
+
+    .footer-text {
+      margin-bottom: 5px;
+    }
+
+    .footer-year {
+      font-weight: 700;
+      color: #4CAF50;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .left-column {
+        flex: 0 0 auto;
+      }
+
+      .right-column {
+        flex: 0 0 auto;
+      }
+
+      .developers-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 32px;
+      }
+
+      .section-title,
+      .developers-title {
+        font-size: 22px;
+      }
+
+      .developers-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .institution-section {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">FABRICA DE SOFTWARE</div>
+      <div class="subtitle">Encuesta de Satisfaccion</div>
+      <div class="divider"></div>
+    </header>
+
+    <!-- Nuevo layout con dos columnas -->
+    <div class="content">
+      <!-- Columna izquierda: Institución -->
+      <div class="left-column">
+        <div class="institution-section">
+          <h2 class="section-title">Servicio Nacional de Aprendizaje - SENA</h2>
+          <div class="institution-info">
+            <div class="institution-name">Centro de Comercio y Servicios CAUCA</div>
+            <div class="institution-description">
+                El Centro de Comercio y Servicios, a través de su Fábrica de Software, desarrolló un sistema digital de Encuestas de Satisfacción dirigido a los aprendices del SENA.
+                Este proyecto permite evaluar la calidad de la formación en la etapa lectiva, facilitando la recolección, organización y análisis de las percepciones sobre los instructores, la planeación, la ejecución y la evaluación del proceso formativo.
+                El sistema optimiza la toma de decisiones mediante informes automáticos y contribuye al mejoramiento continuo de los programas de formación.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Desarrolladores -->
+
+
+
+      <div class="right-column">
+        <h2 class="developers-title">Equipo de Desarrollo</h2>
+        <div class="developers-grid">
+
+        <div class="developer-card">
+            <div class="dev-icon">AR</div>
+            <div class="dev-name">Antonio José Rodríguez</div>
+            <div class="dev-role">Back & Front • Lógica y Bases de Datos</div>
+            <div class="dev-description">
+                Desarrollador Fullstack Jr con enfoque en lógica, automatización y creación de APIs.
+                Manejo de frameworks backend como Laravel y Django, además de experiencia en Angular y
+                gestión estructurada de bases de datos.
+            </div>
+            <div class="tech-stack">
+                <div class="tech-title">Tecnologías</div>
+                <div class="tech-list">
+                    <span class="tech-tag">PHP</span>
+                    <span class="tech-tag">Laravel</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Django</span>
+                    <span class="tech-tag">Bases de Datos</span>
+                    <span class="tech-tag">Angular</span>
+                    <span class="tech-tag">React</span>
+                    <span class="tech-tag">MCP</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="developer-card">
+            <div class="dev-icon">AM</div>
+            <div class="dev-name">Andrés Felipe Muñoz</div>
+            <div class="dev-role">Front & Back • UX/UI</div>
+            <div class="dev-description">
+                Desarrollador enfocado en crear interfaces fluidas, modernas y centradas en la experiencia del usuario.
+                Manejo avanzado de herramientas visuales y frameworks multiplataforma.
+            </div>
+            <div class="tech-stack">
+                <div class="tech-title">Tecnologías</div>
+                <div class="tech-list">
+                    <span class="tech-tag">Kotlin</span>
+                    <span class="tech-tag">Compose</span>
+                    <span class="tech-tag">Angular</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">Figma</span>
+                    <span class="tech-tag">PHP</span>
+                    <span class="tech-tag">Laravel</span>
+                    <span class="tech-tag">Linux</span>
+                </div>
+            </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-text">Encuesta de Satisfaccion &copy; <span class="footer-year">2025</span></div>
+    </footer>
+  </div>
+</body>
+</html>

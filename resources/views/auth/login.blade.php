@@ -59,10 +59,17 @@
                         <!-- <span class="separator">o</span>
                         <a href="{{ route('login.areaLeader') }}" class="text-green-500 hover:underline">Lider de Area</a> -->
                     </p>
+                    <br><br>
+                    <p class="text-sm text-gray-500">
+                        Desarrollado por
+                        <a href="{{ route('creditos') }}" class="text-green-500 hover:underline">Fabrica CCyS - Cauca</a>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
+
+
 
     <!-- Modal de verificación -->
     <div id="verificationModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">

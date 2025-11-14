@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Tabla de reporte con filtros y boton de descarga de los datos filtrados">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> --}}
 
     <style>
         .tittle-close {
@@ -603,7 +603,7 @@
                     <th>Nombres y Apellidos</th>
                     <th>Calificación Promedio</th>
                     <th style="max-width: 80px">Total Respuestas</th>
-                    <th style="width: 30px; ">respuestas abiertas</th>
+                    {{-- <th style="width: 30px; ">respuestas abiertas</th> --}}
                     <th style="width: 30px; ">Acciones</th>
                 </tr>
             </thead>
@@ -615,8 +615,7 @@
                         <td>{{ $summary->instructor_name }} {{ $summary->instructor_last_name }}</td>
                         <td>{{ number_format($summary->average_qualification, 2) }}</td>
                         <td>{{ $summary->total_responses }}</td>
-                        <td style="text-align: center;">
-
+                        {{-- <td style="text-align: center;">
                             <a href="javascript:void(0)" class="view-open-questions"
                                 style="color: #388E3C; font-weight: bold; "
                                 data-survey="{{ $summary->survey_identifier }}"
@@ -624,9 +623,7 @@
                                 <i class="fa fa-eye" style="margin-right: 4px;color: #388E3C; font-weight: bold;"></i>
                                 Ver
                             </a>
-
-
-                        </td>
+                        </td> --}}
                         <td style="text-align: center;">
                             <a href="{{ route('totalreport', [
                                 'id' => $summary->instructor_id,

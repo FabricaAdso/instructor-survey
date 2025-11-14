@@ -29,3 +29,8 @@ openpyxl
 
 # # para los excels interactivos que descarga
 # pip install openpyxl
+
+
+
+# npm install
+# npm run dev

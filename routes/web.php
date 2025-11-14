@@ -32,6 +32,10 @@ Route::get('login/admin', function() {
     return view('auth.loginAdmin');
 })->name('login.admin');
 
+Route::get('creditos', function() {
+    return view('auth.creditos');
+})->name('creditos');
+
 Route::post('login/admin', [AuthController::class, 'loginAdmin'])->name('login.admin.submit');
 
 Route::middleware(['auth:admin', 'superuser'])->group(function () {
