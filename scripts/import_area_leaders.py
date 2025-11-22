@@ -7,16 +7,15 @@ import signal
 import bcrypt
 from openpyxl.styles import PatternFill
 
-# Configurar un timeout de 10 minutos
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
-signal.alarm(600)  # 600 segundos (10 minutos)
+signal.alarm(600)
 
 # Configuración de la base de datos
 db_config = {
     'host': 'localhost',
-    'user': 'root',           # usuario de MySQL
-    'password': 'antonio123',  # contraseña de MySQL
-    'database': 'instructor_survey'  # nombre de la base de datos
+    'user': 'root',
+    'password': 'viento3roca*',
+    'database': 'instructor_survey'
 }
 
 # Función para generar hash compatible con Laravel
@@ -29,7 +28,7 @@ def generate_laravel_bcrypt(password):
     return laravel_hash
 
 # Contraseña por defecto hasheada de forma compatible con Laravel
-DEFAULT_PASSWORD = "liderareasena2025"
+DEFAULT_PASSWORD = "l1d3r4r34s3n42025."
 DEFAULT_HASHED_PASSWORD = generate_laravel_bcrypt(DEFAULT_PASSWORD)
 
 def import_area_leaders(file_path):
