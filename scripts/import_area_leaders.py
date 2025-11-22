@@ -7,8 +7,9 @@ import signal
 import bcrypt
 from openpyxl.styles import PatternFill
 
+# Configurar un timeout de 10 minutos
 signal.signal(signal.SIGALRM, lambda signum, frame: print("Tiempo de ejecución excedido"))
-signal.alarm(600)
+signal.alarm(600)  # 600 segundos (10 minutos)
 
 # Configuración de la base de datos
 db_config = {

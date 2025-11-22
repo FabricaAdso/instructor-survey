@@ -16,10 +16,10 @@ class AdminUserSeeder extends Seeder
         $adminPassword = env('ADMIN_PASSWORD');
 
         $user = User::create([
-            'identity_document' => '1002',
-            'name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@gmail.com',
+            'identity_document' => '1234567890',
+            'name' => 'AdministadorSena',
+            'last_name' => '2025',
+            'email' => 'AdministadorSena@gmail.com',
             'is_superuser' => true,
             'password' => Hash::make($adminPassword),
         ]);
